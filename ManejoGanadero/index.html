@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+   <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -18,6 +19,7 @@
       --bg-body: #f4f6f8;
       --alert-color: #d32f2f;
       --alert-bg: #fde8e8;
+      --green-total: #2e7d32;
     }
 
     body {
@@ -74,10 +76,6 @@
       padding-left: 18px;
       font-size: 12px;
       color: #5f2121;
-    }
-
-    .notification-list li {
-      margin-bottom: 4px;
     }
 
     /* Menú de Módulos */
@@ -213,6 +211,46 @@
       cursor: pointer;
       margin-top: 8px;
     }
+
+    /* Estilos del Resumen e Inventario */
+    .summary-card {
+      background-color: #f0f7ff;
+      border: 1.5px solid #b3d7ff;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 20px;
+    }
+
+    .summary-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--blue-primary);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #cce3ff;
+      padding-bottom: 6px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 4px 0;
+      border-bottom: 1px dashed #d0e4ff;
+    }
+
+    .summary-total-general {
+      display: flex;
+      justify-content: space-between;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--green-total);
+      background-color: #e8f5e9;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 12px;
+      border: 1px solid #c8e6c9;
+    }
   </style>
 </head>
 <body>
@@ -229,8 +267,7 @@
       <span>🔔 Notificaciones y Alertas del Sistema</span>
     </div>
     <ul class="notification-list" id="notifications-list">
-      <li><strong>Tarea Cumplida:</strong> Limpieza de corral realizada por Capataz.</li>
-      <li><strong>Alerta:</strong> Programada vacunación para Lote 3 el día de mañana.</li>
+      <li><strong>Sistema:</strong> Módulo de inventario y rotación listo.</li>
     </ul>
   </div>
 
@@ -245,7 +282,7 @@
         <div class="btn-icon">🌾</div>
         <div class="btn-content">
           <h4>1. Inventario por Potreros y Rotación</h4>
-          <p>Ubicación, carga animal y días de ocupación por lote.</p>
+          <p>Potreros, fechas de rotación, grupos por categoría y resumen del rebaño.</p>
         </div>
       </button>
 
@@ -335,21 +372,97 @@
 
   <!-- VISTAS DE CADA MÓDULO -->
 
-  <!-- Mod 1 -->
+  <!-- Mod 1: Inventario por Potreros y Rotación -->
   <div id="mod-1" class="module-view">
     <div class="module-header">
       <h3>1. Inventario por Potrero y Rotación</h3>
       <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
+
+    <!-- Selección de Potrero -->
     <div class="form-group">
-      <label>Potrero:</label>
-      <input type="text" class="form-control" placeholder="Ej: Potrero Norte 02">
+      <label for="select-potrero">Seleccionar Potrero:</label>
+      <select class="form-control" id="select-potrero">
+        <option value="Macanillal">Macanillal</option>
+        <option value="Mata del Muerto">Mata del Muerto</option>
+        <option value="Galpón">Galpón</option>
+        <option value="Potrero del Medio">Potrero del Medio</option>
+        <option value="Manguito">Manguito</option>
+        <option value="Mata de Piña">Mata de Piña</option>
+        <option value="Las Rayas">Las Rayas</option>
+        <option value="Paulero">Paulero</option>
+        <option value="Jobo Gacho">Jobo Gacho</option>
+        <option value="Módulo A">Módulo A</option>
+        <option value="Módulo B">Módulo B</option>
+        <option value="Módulo C">Módulo C</option>
+        <option value="Módulo D">Módulo D</option>
+        <option value="Módulo E">Módulo E</option>
+        <option value="Módulo F">Módulo F</option>
+        <option value="Saladillal">Saladillal</option>
+        <option value="Carretera">Carretera</option>
+        <option value="Casa">Casa</option>
+        <option value="Cuatro Esquinas">Cuatro Esquinas</option>
+        <option value="María del Carmen">María del Carmen</option>
+      </select>
     </div>
+
+    <!-- Fechas -->
     <div class="form-group">
-      <label>Especie y Cantidad de Animales:</label>
-      <input type="text" class="form-control" placeholder="Ej: 45 Bovinos">
+      <label for="fecha-ingreso">Fecha de Ingreso:</label>
+      <input type="date" class="form-control" id="fecha-ingreso">
     </div>
-    <button class="btn-action" onclick="registrarActividad('Movimiento de potrero registrado')">Guardar Rotación</button>
+
+    <div class="form-group">
+      <label for="fecha-salida">Fecha de Salida (Estimada/Real):</label>
+      <input type="date" class="form-control" id="fecha-salida">
+    </div>
+
+    <!-- Grupo / Categoría -->
+    <div class="form-group">
+      <label for="select-grupo">Grupo / Categoría Animal:</label>
+      <select class="form-control" id="select-grupo">
+        <optgroup label="Categorías Bovinas">
+          <option value="Vaca">Vaca</option>
+          <option value="Novilla">Novilla</option>
+          <option value="Becerro">Becerro</option>
+          <option value="Becerra">Becerra</option>
+          <option value="Toro">Toro</option>
+          <option value="Mauta">Mauta</option>
+          <option value="Maute">Maute</option>
+        </optgroup>
+        <optgroup label="Categorías Bufalinas">
+          <option value="Búfala">Búfala</option>
+          <option value="Buvilla">Buvilla</option>
+          <option value="Bucerro">Bucerro</option>
+          <option value="Bucerra">Bucerra</option>
+          <option value="Butoro">Butoro</option>
+          <option value="Bautas">Bautas</option>
+          <option value="Bautes">Bautes</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- Cantidad -->
+    <div class="form-group">
+      <label for="input-cantidad">Cantidad de Cabezas:</label>
+      <input type="number" class="form-control" id="input-cantidad" placeholder="Ej: 25" min="1">
+    </div>
+
+    <button class="btn-action" onclick="guardarRotacion()">Registrar y Cargar al Inventario</button>
+
+    <!-- Resumen General -->
+    <div class="summary-card">
+      <div class="summary-title">📊 Resumen General del Hato</div>
+      
+      <div id="resumen-potreros">
+        <p style="font-size: 12px; color: var(--text-muted); margin: 0;">No hay registros cargados aún.</p>
+      </div>
+
+      <div class="summary-total-general">
+        <span>TOTAL GENERAL DEL REBAÑO:</span>
+        <span id="total-rebanio">0 Cabezas</span>
+      </div>
+    </div>
   </div>
 
   <!-- Mod 2 -->
@@ -490,7 +603,7 @@
     <button class="btn-action" onclick="registrarActividad('Pedido de comida registrado')">Solicitar Raciones</button>
   </div>
 
-  <!-- SCRIPT -->
+  <!-- SCRIPT LÓGICO -->
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
@@ -500,6 +613,9 @@
     if (user) {
       document.getElementById("saludo").innerText = `¡Hola, ${user.first_name}! 🤠`;
     }
+
+    // Estructura en memoria para almacenar los datos por potrero
+    let inventarioHato = {};
 
     function mostrarModulo(id) {
       document.getElementById("main-menu").style.display = "none";
@@ -514,10 +630,76 @@
       document.getElementById("main-menu").style.display = "block";
     }
 
+    function guardarRotacion() {
+      const potrero = document.getElementById("select-potrero").value;
+      const ingreso = document.getElementById("fecha-ingreso").value;
+      const salida = document.getElementById("fecha-salida").value;
+      const grupo = document.getElementById("select-grupo").value;
+      const cantidad = parseInt(document.getElementById("input-cantidad").value);
+
+      if (!cantidad || cantidad <= 0) {
+        tg.showAlert("⚠️ Por favor ingresa una cantidad válida de animales.");
+        return;
+      }
+
+      // Inicializar potrero si no existe
+      if (!inventarioHato[potrero]) {
+        inventarioHato[potrero] = {
+          totalParcial: 0,
+          detalles: []
+        };
+      }
+
+      // Guardar el registro
+      inventarioHato[potrero].detalles.push({ grupo, cantidad, ingreso, salida });
+      inventarioHato[potrero].totalParcial += cantidad;
+
+      // Actualizar vista y resumen
+      renderizarResumen();
+
+      // Notificación en Telegram
+      const mensaje = `Ingresados ${cantidad} ${grupo}(s) a ${potrero}`;
+      tg.showAlert(`✅ ${mensaje}`);
+
+      const lista = document.getElementById("notifications-list");
+      const nuevaNotif = document.createElement("li");
+      nuevaNotif.innerHTML = `<strong>Rotación:</strong> ${mensaje} (Ingreso: ${ingreso || 'N/A'}).`;
+      lista.prepend(nuevaNotif);
+
+      // Limpiar input de cantidad
+      document.getElementById("input-cantidad").value = "";
+    }
+
+    function renderizarResumen() {
+      const contenedor = document.getElementById("resumen-potreros");
+      contenedor.innerHTML = "";
+
+      let totalGeneral = 0;
+
+      for (const [potrero, datos] of Object.entries(inventarioHato)) {
+        if (datos.totalParcial > 0) {
+          totalGeneral += datos.totalParcial;
+
+          const fila = document.createElement("div");
+          fila.className = "summary-row";
+          fila.innerHTML = `
+            <span>📍 <strong>${potrero}</strong></span>
+            <span><strong>${datos.totalParcial}</strong> cabezas</span>
+          `;
+          contenedor.appendChild(fila);
+        }
+      }
+
+      if (totalGeneral === 0) {
+        contenedor.innerHTML = '<p style="font-size: 12px; color: var(--text-muted); margin: 0;">No hay registros cargados aún.</p>';
+      }
+
+      document.getElementById("total-rebanio").innerText = `${totalGeneral} Cabezas`;
+    }
+
     function registrarActividad(mensaje) {
       tg.showAlert(`✅ ${mensaje}`);
       
-      // Agregar notificación al historial superior
       const lista = document.getElementById("notifications-list");
       const nuevaNotif = document.createElement("li");
       nuevaNotif.innerHTML = `<strong>Registro:</strong> ${mensaje}.`;
@@ -532,7 +714,6 @@
       
       tg.showAlert(`✅ Tarea '${tarea}' completada por ${resp}.`);
 
-      // Agregar alerta a la vista
       const lista = document.getElementById("notifications-list");
       const nuevaNotif = document.createElement("li");
       nuevaNotif.innerHTML = `<strong>Tarea Cumplida:</strong> "${tarea}" realizada por ${resp}.`;
