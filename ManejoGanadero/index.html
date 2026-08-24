@@ -9,63 +9,146 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
+    :root {
+      --blue-primary: #1d72b8;
+      --blue-hover: #155a92;
+      --blue-light: #eef6fc;
+      --text-color: #222222;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 0;
       padding: 16px;
-      background-color: var(--tg-theme-bg-color, #ffffff);
-      color: var(--tg-theme-text-color, #000000);
+      background-color: var(--tg-theme-bg-color, #f4f6f8);
+      color: var(--tg-theme-text-color, var(--text-color));
     }
 
-    .card {
-      background-color: var(--tg-theme-secondary-bg-color, #f4f4f5);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
+    .header-card {
+      background: linear-gradient(135deg, #1d72b8, #0d47a1);
+      color: #ffffff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
     }
 
-    .btn {
-      width: 100%;
-      background-color: var(--tg-theme-button-color, #2481cc);
-      color: var(--tg-theme-button-text-color, #ffffff);
+    .header-card h2 {
+      margin: 0 0 8px 0;
+      font-size: 22px;
+    }
+
+    .header-card p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #666;
+      margin: 0 0 10px 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .grid-menu {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn-blue {
+      background-color: var(--blue-primary);
+      color: #ffffff;
       border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
+      padding: 16px 12px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
       cursor: pointer;
-      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(29, 114, 184, 0.25);
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn-blue:active {
+      background-color: var(--blue-hover);
+      transform: scale(0.98);
+    }
+
+    .btn-blue.full-width {
+      grid-column: span 2;
+      flex-direction: row;
+      padding: 14px;
+    }
+
+    .icon {
+      font-size: 22px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Encabezado de bienvenida -->
-  <div class="card">
-    <h2 id="saludo">¡Hola!</h2>
-    <p>Bienvenido al Sistema de Gestión Ganadera.</p>
+  <!-- Tarjeta de Encabezado Azul -->
+  <div class="header-card">
+    <h2 id="saludo">¡Hola, Ganadero! 🤠</h2>
+    <p>Panel de Control de Finca</p>
   </div>
 
-  <!-- Menú de Opciones -->
-  <div class="card">
-    <h3>Menú Principal</h3>
-    <button class="btn" onclick="alert('Módulo de Registro en desarrollo')">🐄 Registrar Animal</button>
-    <button class="btn" onclick="alert('Módulo de Inventario en desarrollo')">📋 Ver Inventario</button>
+  <!-- Menú de Botones Azules -->
+  <div class="section-title">Acciones Rápidas</div>
+  
+  <div class="grid-menu">
+    <button class="btn-blue" onclick="abrirModulo('Registro de Animal')">
+      <span class="icon">🐄</span>
+      <span>Nuevo Animal</span>
+    </button>
+
+    <button class="btn-blue" onclick="abrirModulo('Inventario')">
+      <span class="icon">📋</span>
+      <span>Inventario</span>
+    </button>
+
+    <button class="btn-blue" onclick="abrirModulo('Control de Salud')">
+      <span class="icon">💉</span>
+      <span>Vacunación</span>
+    </button>
+
+    <button class="btn-blue" onclick="abrirModulo('Producción de Leche/Carne')">
+      <span class="icon">🥛</span>
+      <span>Producción</span>
+    </button>
+
+    <button class="btn-blue full-width" onclick="abrirModulo('Reporte General')">
+      <span class="icon">📊</span>
+      <span>Generar Reporte</span>
+    </button>
   </div>
 
-  <!-- SCRIPT DE TELEGRAM -->
   <script>
     // 1. Inicializar el SDK de Telegram
     const tg = window.Telegram.WebApp;
     tg.ready();
-    tg.expand(); // Abre la app a pantalla completa
+    tg.expand();
 
-    // 2. Obtener datos del usuario de Telegram
+    // 2. Personalizar el saludo con los datos del usuario de Telegram
     const user = tg.initDataUnsafe?.user;
-
     if (user) {
-      // Personaliza el saludo con el nombre del usuario
       document.getElementById("saludo").innerText = `¡Hola, ${user.first_name}! 🤠`;
+    }
+
+    // 3. Función para gestionar las acciones de los botones
+    function abrirModulo(nombreModulo) {
+      // Muestra una ventana emergente nativa dentro de Telegram
+      tg.showAlert(`Has seleccionado: ${nombreModulo}`);
     }
   </script>
 </body>
