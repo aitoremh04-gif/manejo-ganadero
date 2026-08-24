@@ -78,7 +78,7 @@
       padding-left: 18px;
       font-size: 12px;
       color: #5f2121;
-      max-height: 120px;
+      max-height: 140px;
       overflow-y: auto;
     }
 
@@ -333,7 +333,7 @@
       <span>🔔 Notificaciones y Alertas del Sistema</span>
     </div>
     <ul class="notification-list" id="notifications-list">
-      <li><strong>Sistema:</strong> Monitoreo activo de movimientos y tareas.</li>
+      <li><strong>Sistema:</strong> Control sanitario y operacional en línea.</li>
     </ul>
   </div>
 
@@ -356,17 +356,25 @@
           <p>Asignación, fechas, ejecución y resumen mensual.</p>
         </div>
       </button>
+
+      <!-- BOTÓN MÓDULO 3 REQUERIDO -->
+      <button class="btn-card" onclick="mostrarModulo('mod-3')">
+        <div class="btn-icon">💉</div>
+        <div class="btn-content">
+          <h4>3. Manejo Sanitario Productivo</h4>
+          <p>Tratamientos por lote, esquema sanitario y alertas de fecha.</p>
+        </div>
+      </button>
     </div>
   </div>
 
-  <!-- MODULO 1: INVENTARIO, POTRERO Y ROTACIÓN (ACTUALIZADO) -->
+  <!-- MODULO 1: INVENTARIO, POTRERO Y ROTACIÓN -->
   <div id="mod-1" class="module-view">
     <div class="module-header">
       <h3>1. Inventario por Potrero y Rotación</h3>
       <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
 
-    <!-- Selección de Potrero -->
     <div class="form-group">
       <label>Potrero:</label>
       <select class="form-control" id="mod1-potrero">
@@ -393,7 +401,6 @@
       </select>
     </div>
 
-    <!-- Fechas Ingreso / Salida -->
     <div class="form-row">
       <div class="form-group">
         <label>Fecha de Ingreso:</label>
@@ -405,7 +412,6 @@
       </div>
     </div>
 
-    <!-- Categoría y Grupo Etario Dinámico -->
     <div class="form-row">
       <div class="form-group">
         <label>Categoría:</label>
@@ -416,13 +422,10 @@
       </div>
       <div class="form-group">
         <label>Grupo Etario:</label>
-        <select class="form-control" id="mod1-grupo-etario">
-          <!-- Opciones dinámicas según la categoría -->
-        </select>
+        <select class="form-control" id="mod1-grupo-etario"></select>
       </div>
     </div>
 
-    <!-- Cantidad -->
     <div class="form-group">
       <label>Cantidad (Cabezas):</label>
       <input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 25" min="1">
@@ -430,7 +433,6 @@
 
     <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento y Generar Alerta</button>
 
-    <!-- Resumen por Potrero -->
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -443,13 +445,10 @@
             <th>Cant.</th>
           </tr>
         </thead>
-        <tbody id="tabla-rotacion-body">
-          <!-- Filas de movimientos -->
-        </tbody>
+        <tbody id="tabla-rotacion-body"></tbody>
       </table>
     </div>
 
-    <!-- Resumen Inferior Hato -->
     <div class="summary-card">
       <h4>📊 Resumen del Hato por Potrero</h4>
       <div class="summary-grid">
@@ -469,7 +468,7 @@
     </div>
   </div>
 
-  <!-- MODULO 2: PLANIFICACIÓN Y TAREAS (ACTUALIZADO) -->
+  <!-- MODULO 2: PLANIFICACIÓN Y TAREAS -->
   <div id="mod-2" class="module-view">
     <div class="module-header">
       <h3>2. Planificación y Tareas</h3>
@@ -507,7 +506,6 @@
 
     <button class="btn-action" onclick="guardarTarea()">Guardar Tarea</button>
 
-    <!-- Tabla Tareas -->
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -519,13 +517,10 @@
             <th>Observación</th>
           </tr>
         </thead>
-        <tbody id="tabla-tareas-body">
-          <!-- Filas dinámicas -->
-        </tbody>
+        <tbody id="tabla-tareas-body"></tbody>
       </table>
     </div>
 
-    <!-- Resumen Mensual con Alertas -->
     <div class="summary-card">
       <h4>🚨 Resumen Mensual de Tareas y Alertas</h4>
       <div class="summary-grid">
@@ -545,18 +540,129 @@
     </div>
   </div>
 
+  <!-- MODULO 3: MANEJO SANITARIO PRODUCTIVO (NUEVO) -->
+  <div id="mod-3" class="module-view">
+    <div class="module-header">
+      <h3>3. Manejo Sanitario Productivo</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+
+    <!-- Lote Trabajado -->
+    <div class="form-group">
+      <label>Lote Trabajado:</label>
+      <select class="form-control" id="mod3-lote">
+        <option>Vacas PÑ</option>
+        <option>Vacas Paridas</option>
+        <option>Vacas Vacías</option>
+        <option>Vacas en Monta</option>
+        <option>Becerros Recién Nacidos</option>
+        <option>Becerros 1 Mes</option>
+        <option>Becerros 2 Meses</option>
+        <option>Becerros 3 Meses</option>
+        <option>Becerros 4 Meses</option>
+        <option>Becerros 5 Meses</option>
+        <option>Novillas</option>
+        <option>Destetes</option>
+        <option>Toros</option>
+        <option>Búfalas PÑ</option>
+        <option>Búfalas Paridas</option>
+        <option>Búfalas Vacías</option>
+        <option>Búfalas en Monta</option>
+        <option>Búfalas en Ordeño</option>
+        <option>Bucerros en Ordeño</option>
+        <option>Buvillas</option>
+        <option>Bautas</option>
+        <option>Bautes</option>
+        <option>Butoro</option>
+      </select>
+    </div>
+
+    <!-- Cantidad y Tipo Tratamiento -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Cantidad (Cabezas):</label>
+        <input type="number" id="mod3-cantidad" class="form-control" placeholder="Ej: 30" min="1">
+      </div>
+      <div class="form-group">
+        <label>Tipo de Tratamiento:</label>
+        <select class="form-control" id="mod3-tipo">
+          <option>Vacunas</option>
+          <option>Desparasitación</option>
+          <option>Minerales</option>
+          <option>Vitaminas</option>
+          <option>Antibióticos</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Fechas Aplicación y Próximo Tratamiento -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fecha Aplicación:</label>
+        <input type="date" id="mod3-f-aplicacion" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Fecha Próximo Tratamiento:</label>
+        <input type="date" id="mod3-f-proximo" class="form-control">
+      </div>
+    </div>
+
+    <!-- Observación -->
+    <div class="form-group">
+      <label>Observación:</label>
+      <input type="text" id="mod3-observacion" class="form-control" placeholder="Ej: Dosis completada 5ml por animal">
+    </div>
+
+    <button class="btn-action" onclick="guardarTratamientoSanitario()">Guardar Tratamiento y Agendar Alerta</button>
+
+    <!-- Tabla Histórico Tratamientos -->
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Lote</th>
+            <th>Cant.</th>
+            <th>Tipo</th>
+            <th>Aplicación</th>
+            <th>Próximo</th>
+            <th>Obs.</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-sanitaria-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Resumen Inferior Sanitario Mensual -->
+    <div class="summary-card">
+      <h4>💉 Resumen Mensual de Tratamientos</h4>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="title">Tratamientos Aplicados (Mes)</span>
+          <span class="value" id="mod3-total-mes">0</span>
+        </div>
+        <div class="summary-item">
+          <span class="title">Animales Tratados (Mes)</span>
+          <span class="value" id="mod3-animales-mes">0</span>
+        </div>
+        <div class="summary-item" style="grid-column: span 2;">
+          <span class="title">Próximos Vencimientos (7 Días)</span>
+          <span class="value" id="mod3-alertas-proximas" style="color: var(--alert-color);">0 Pendientes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    // Arrays de Grupos Etarios según Categoría
     const gruposBovinos = ["Vaca", "Novilla", "Becerro", "Toro", "Mautas", "Mautes"];
     const gruposBufalinos = ["Búfalas", "Buvillas", "Bucerros", "Bucerras", "Butoro", "Bautas", "Bautes"];
 
-    // Bancos de datos
     let movimientosRotacion = [];
     let tareas = [];
+    let tratamientosSanitarios = [];
 
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date().toISOString().split('T')[0];
@@ -564,6 +670,12 @@
       document.getElementById("mod1-f-salida").value = hoy;
       document.getElementById("mod2-f-asignacion").value = hoy;
       document.getElementById("mod2-f-culminacion").value = hoy;
+      document.getElementById("mod3-f-aplicacion").value = hoy;
+      
+      // Fecha próximo tratamiento recomendada (30 días por defecto)
+      const proximo = new Date();
+      proximo.setDate(proximo.getDate() + 30);
+      document.getElementById("mod3-f-proximo").value = proximo.toISOString().split('T')[0];
 
       actualizarGruposEtarios();
     });
@@ -579,7 +691,6 @@
       document.getElementById("main-menu").style.display = "block";
     }
 
-    // Actualiza dinámicamente el combo de Grupos Etarios
     function actualizarGruposEtarios() {
       const cat = document.getElementById("mod1-categoria").value;
       const selectGrupo = document.getElementById("mod1-grupo-etario");
@@ -611,11 +722,9 @@
       const registro = { potrero, fIngreso, fSalida, categoria, grupoEtario, cantidad };
       movimientosRotacion.unshift(registro);
 
-      // Disparar Alerta de Movimiento
       const detalleAlerta = `Movimiento en '${potrero}': ${cantidad} ${grupoEtario} (${categoria}) asignados del ${fIngreso} al ${fSalida}.`;
       tg.showAlert(`🚨 ALERTA DE MOVIMIENTO:\n${detalleAlerta}`);
 
-      // Registrar Alerta en el Panel Superior
       const listaNotif = document.getElementById("notifications-list");
       const li = document.createElement("li");
       li.innerHTML = `<strong style="color: var(--alert-color);">[ALERTA MOVIMIENTO]:</strong> ${detalleAlerta}`;
@@ -673,7 +782,6 @@
       const nuevaTarea = { descripcion, fAsignacion, fCulminacion, ejecucion, observacion };
       tareas.unshift(nuevaTarea);
 
-      // Si no fue ejecutada, lanzar una alerta en el panel global
       if (ejecucion === "No") {
         const listaNotif = document.getElementById("notifications-list");
         const li = document.createElement("li");
@@ -724,6 +832,94 @@
       document.getElementById("mod2-ejecutadas-mes").innerText = ejecutadasMes;
       document.getElementById("mod2-alertas-mes").innerText = alertasMes;
       document.getElementById("mod2-eficiencia").innerText = `${eficiencia}%`;
+    }
+
+    /* LÓGICA MÓDULO 3: MANEJO SANITARIO PRODUCTIVO */
+    function guardarTratamientoSanitario() {
+      const lote = document.getElementById("mod3-lote").value;
+      const cantidad = parseInt(document.getElementById("mod3-cantidad").value) || 0;
+      const tipo = document.getElementById("mod3-tipo").value;
+      const fAplicacion = document.getElementById("mod3-f-aplicacion").value;
+      const fProximo = document.getElementById("mod3-f-proximo").value;
+      const observacion = document.getElementById("mod3-observacion").value || "-";
+
+      if (cantidad <= 0) {
+        tg.showAlert("⚠️ Ingresa una cantidad de animales válida.");
+        return;
+      }
+
+      const registro = { lote, cantidad, tipo, fAplicacion, fProximo, observacion };
+      tratamientosSanitarios.unshift(registro);
+
+      // Evaluación de alerta por proximidad (si faltan 7 días o menos)
+      evaluarAlertaProximidadSanitaria(registro);
+
+      renderizarSanidad();
+      actualizarResumenSanitario();
+      
+      document.getElementById("mod3-cantidad").value = "";
+      document.getElementById("mod3-observacion").value = "";
+      tg.showAlert(`✅ Tratamiento (${tipo}) registrado correctamente.`);
+    }
+
+    function evaluarAlertaProximidadSanitaria(registro) {
+      const hoy = new Date();
+      const fechaProxima = new Date(registro.fProximo);
+      const diferenciaDias = Math.ceil((fechaProxima - hoy) / (1000 * 60 * 60 * 24));
+
+      if (diferenciaDias <= 7) {
+        const mensajeAlerta = `Alerta de vencimiento: Próximo tratamiento de ${registro.tipo} para Lote '${registro.lote}' vence el ${registro.fProximo}.`;
+        
+        // Agregar al panel general superior
+        const listaNotif = document.getElementById("notifications-list");
+        const li = document.createElement("li");
+        li.innerHTML = `<strong style="color: var(--alert-color);">[ALERTA SANITARIA]:</strong> ${mensajeAlerta}`;
+        listaNotif.prepend(li);
+      }
+    }
+
+    function renderizarSanidad() {
+      const tbody = document.getElementById("tabla-sanitaria-body");
+      tbody.innerHTML = "";
+
+      tratamientosSanitarios.forEach(s => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${s.lote}</strong></td>
+          <td>${s.cantidad}</td>
+          <td>${s.tipo}</td>
+          <td>${s.fAplicacion}</td>
+          <td><span style="color: var(--alert-color); font-weight: bold;">${s.fProximo}</span></td>
+          <td>${s.observacion}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function actualizarResumenSanitario() {
+      const mesActual = new Date().toISOString().substring(0, 7);
+      const hoy = new Date();
+
+      let tratamientosMes = 0;
+      let animalesTratadosMes = 0;
+      let alertasProximas = 0;
+
+      tratamientosSanitarios.forEach(s => {
+        if (s.fAplicacion.startsWith(mesActual)) {
+          tratamientosMes++;
+          animalesTratadosMes += s.cantidad;
+        }
+
+        const fechaProxima = new Date(s.fProximo);
+        const diferenciaDias = Math.ceil((fechaProxima - hoy) / (1000 * 60 * 60 * 24));
+        if (diferenciaDias <= 7) {
+          alertasProximas++;
+        }
+      });
+
+      document.getElementById("mod3-total-mes").innerText = tratamientosMes;
+      document.getElementById("mod3-animales-mes").innerText = animalesTratadosMes;
+      document.getElementById("mod3-alertas-proximas").innerText = `${alertasProximas} Pendientes`;
     }
   </script>
 </body>
