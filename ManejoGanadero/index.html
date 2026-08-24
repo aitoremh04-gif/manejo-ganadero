@@ -15,37 +15,40 @@
       --bg-card: #ffffff;
       --text-main: #1c252e;
       --text-muted: #637381;
+      --bg-body: #f4f6f8;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 0;
       padding: 16px;
-      background-color: var(--tg-theme-bg-color, #f4f6f8);
+      background-color: var(--tg-theme-bg-color, var(--bg-body));
       color: var(--tg-theme-text-color, var(--text-main));
     }
 
+    /* Encabezado */
     .header-card {
       background: linear-gradient(135deg, #1d72b8, #0d47a1);
       color: #ffffff;
       border-radius: 16px;
-      padding: 20px;
+      padding: 18px;
       margin-bottom: 20px;
       box-shadow: 0 4px 12px rgba(29, 114, 184, 0.2);
       text-align: center;
     }
 
     .header-card h2 {
-      margin: 0 0 6px 0;
-      font-size: 22px;
+      margin: 0 0 4px 0;
+      font-size: 20px;
     }
 
     .header-card p {
       margin: 0;
       opacity: 0.9;
-      font-size: 14px;
+      font-size: 13px;
     }
 
+    /* Vista de Lista de Módulos */
     .section-title {
       font-size: 13px;
       font-weight: 700;
@@ -64,29 +67,30 @@
 
     .btn-card {
       background-color: var(--bg-card);
-      border: 2px solid var(--blue-primary);
+      border: 1.5px solid #dce0e4;
       border-radius: 14px;
-      padding: 16px;
+      padding: 14px;
       display: flex;
       align-items: center;
       gap: 14px;
       text-align: left;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
     }
 
     .btn-card:active {
       background-color: #ebf4fc;
+      border-color: var(--blue-primary);
       transform: scale(0.98);
     }
 
     .btn-icon {
       background-color: var(--blue-primary);
       color: #ffffff;
-      font-size: 22px;
-      width: 46px;
-      height: 46px;
+      font-size: 20px;
+      width: 44px;
+      height: 44px;
       border-radius: 12px;
       display: flex;
       align-items: center;
@@ -96,7 +100,7 @@
 
     .btn-content h4 {
       margin: 0 0 4px 0;
-      font-size: 16px;
+      font-size: 15px;
       color: var(--blue-primary);
     }
 
@@ -106,6 +110,81 @@
       color: var(--text-muted);
       line-height: 1.3;
     }
+
+    /* Vista Detalle del Módulo (Formularios / Opciones) */
+    .module-view {
+      display: none;
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .module-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eef0f2;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .module-header h3 {
+      margin: 0;
+      color: var(--blue-primary);
+      font-size: 17px;
+    }
+
+    .btn-back {
+      background: #eef6fc;
+      color: var(--blue-primary);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* Formularios dentro de los Módulos */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cfd8dc;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+      background: #fafafa;
+    }
+
+    .btn-action {
+      width: 100%;
+      background-color: var(--blue-primary);
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-action:active {
+      background-color: var(--blue-hover);
+    }
   </style>
 </head>
 <body>
@@ -113,66 +192,298 @@
   <!-- Encabezado -->
   <div class="header-card">
     <h2 id="saludo">¡Hola, Ganadero! 🤠</h2>
-    <p>Sistema de Control y Gestión de Finca</p>
+    <p>Sistema Integral de Gestión y Trazabilidad</p>
   </div>
 
-  <div class="section-title">Módulos de Trabajo</div>
-  
-  <div class="grid-menu">
+  <!-- VISTA PRINCIPAL: Menú con los 7 Módulos -->
+  <div id="main-menu">
+    <div class="section-title">Módulos del Sistema</div>
     
-    <!-- 1. Registro de Animales -->
-    <button class="btn-card" onclick="abrirModulo('Registro de Animales')">
-      <div class="btn-icon">🐄</div>
-      <div class="btn-content">
-        <h4>Registro de Animales</h4>
-        <p>Ingresa arete, peso, sexo y categoría (Bovina y Bufalina).</p>
-      </div>
-    </button>
+    <div class="grid-menu">
+      
+      <!-- 1. Inventario e Infraestructura -->
+      <button class="btn-card" onclick="mostrarModulo('mod-inventario')">
+        <div class="btn-icon">🐄</div>
+        <div class="btn-content">
+          <h4>1. Inventario y Potreros</h4>
+          <p>Bufalinos/Bovinos por categoría, estado reproductivo y carga de potreros.</p>
+        </div>
+      </button>
 
-    <!-- 2. Control de Salud -->
-    <button class="btn-card" onclick="abrirModulo('Control de Salud')">
-      <div class="btn-icon">💉</div>
-      <div class="btn-content">
-        <h4>Control de Salud</h4>
-        <p>Registro de vacunas, desparasitaciones y tratamientos.</p>
-      </div>
-    </button>
+      <!-- 2. Planificación y Tareas -->
+      <button class="btn-card" onclick="mostrarModulo('mod-tareas')">
+        <div class="btn-icon">📅</div>
+        <div class="btn-content">
+          <h4>2. Planificación y Tareas</h4>
+          <p>Calendario operativo, organigrama, asignación de roles y bitácora.</p>
+        </div>
+      </button>
 
-    <!-- 3. Producción -->
-    <button class="btn-card" onclick="abrirModulo('Producción')">
-      <div class="btn-icon">🥛</div>
-      <div class="btn-content">
-        <h4>Producción</h4>
-        <p>Registros de preñez, nacimiento, peso al nacer, GPD e intervalos entre partos.</p>
-      </div>
-    </button>
+      <!-- 3. Movimientos, Salud e Incidencias -->
+      <button class="btn-card" onclick="mostrarModulo('mod-salud')">
+        <div class="btn-icon">💉</div>
+        <div class="btn-content">
+          <h4>3. Movimientos y Sanidad</h4>
+          <p>Rotación, vacunación, mortalidad con GPS/fotos y trabajo en corral.</p>
+        </div>
+      </button>
 
-    <!-- 4. Potreros / Lotes -->
-    <button class="btn-card" onclick="abrirModulo('Potreros y Lotes')">
-      <div class="btn-icon">🌾</div>
-      <div class="btn-content">
-        <h4>Potreros / Lotes</h4>
-        <p>Organización y ubicación del ganado por potrero.</p>
-      </div>
-    </button>
+      <!-- 4. Maquinaria y Combustible -->
+      <button class="btn-card" onclick="mostrarModulo('mod-maquinaria')">
+        <div class="btn-icon">🚜</div>
+        <div class="btn-content">
+          <h4>4. Maquinaria y Combustible</h4>
+          <p>Mantenimiento, horómetros, control de gasoil/gasolina y rendimientos.</p>
+        </div>
+      </button>
 
+      <!-- 5. Servicios Internos y Cocina -->
+      <button class="btn-card" onclick="mostrarModulo('mod-cocina')">
+        <div class="btn-icon">🍲</div>
+        <div class="btn-content">
+          <h4>5. Logística de Cocina</h4>
+          <p>Solicitudes de raciones, planificación de comidas y control de víveres.</p>
+        </div>
+      </button>
+
+      <!-- 6. Control Meteorológico -->
+      <button class="btn-card" onclick="mostrarModulo('mod-clima')">
+        <div class="btn-icon">🌧️</div>
+        <div class="btn-content">
+          <h4>6. Control Meteorológico</h4>
+          <p>Registro pluviométrico, pronóstico localizado e histórico climático.</p>
+        </div>
+      </button>
+
+      <!-- 7. Inventario de Insumos -->
+      <button class="btn-card" onclick="mostrarModulo('mod-insumos')">
+        <div class="btn-icon">📦</div>
+        <div class="btn-content">
+          <h4>7. Insumos y Suministros</h4>
+          <p>Alimentos, productos veterinarios y materiales de cerca/taller.</p>
+        </div>
+      </button>
+
+    </div>
   </div>
 
+  <!-- VISTAS DETALLADAS DE CADA MÓDULO -->
+
+  <!-- Módulo 1 -->
+  <div id="mod-inventario" class="module-view">
+    <div class="module-header">
+      <h3>1. Inventario e Infraestructura</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group">
+      <label>Especie:</label>
+      <select class="form-control">
+        <option>Bovino</option>
+        <option>Bufalino</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Categoría / Etapa:</label>
+      <select class="form-control">
+        <option>Becerro / Bucerro</option>
+        <option>Maute / Bubillo</option>
+        <option>Novillo / Bubillo de Ceba</option>
+        <option>Toro / Reproductor</option>
+        <option>Vaca / Búfala</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Estado Reproductivo:</label>
+      <select class="form-control">
+        <option>Vacía (Escotera)</option>
+        <option>Preñada</option>
+        <option>En Lactancia</option>
+        <option>Gestante Lactante</option>
+        <option>Seca</option>
+        <option>Programa IATF</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Asignar Potrero:</label>
+      <input type="text" class="form-control" placeholder="Nombre o N° de potrero">
+    </div>
+    <button class="btn-action" onclick="guardarRegistro('Inventario Actualizado')">Guardar Registro</button>
+  </div>
+
+  <!-- Módulo 2 -->
+  <div id="mod-tareas" class="module-view">
+    <div class="module-header">
+      <h3>2. Planificación y Tareas</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group">
+      <label>Descripción de la Tarea:</label>
+      <input type="text" class="form-control" placeholder="Ej: Reparar cerca potrero 4">
+    </div>
+    <div class="form-group">
+      <label>Responsable:</label>
+      <select class="form-control">
+        <option>Capataz</option>
+        <option>Vaquero</option>
+        <option>Maquinista</option>
+        <option>Administrador</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Bitácora / Observaciones:</label>
+      <textarea class="form-control" rows="3" placeholder="Novedades o imprevistos..."></textarea>
+    </div>
+    <button class="btn-action" onclick="guardarRegistro('Tarea Asignada')">Asignar Tarea</button>
+  </div>
+
+  <!-- Módulo 3 -->
+  <div id="mod-salud" class="module-view">
+    <div class="module-header">
+      <h3>3. Movimientos y Sanidad</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group">
+      <label>Tipo de Registro:</label>
+      <select class="form-control">
+        <option>Rotación de Potrero</option>
+        <option>Vacunación / Tratamiento</option>
+        <option>Incidencia / Mortalidad</option>
+        <option>Manejo en Manga / Pesaje</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Detalles / Cantidad de Cabezas:</label>
+      <input type="text" class="form-control" placeholder="Ingrese detalles o conteo">
+    </div>
+    <button class="btn-action" onclick="guardarRegistro('Registro de Sanidad Guardado')">Registrar Evento</button>
+  </div>
+
+  <!-- Módulo 4 -->
+  <div id="mod-maquinaria" class="module-view">
+    <div class="module-header">
+      <h3>4. Maquinaria y Combustible</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group">
+      <label>Equipo / Maquinaria:</label>
+      <input type="text" class="form-control" placeholder="Tractor 1, Motobomba, etc.">
+    </div>
+    <div class="form-group">
+      <label>Suministro de Combustible (Litros):</label>
+      <input type="number" class="form-control" placeholder="Litros despachados">
+    </div>
+    <div class="form-group">
+      <label>Horómetro / Kilometraje Actual:</label>
+      <input type="number" class="form-control" placeholder="Horas de trabajo">
+    </div>
+    <button class="btn-action" onclick="guardarRegistro('Consumo de Combustible Registrado')">Registrar Consumo</button>
+  </div>
+
+  <!-- Módulo 5 -->
+  <div id="mod-cocina" class="module-view">
+    <div class="module-header">
+      <h3>5. Logística de Cocina</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group">
+      <label>Número de Personal en Campo:</label>
+      <input type="number" class="form-control" placeholder="Cantidad de personas">
+    </div>
+    <div class="form-group">
+      <label>Solicitud de Raciones:</label>
+      <select class="form-control">
+        <option>Desayunos</option>
+        <option>Almuerzos</option>
+        <option>Cenas</option>
+        <option>Jornada Especial (Faena de Corral)</option>
+      </select>
+    </div>
+    <button class="btn-action" onclick="guardarRegistro('Pedido de Cocina Enviado')">Enviar Solicitud</button>
+  </div>
+
+  <!-- Módulo 6 -->
+  <div id="mod-clima" class="module-view">
+    <div class="module-header">
+      <h3>6. Control Meteorológico</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group">
+      <label>Pluviometría (Precipitación en mm):</label>
+      <input type="number" class="form-control" placeholder="Ej: 25 mm">
+    </div>
+    <div class="form-group">
+      <label>Sector / Estación de la Finca:</label>
+      <input type="text" class="form-control" placeholder="Nombre del sector">
+    </div>
+    <button class="btn-action" onclick="guardarRegistro('Lectura de Lluvia Registrada')">Guardar Lectura</button>
+  </div>
+
+  <!-- Módulo 7 -->
+  <div id="mod-insumos" class="module-view">
+    <div class="module-header">
+      <h3>7. Insumos y Suministros</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group">
+      <label>Tipo de Insumo:</label>
+      <select class="form-control">
+        <option>Alimentos / Suplementos (Sal, Melaza, Pacas)</option>
+        <option>Veterinarios (Vacunas, Jeringas)</option>
+        <option>Cercas y Taller (Estantillos, Alambre)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Movimiento:</label>
+      <select class="form-control">
+        <option>Entrada (Compra / Recepción)</option>
+        <option>Salida (Uso en Campo)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Cantidad:</label>
+      <input type="number" class="form-control" placeholder="Cantidad de unidades/sacos">
+    </div>
+    <button class="btn-action" onclick="guardarRegistro('Inventario de Insumos Actualizado')">Actualizar Stock</button>
+  </div>
+
+  <!-- SCRIPT LÓGICO DE NAVEGACIÓN Y TELEGRAM -->
   <script>
-    // Inicializar Telegram WebApp SDK
+    // 1. Inicializar Telegram WebApp
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    // Saludo personalizado con el nombre del usuario en Telegram
+    // 2. Saludo personalizado con el usuario
     const user = tg.initDataUnsafe?.user;
     if (user) {
       document.getElementById("saludo").innerText = `¡Hola, ${user.first_name}! 🤠`;
     }
 
-    // Respuesta al hacer clic en los botones
-    function abrirModulo(nombreModulo) {
-      tg.showAlert(`Abriendo: ${nombreModulo}`);
+    // 3. Función para cambiar entre el Menú Principal y los Módulos
+    function mostrarModulo(idModulo) {
+      document.getElementById("main-menu").style.display = "none";
+      
+      // Oculta todos los módulos por seguridad
+      const modulos = document.querySelectorAll('.module-view');
+      modulos.forEach(mod => mod.style.display = "none");
+
+      // Muestra el módulo seleccionado
+      document.getElementById(idModulo).style.display = "block";
+    }
+
+    function volverMenu() {
+      // Oculta todos los módulos
+      const modulos = document.querySelectorAll('.module-view');
+      modulos.forEach(mod => mod.style.display = "none");
+
+      // Muestra el menú principal
+      document.getElementById("main-menu").style.display = "block";
+    }
+
+    // 4. Confirmación de envío de datos
+    function guardarRegistro(mensaje) {
+      tg.showAlert(`✅ ${mensaje}`);
+      volverMenu();
     }
   </script>
 </body>
