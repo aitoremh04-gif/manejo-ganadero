@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Gestión Ganadera</title>
+  <title>Gestión Ganadera Hato</title>
   
   <!-- SDK Oficial de Telegram -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -20,6 +20,8 @@
       --alert-bg: #fde8e8;
       --success-color: #2e7d32;
       --success-bg: #e8f5e9;
+      --warning-color: #ed6c02;
+      --warning-bg: #fff4e5;
     }
 
     body {
@@ -52,7 +54,7 @@
       font-size: 13px;
     }
 
-    /* Panel de Alertas y Notificaciones Globales */
+    /* Panel de Alertas Globales */
     .notifications-card {
       background-color: var(--alert-bg);
       border: 1px solid #f8b4b4;
@@ -84,7 +86,7 @@
       margin-bottom: 4px;
     }
 
-    /* Menú de Módulos */
+    /* Menú */
     .section-title {
       font-size: 13px;
       font-weight: 700;
@@ -147,7 +149,7 @@
       line-height: 1.2;
     }
 
-    /* Vistas de Módulo */
+    /* Vistas Módulos */
     .module-view {
       display: none;
       background: var(--bg-card);
@@ -182,9 +184,15 @@
       cursor: pointer;
     }
 
-    /* Formulario */
+    /* Formulario UI */
     .form-group {
       margin-bottom: 12px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
 
     .form-group label {
@@ -218,7 +226,7 @@
       margin-top: 8px;
     }
 
-    /* Tabla Estilizada */
+    /* Tablas Estilizadas */
     .table-container {
       width: 100%;
       overflow-x: auto;
@@ -270,7 +278,7 @@
       color: var(--alert-color);
     }
 
-    /* Panel de Resumen */
+    /* Tarjetas de Resumen */
     .summary-card {
       background-color: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -309,13 +317,6 @@
       font-weight: bold;
       color: var(--text-main);
     }
-
-    /* Estilos del modal/vista ampliada del módulo 2 */
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
   </style>
 </head>
 <body>
@@ -332,178 +333,181 @@
       <span>🔔 Notificaciones y Alertas del Sistema</span>
     </div>
     <ul class="notification-list" id="notifications-list">
-      <li><strong>Sistema:</strong> Control operativo iniciado correctamente.</li>
+      <li><strong>Sistema:</strong> Monitoreo activo de movimientos y tareas.</li>
     </ul>
   </div>
 
   <!-- MENU PRINCIPAL -->
   <div id="main-menu">
     <div class="section-title">Módulos de Trabajo</div>
-    
     <div class="grid-menu">
-      
-      <!-- 1 -->
       <button class="btn-card" onclick="mostrarModulo('mod-1')">
         <div class="btn-icon">🌾</div>
         <div class="btn-content">
           <h4>1. Inventario por Potreros y Rotación</h4>
-          <p>Ubicación, carga animal y días de ocupación por lote.</p>
+          <p>Ubicación, especies, grupos etarios y control de rotación.</p>
         </div>
       </button>
 
-      <!-- 2 -->
       <button class="btn-card" onclick="mostrarModulo('mod-2')">
         <div class="btn-icon">📅</div>
         <div class="btn-content">
           <h4>2. Planificación y Tareas</h4>
-          <p>Organigrama, asignación de responsabilidades y seguimiento.</p>
+          <p>Asignación, fechas, ejecución y resumen mensual.</p>
         </div>
       </button>
-
-      <!-- 3 -->
-      <button class="btn-card" onclick="mostrarModulo('mod-3')">
-        <div class="btn-icon">💉</div>
-        <div class="btn-content">
-          <h4>3. Manejo Sanitario Productivo</h4>
-          <p>Tratamientos, esquema de vacunación y programas sanitarios.</p>
-        </div>
-      </button>
-
-      <!-- 4 -->
-      <button class="btn-card" onclick="mostrarModulo('mod-4')">
-        <div class="btn-icon">🐄</div>
-        <div class="btn-content">
-          <h4>4. Eventos por Categoría</h4>
-          <p>Bovina y Bufalina: Mortalidad, nacimientos, natibortos y abortos.</p>
-        </div>
-      </button>
-
-      <!-- 5 -->
-      <button class="btn-card" onclick="mostrarModulo('mod-5')">
-        <div class="btn-icon">🚜</div>
-        <div class="btn-content">
-          <h4>5. Maquinarias y Equipos</h4>
-          <p>Mantenimiento, horas de trabajo y estado operacional.</p>
-        </div>
-      </button>
-
-      <!-- 6 -->
-      <button class="btn-card" onclick="mostrarModulo('mod-6')">
-        <div class="btn-icon">🌧️</div>
-        <div class="btn-content">
-          <h4>6. Control Meteorológico</h4>
-          <p>Lectura pluviométrica y pronóstico local.</p>
-        </div>
-      </button>
-
-      <!-- 7 -->
-      <button class="btn-card" onclick="mostrarModulo('mod-7')">
-        <div class="btn-icon">📦</div>
-        <div class="btn-content">
-          <h4>7. Depósito</h4>
-          <p>Inventario general de insumos, materiales y repuestos.</p>
-        </div>
-      </button>
-
-      <!-- 8 -->
-      <button class="btn-card" onclick="mostrarModulo('mod-8')">
-        <div class="btn-icon">🛠️</div>
-        <div class="btn-content">
-          <h4>8. Reparación de Línea</h4>
-          <p>Reportes de fallas y mantenimiento de cercas o infraestructura.</p>
-        </div>
-      </button>
-
-      <!-- 9 -->
-      <button class="btn-card" onclick="mostrarModulo('mod-9')">
-        <div class="btn-icon">⛽</div>
-        <div class="btn-content">
-          <h4>9. Control de Combustible</h4>
-          <p>Suministro, inventario y rendimiento de Gasoil/Gasolina.</p>
-        </div>
-      </button>
-
-      <!-- 10 -->
-      <button class="btn-card" onclick="mostrarModulo('mod-10')">
-        <div class="btn-icon">🍲</div>
-        <div class="btn-content">
-          <h4>10. Logística de Comida</h4>
-          <p>Planificación de platos y raciones para el personal.</p>
-        </div>
-      </button>
-
     </div>
   </div>
 
-  <!-- VISTAS DE CADA MÓDULO -->
-
-  <!-- Mod 1: Potrero y Rotación (Con Alerta Activa) -->
+  <!-- MODULO 1: INVENTARIO, POTRERO Y ROTACIÓN (ACTUALIZADO) -->
   <div id="mod-1" class="module-view">
     <div class="module-header">
       <h3>1. Inventario por Potrero y Rotación</h3>
       <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
+
+    <!-- Selección de Potrero -->
     <div class="form-group">
-      <label>Potrero / Identificador:</label>
-      <input type="text" id="mod1-potrero" class="form-control" placeholder="Ej: Potrero Norte 02">
+      <label>Potrero:</label>
+      <select class="form-control" id="mod1-potrero">
+        <option>Macanillal</option>
+        <option>Mata del Muerto</option>
+        <option>Galpón</option>
+        <option>Potrero del Medio</option>
+        <option>Manguito</option>
+        <option>Mata de Piña</option>
+        <option>Las Rayas</option>
+        <option>Paulero</option>
+        <option>Jobo Gacho</option>
+        <option>Módulo A</option>
+        <option>Módulo B</option>
+        <option>Módulo C</option>
+        <option>Módulo D</option>
+        <option>Módulo E</option>
+        <option>Módulo F</option>
+        <option>Saladillal</option>
+        <option>Carretera</option>
+        <option>Casa</option>
+        <option>Cuatro Esquinas</option>
+        <option>María del Carmen</option>
+      </select>
     </div>
+
+    <!-- Fechas Ingreso / Salida -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fecha de Ingreso:</label>
+        <input type="date" id="mod1-f-ingreso" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Fecha de Salida:</label>
+        <input type="date" id="mod1-f-salida" class="form-control">
+      </div>
+    </div>
+
+    <!-- Categoría y Grupo Etario Dinámico -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Categoría:</label>
+        <select class="form-control" id="mod1-categoria" onchange="actualizarGruposEtarios()">
+          <option value="Bovinos">Bovinos</option>
+          <option value="Bufalinos">Bufalinos</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Grupo Etario:</label>
+        <select class="form-control" id="mod1-grupo-etario">
+          <!-- Opciones dinámicas según la categoría -->
+        </select>
+      </div>
+    </div>
+
+    <!-- Cantidad -->
     <div class="form-group">
-      <label>Especie y Cantidad de Animales:</label>
-      <input type="text" id="mod1-cantidad" class="form-control" placeholder="Ej: 45 Bovinos">
+      <label>Cantidad (Cabezas):</label>
+      <input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 25" min="1">
     </div>
-    <button class="btn-action" onclick="guardarModulo1()">Guardar Rotación</button>
+
+    <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento y Generar Alerta</button>
+
+    <!-- Resumen por Potrero -->
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Potrero</th>
+            <th>F. Ingreso</th>
+            <th>F. Salida</th>
+            <th>Categoría</th>
+            <th>Grupo Etario</th>
+            <th>Cant.</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-rotacion-body">
+          <!-- Filas de movimientos -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Resumen Inferior Hato -->
+    <div class="summary-card">
+      <h4>📊 Resumen del Hato por Potrero</h4>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="title">Total Bovinos Hato</span>
+          <span class="value" id="resumen-bovinos">0</span>
+        </div>
+        <div class="summary-item">
+          <span class="title">Total Bufalinos Hato</span>
+          <span class="value" id="resumen-bufalinos">0</span>
+        </div>
+        <div class="summary-item" style="grid-column: span 2;">
+          <span class="title">TOTAL GENERAL DEL HATO</span>
+          <span class="value" id="resumen-total-hato" style="color: var(--blue-primary); font-size: 16px;">0 Animales</span>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Mod 2: Planificación y Tareas (MEJORADO) -->
+  <!-- MODULO 2: PLANIFICACIÓN Y TAREAS (ACTUALIZADO) -->
   <div id="mod-2" class="module-view">
     <div class="module-header">
       <h3>2. Planificación y Tareas</h3>
       <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
-    
+
     <div class="form-group">
-      <label>Casilla / Tarea:</label>
-      <input type="text" id="input-tarea" class="form-control" placeholder="Ej: Reparar bebedero de potrero 3">
+      <label>Tarea / Actividad:</label>
+      <input type="text" id="mod2-tarea" class="form-control" placeholder="Ej: Reparación de cerca en Cuatro Esquinas">
     </div>
 
     <div class="form-row">
       <div class="form-group">
         <label>Fecha Asignación:</label>
-        <input type="date" id="input-f-asignacion" class="form-control">
+        <input type="date" id="mod2-f-asignacion" class="form-control">
       </div>
       <div class="form-group">
         <label>Fecha Culminación:</label>
-        <input type="date" id="input-f-culminacion" class="form-control">
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Responsable:</label>
-        <select class="form-control" id="input-responsable">
-          <option>Capataz</option>
-          <option>Vaquero</option>
-          <option>Maquinista</option>
-          <option>Administrador</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Ejecutar:</label>
-        <select class="form-control" id="input-ejecutar">
-          <option value="No">No</option>
-          <option value="Sí">Sí</option>
-        </select>
+        <input type="date" id="mod2-f-culminacion" class="form-control">
       </div>
     </div>
 
     <div class="form-group">
-      <label>Observación:</label>
-      <input type="text" id="input-observacion" class="form-control" placeholder="Ej: Pendiente repuesto de tubería">
+      <label>Ejecución (Sí / No):</label>
+      <select class="form-control" id="mod2-ejecucion">
+        <option value="No">No</option>
+        <option value="Sí">Sí</option>
+      </select>
     </div>
 
-    <button class="btn-action" onclick="agregarOActualizarTarea()">Registrar / Actualizar Tarea</button>
+    <div class="form-group">
+      <label>Observación:</label>
+      <input type="text" id="mod2-observacion" class="form-control" placeholder="Ej: Sin novedades, material completado">
+    </div>
 
-    <!-- Tabla de Tareas Registradas -->
+    <button class="btn-action" onclick="guardarTarea()">Guardar Tarea</button>
+
+    <!-- Tabla Tareas -->
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -511,346 +515,215 @@
             <th>Tarea</th>
             <th>Asignación</th>
             <th>Culminación</th>
-            <th>Resp.</th>
-            <th>Ejec.</th>
-            <th>Obs.</th>
+            <th>Ejecución</th>
+            <th>Observación</th>
           </tr>
         </thead>
         <tbody id="tabla-tareas-body">
-          <!-- Se puebla dinámicamente -->
+          <!-- Filas dinámicas -->
         </tbody>
       </table>
     </div>
 
-    <!-- Resumen de Tareas en la Parte Inferior -->
+    <!-- Resumen Mensual con Alertas -->
     <div class="summary-card">
-      <h4>📊 Resumen de Tareas y Notificaciones</h4>
+      <h4>🚨 Resumen Mensual de Tareas y Alertas</h4>
       <div class="summary-grid">
         <div class="summary-item">
-          <span class="title">Cumplidas Hoy</span>
-          <span class="value" id="resumen-hoy">0</span>
+          <span class="title">Tareas Ejecutadas (Mes)</span>
+          <span class="value" id="mod2-ejecutadas-mes" style="color: var(--success-color);">0</span>
         </div>
         <div class="summary-item">
-          <span class="title">Pendientes Hoy</span>
-          <span class="value" id="resumen-pendientes-hoy">0</span>
+          <span class="title">Alertas / Incompletas (Mes)</span>
+          <span class="value" id="mod2-alertas-mes" style="color: var(--alert-color);">0</span>
         </div>
-        <div class="summary-item">
-          <span class="title">Cumplidas Mes</span>
-          <span class="value" id="resumen-mes">0</span>
-        </div>
-        <div class="summary-item">
-          <span class="title">Notif. Totales</span>
-          <span class="value" id="resumen-notif">0</span>
+        <div class="summary-item" style="grid-column: span 2;">
+          <span class="title">% Eficiencia Mensual</span>
+          <span class="value" id="mod2-eficiencia">0%</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Mod 3 -->
-  <div id="mod-3" class="module-view">
-    <div class="module-header">
-      <h3>3. Manejo Sanitario Productivo</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group">
-      <label>Tratamiento / Vacunación:</label>
-      <input type="text" class="form-control" placeholder="Ej: Aftosa / Desparasitante">
-    </div>
-    <button class="btn-action" onclick="registrarActividad('Registro sanitario actualizado', 'Sanidad')">Guardar Sanidad</button>
-  </div>
-
-  <!-- Mod 4 -->
-  <div id="mod-4" class="module-view">
-    <div class="module-header">
-      <h3>4. Eventos por Categoría</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group">
-      <label>Especie:</label>
-      <select class="form-control">
-        <option>Bovina</option>
-        <option>Bufalina</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Tipo de Evento:</label>
-      <select class="form-control">
-        <option>Nacimiento</option>
-        <option>Mortalidad</option>
-        <option>Natiborto</option>
-        <option>Aborto</option>
-      </select>
-    </div>
-    <button class="btn-action" onclick="registrarActividad('Evento reproductivo/mortalidad asentado', 'Eventos')">Registrar Evento</button>
-  </div>
-
-  <!-- Mod 5 -->
-  <div id="mod-5" class="module-view">
-    <div class="module-header">
-      <h3>5. Maquinarias y Equipos</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group">
-      <label>Maquinaria / Tractor:</label>
-      <input type="text" class="form-control" placeholder="Identificador de máquina">
-    </div>
-    <button class="btn-action" onclick="registrarActividad('Horas/Mantenimiento registrado', 'Maquinaria')">Guardar Reporte</button>
-  </div>
-
-  <!-- Mod 6 -->
-  <div id="mod-6" class="module-view">
-    <div class="module-header">
-      <h3>6. Control Meteorológico</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group">
-      <label>Precipitación (mm de agua):</label>
-      <input type="number" class="form-control" placeholder="Ej: 15">
-    </div>
-    <button class="btn-action" onclick="registrarActividad('Lectura de lluvia guardada', 'Meteorología')">Registrar Pluviometría</button>
-  </div>
-
-  <!-- Mod 7: Depósito / Inventario General (Con Alerta Activa) -->
-  <div id="mod-7" class="module-view">
-    <div class="module-header">
-      <h3>7. Depósito e Inventario General</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group">
-      <label>Insumo / Material / Repuesto:</label>
-      <input type="text" id="mod7-item" class="form-control" placeholder="Sacos de sal, alambre, etc.">
-    </div>
-    <div class="form-group">
-      <label>Cantidad / Modificación:</label>
-      <input type="text" id="mod7-cantidad" class="form-control" placeholder="Ej: Entrada 10 sacos">
-    </div>
-    <button class="btn-action" onclick="guardarModulo7()">Guardar en Depósito</button>
-  </div>
-
-  <!-- Mod 8 -->
-  <div id="mod-8" class="module-view">
-    <div class="module-header">
-      <h3>8. Reparación de Línea</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group">
-      <label>Tramo / Línea Afectada:</label>
-      <input type="text" class="form-control" placeholder="Ej: Cerca de potrero 5">
-    </div>
-    <button class="btn-action" onclick="registrarActividad('Reporte de reparación enviado', 'Infraestructura')">Registrar Reparación</button>
-  </div>
-
-  <!-- Mod 9 -->
-  <div id="mod-9" class="module-view">
-    <div class="module-header">
-      <h3>9. Control de Combustible</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group">
-      <label>Litros de Gasoil / Gasolina:</label>
-      <input type="number" class="form-control" placeholder="Litros despachados">
-    </div>
-    <button class="btn-action" onclick="registrarActividad('Despacho de combustible registrado', 'Combustible')">Registrar Combustible</button>
-  </div>
-
-  <!-- Mod 10 -->
-  <div id="mod-10" class="module-view">
-    <div class="module-header">
-      <h3>10. Logística de Comida</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group">
-      <label>Raciones Solicitadas:</label>
-      <input type="number" class="form-control" placeholder="Cantidad de comensales">
-    </div>
-    <button class="btn-action" onclick="registrarActividad('Pedido de comida registrado', 'Comida')">Solicitar Raciones</button>
-  </div>
-
-  <!-- SCRIPT -->
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    const user = tg.initDataUnsafe?.user;
-    if (user) {
-      document.getElementById("saludo").innerText = `¡Hola, ${user.first_name}! 🤠`;
-    }
+    // Arrays de Grupos Etarios según Categoría
+    const gruposBovinos = ["Vaca", "Novilla", "Becerro", "Toro", "Mautas", "Mautes"];
+    const gruposBufalinos = ["Búfalas", "Buvillas", "Bucerros", "Bucerras", "Butoro", "Bautas", "Bautes"];
 
-    // Estado Interno de Datos
+    // Bancos de datos
+    let movimientosRotacion = [];
     let tareas = [];
-    let totalNotificaciones = 1;
 
-    // Inicialización de fechas en el formulario
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date().toISOString().split('T')[0];
-      document.getElementById("input-f-asignacion").value = hoy;
-      document.getElementById("input-f-culminacion").value = hoy;
-      renderizarTareas();
+      document.getElementById("mod1-f-ingreso").value = hoy;
+      document.getElementById("mod1-f-salida").value = hoy;
+      document.getElementById("mod2-f-asignacion").value = hoy;
+      document.getElementById("mod2-f-culminacion").value = hoy;
+
+      actualizarGruposEtarios();
     });
 
     function mostrarModulo(id) {
       document.getElementById("main-menu").style.display = "none";
-      const modulos = document.querySelectorAll('.module-view');
-      modulos.forEach(m => m.style.display = "none");
+      document.querySelectorAll('.module-view').forEach(m => m.style.display = "none");
       document.getElementById(id).style.display = "block";
     }
 
     function volverMenu() {
-      const modulos = document.querySelectorAll('.module-view');
-      modulos.forEach(m => m.style.display = "none");
+      document.querySelectorAll('.module-view').forEach(m => m.style.display = "none");
       document.getElementById("main-menu").style.display = "block";
     }
 
-    // Disparador de Alertas Generales para Módulos Específicos
-    function lanzarAlertaMonitoreo(modulo, detalle) {
-      const mensajeAlerta = `⚠️ ALERTA DE MODIFICACIÓN [${modulo.toUpperCase()}]: ${detalle}`;
-      
-      tg.showAlert(mensajeAlerta);
-      
-      // Añadir al panel superior de notificaciones
-      const lista = document.getElementById("notifications-list");
-      const nuevaNotif = document.createElement("li");
-      nuevaNotif.innerHTML = `<strong style="color: var(--alert-color);">[Modificación ${modulo}]:</strong> ${detalle}`;
-      lista.prepend(nuevaNotif);
+    // Actualiza dinámicamente el combo de Grupos Etarios
+    function actualizarGruposEtarios() {
+      const cat = document.getElementById("mod1-categoria").value;
+      const selectGrupo = document.getElementById("mod1-grupo-etario");
+      selectGrupo.innerHTML = "";
 
-      totalNotificaciones++;
-      actualizarResumen();
+      const lista = (cat === "Bovinos") ? gruposBovinos : gruposBufalinos;
+      lista.forEach(g => {
+        const opt = document.createElement("option");
+        opt.value = g;
+        opt.innerText = g;
+        selectGrupo.appendChild(opt);
+      });
     }
 
-    function registrarActividad(mensaje, modulo = 'General') {
-      tg.showAlert(`✅ ${mensaje}`);
-      
-      const lista = document.getElementById("notifications-list");
-      const nuevaNotif = document.createElement("li");
-      nuevaNotif.innerHTML = `<strong>${modulo}:</strong> ${mensaje}.`;
-      lista.prepend(nuevaNotif);
+    /* LÓGICA MÓDULO 1: ROTACIÓN E INVENTARIO */
+    function registrarMovimientoRotacion() {
+      const potrero = document.getElementById("mod1-potrero").value;
+      const fIngreso = document.getElementById("mod1-f-ingreso").value;
+      const fSalida = document.getElementById("mod1-f-salida").value;
+      const categoria = document.getElementById("mod1-categoria").value;
+      const grupoEtario = document.getElementById("mod1-grupo-etario").value;
+      const cantidad = parseInt(document.getElementById("mod1-cantidad").value) || 0;
 
-      totalNotificaciones++;
-      actualizarResumen();
-      volverMenu();
-    }
-
-    /* Lógica Específica Módulo 1 (Potrero y Rotación - Monitoreado) */
-    function guardarModulo1() {
-      const potrero = document.getElementById("mod1-potrero").value || "Desconocido";
-      const cant = document.getElementById("mod1-cantidad").value || "Sin especificar";
-      const detalle = `Actualizado potrero '${potrero}' con '${cant}'`;
-      
-      lanzarAlertaMonitoreo("Potrero / Rotación", detalle);
-      volverMenu();
-    }
-
-    /* Lógica Específica Módulo 7 (Depósito e Inventario - Monitoreado) */
-    function guardarModulo7() {
-      const item = document.getElementById("mod7-item").value || "Insumo";
-      const cant = document.getElementById("mod7-cantidad").value || "Cambio no especificado";
-      const detalle = `Ajuste en Inventario Depósito: ${item} (${cant})`;
-
-      lanzarAlertaMonitoreo("Inventario / Depósito", detalle);
-      volverMenu();
-    }
-
-    /* Lógica Específica Módulo 2 (Planificación y Tareas) */
-    function agregarOActualizarTarea() {
-      const desc = document.getElementById("input-tarea").value;
-      const fAsig = document.getElementById("input-f-asignacion").value;
-      const fCulm = document.getElementById("input-f-culminacion").value;
-      const resp = document.getElementById("input-responsable").value;
-      const ejec = document.getElementById("input-ejecutar").value;
-      const obs = document.getElementById("input-observacion").value || "-";
-
-      if (!desc) {
-        tg.showAlert("Por favor ingrese el nombre de la tarea.");
+      if (cantidad <= 0) {
+        tg.showAlert("⚠️ Debe ingresar una cantidad válida de animales.");
         return;
       }
 
-      const nuevaTarea = {
-        id: Date.now(),
-        descripcion: desc,
-        fechaAsignacion: fAsig,
-        fechaCulminacion: fCulm,
-        responsable: resp,
-        ejecutado: ejec,
-        observacion: obs
-      };
+      const registro = { potrero, fIngreso, fSalida, categoria, grupoEtario, cantidad };
+      movimientosRotacion.unshift(registro);
 
-      tareas.unshift(nuevaTarea);
-      renderizarTareas();
+      // Disparar Alerta de Movimiento
+      const detalleAlerta = `Movimiento en '${potrero}': ${cantidad} ${grupoEtario} (${categoria}) asignados del ${fIngreso} al ${fSalida}.`;
+      tg.showAlert(`🚨 ALERTA DE MOVIMIENTO:\n${detalleAlerta}`);
 
-      // Registro en Panel de Notificaciones
-      const lista = document.getElementById("notifications-list");
-      const nuevaNotif = document.createElement("li");
-      
-      if (ejec === "Sí") {
-        nuevaNotif.innerHTML = `<strong style="color: var(--success-color);">Tarea Cumplida:</strong> "${desc}" por ${resp}.`;
-        tg.showAlert(`✅ Tarea '${desc}' registrada como CUMPLIDA.`);
-      } else {
-        nuevaNotif.innerHTML = `<strong>Tarea Programada:</strong> "${desc}" para ${resp}.`;
-        tg.showAlert(`📝 Tarea '${desc}' asignada.`);
+      // Registrar Alerta en el Panel Superior
+      const listaNotif = document.getElementById("notifications-list");
+      const li = document.createElement("li");
+      li.innerHTML = `<strong style="color: var(--alert-color);">[ALERTA MOVIMIENTO]:</strong> ${detalleAlerta}`;
+      listaNotif.prepend(li);
+
+      renderizarRotaciones();
+      actualizarResumenHato();
+    }
+
+    function renderizarRotaciones() {
+      const tbody = document.getElementById("tabla-rotacion-body");
+      tbody.innerHTML = "";
+
+      movimientosRotacion.forEach(m => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${m.potrero}</strong></td>
+          <td>${m.fIngreso}</td>
+          <td>${m.fSalida}</td>
+          <td>${m.categoria}</td>
+          <td>${m.grupoEtario}</td>
+          <td><strong>${m.cantidad}</strong></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function actualizarResumenHato() {
+      let totalBovinos = 0;
+      let totalBufalinos = 0;
+
+      movimientosRotacion.forEach(m => {
+        if (m.categoria === "Bovinos") totalBovinos += m.cantidad;
+        if (m.categoria === "Bufalinos") totalBufalinos += m.cantidad;
+      });
+
+      document.getElementById("resumen-bovinos").innerText = totalBovinos;
+      document.getElementById("resumen-bufalinos").innerText = totalBufalinos;
+      document.getElementById("resumen-total-hato").innerText = `${totalBovinos + totalBufalinos} Animales`;
+    }
+
+    /* LÓGICA MÓDULO 2: PLANIFICACIÓN Y TAREAS */
+    function guardarTarea() {
+      const descripcion = document.getElementById("mod2-tarea").value;
+      const fAsignacion = document.getElementById("mod2-f-asignacion").value;
+      const fCulminacion = document.getElementById("mod2-f-culminacion").value;
+      const ejecucion = document.getElementById("mod2-ejecucion").value;
+      const observacion = document.getElementById("mod2-observacion").value || "-";
+
+      if (!descripcion) {
+        tg.showAlert("⚠️ Por favor ingresa el nombre de la tarea.");
+        return;
       }
 
-      lista.prepend(nuevaNotif);
-      totalNotificaciones++;
+      const nuevaTarea = { descripcion, fAsignacion, fCulminacion, ejecucion, observacion };
+      tareas.unshift(nuevaTarea);
 
-      // Limpiar Formulario Parte Interna
-      document.getElementById("input-tarea").value = "";
-      document.getElementById("input-observacion").value = "";
+      // Si no fue ejecutada, lanzar una alerta en el panel global
+      if (ejecucion === "No") {
+        const listaNotif = document.getElementById("notifications-list");
+        const li = document.createElement("li");
+        li.innerHTML = `<strong style="color: var(--warning-color);">[ALERTA TAREA PENDIENTE]:</strong> "${descripcion}" agendada para ${fCulminacion}.`;
+        listaNotif.prepend(li);
+      }
 
-      actualizarResumen();
+      renderizarTareas();
+      actualizarResumenMensualTareas();
+      document.getElementById("mod2-tarea").value = "";
+      document.getElementById("mod2-observacion").value = "";
     }
 
     function renderizarTareas() {
       const tbody = document.getElementById("tabla-tareas-body");
       tbody.innerHTML = "";
 
-      if (tareas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No hay tareas registradas</td></tr>`;
-        return;
-      }
-
       tareas.forEach(t => {
         const tr = document.createElement("tr");
-        const badgeClass = t.ejecutado === "Sí" ? "badge-si" : "badge-no";
-
+        const badgeClass = t.ejecucion === "Sí" ? "badge-si" : "badge-no";
         tr.innerHTML = `
           <td><strong>${t.descripcion}</strong></td>
-          <td>${t.fechaAsignacion}</td>
-          <td>${t.fechaCulminacion}</td>
-          <td>${t.responsable}</td>
-          <td><span class="badge-status ${badgeClass}">${t.ejecutado}</span></td>
+          <td>${t.fAsignacion}</td>
+          <td>${t.fCulminacion}</td>
+          <td><span class="badge-status ${badgeClass}">${t.ejecucion}</span></td>
           <td>${t.observacion}</td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function actualizarResumen() {
-      const hoyISO = new Date().toISOString().split('T')[0];
-      const mesActual = hoyISO.substring(0, 7); // YYYY-MM
-
-      let cumplidasHoy = 0;
-      let pendientesHoy = 0;
-      let cumplidasMes = 0;
+    function actualizarResumenMensualTareas() {
+      const mesActual = new Date().toISOString().substring(0, 7);
+      let ejecutadasMes = 0;
+      let alertasMes = 0;
+      let totalMes = 0;
 
       tareas.forEach(t => {
-        const esHoy = t.fechaCulminacion === hoyISO;
-        const esMes = t.fechaCulminacion.startsWith(mesActual);
-
-        if (esHoy) {
-          if (t.ejecutado === "Sí") cumplidasHoy++;
-          else pendientesHoy++;
-        }
-
-        if (esMes && t.ejecutado === "Sí") {
-          cumplidasMes++;
+        if (t.fCulminacion.startsWith(mesActual)) {
+          totalMes++;
+          if (t.ejecucion === "Sí") ejecutadasMes++;
+          else alertasMes++;
         }
       });
 
-      document.getElementById("resumen-hoy").innerText = cumplidasHoy;
-      document.getElementById("resumen-pendientes-hoy").innerText = pendientesHoy;
-      document.getElementById("resumen-mes").innerText = cumplidasMes;
-      document.getElementById("resumen-notif").innerText = totalNotificaciones;
+      const eficiencia = totalMes > 0 ? Math.round((ejecutadasMes / totalMes) * 100) : 0;
+
+      document.getElementById("mod2-ejecutadas-mes").innerText = ejecutadasMes;
+      document.getElementById("mod2-alertas-mes").innerText = alertasMes;
+      document.getElementById("mod2-eficiencia").innerText = `${eficiencia}%`;
     }
   </script>
 </body>
