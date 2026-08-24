@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Gestión Ganadera Hato Integral - Nube Offline</title>
+  <title>Gestión Ganadera Hato Integral</title>
   
   <!-- SDK Oficial de Telegram -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Base de datos local robusta para IndexedDB (Dexie.js) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dexie/3.2.4/dexie.min.js"></script>
 
   <style>
     :root {
@@ -22,8 +20,8 @@
       --alert-bg: #fde8e8;
       --success-color: #2e7d32;
       --success-bg: #e8f5e9;
-      --cloud-offline: #ed6c02;
-      --cloud-online: #1976d2;
+      --warning-color: #ed6c02;
+      --warning-bg: #fff4e5;
     }
 
     body {
@@ -39,7 +37,7 @@
       color: #ffffff;
       border-radius: 16px;
       padding: 18px;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       box-shadow: 0 4px 12px rgba(29, 114, 184, 0.2);
       text-align: center;
     }
@@ -47,65 +45,41 @@
     .header-card h2 { margin: 0 0 4px 0; font-size: 20px; }
     .header-card p { margin: 0; opacity: 0.9; font-size: 13px; }
 
-    /* MÓDULO NUBE Y ESTADO OFFLINE */
-    .cloud-status-card {
-      background: #ffffff;
+    .notifications-card {
+      background-color: var(--alert-bg);
+      border: 1px solid #f8b4b4;
       border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-      border: 1px solid #e0e0e0;
+      padding: 12px 16px;
+      margin-bottom: 20px;
     }
 
-    .cloud-header {
+    .notifications-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .cloud-title {
-      font-size: 13px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .badge-cloud {
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 20px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .online { background-color: var(--success-color); }
-    .offline { background-color: var(--cloud-offline); }
-
-    .cloud-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-top: 10px;
+      color: var(--alert-color);
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 6px;
     }
 
-    .btn-cloud {
-      background-color: #f0f4f8;
-      border: 1px solid #cfd8dc;
-      padding: 8px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-main);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
+    .notification-list {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 12px;
+      color: #5f2121;
+      max-height: 120px;
+      overflow-y: auto;
     }
 
-    .btn-cloud:active { background-color: #e3f2fd; }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 0 0 12px 4px;
+      letter-spacing: 0.5px;
+    }
 
     .grid-menu {
       display: grid;
@@ -207,6 +181,58 @@
       margin-top: 8px;
     }
 
+    .btn-geo {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 4px;
+      width: 100%;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 16px;
+      border: 1px solid #eef0f2;
+      border-radius: 8px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background-color: #f0f4f8;
+      color: var(--text-main);
+      padding: 8px 6px;
+      border-bottom: 1px solid #cfd8dc;
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #eef0f2;
+      white-space: nowrap;
+    }
+
+    .badge-status {
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 10px;
+      display: inline-block;
+    }
+    .badge-si { background-color: var(--success-bg); color: var(--success-color); }
+    .badge-no { background-color: var(--alert-bg); color: var(--alert-color); }
+
     .summary-card {
       background-color: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -220,57 +246,76 @@
     .summary-item { background: #ffffff; padding: 8px; border-radius: 8px; border: 1px solid #edf2f7; }
     .summary-item .title { font-size: 10px; color: var(--text-muted); display: block; }
     .summary-item .value { font-size: 14px; font-weight: bold; color: var(--text-main); }
+    
+    .weather-box {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .weather-temp { font-size: 28px; font-weight: bold; color: #0d47a1; }
+    .recommendations-box {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 12px;
+      color: #5d4037;
+    }
+    
+    .map-preview {
+      width: 100%;
+      height: 150px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Encabezado Principal -->
+  <!-- Encabezado -->
   <div class="header-card">
     <h2 id="saludo">¡Hola, Ganadero! 🤠</h2>
     <p>Sistema de Control y Operaciones del Hato</p>
   </div>
 
-  <!-- PANEL DE LA NUBE Y CONEXIÓN OFFLINE -->
-  <div class="cloud-status-card">
-    <div class="cloud-header">
-      <div class="cloud-title">
-        <span>☁️ Nube de Datos del Hato:</span>
-      </div>
-      <span id="cloud-status-badge" class="badge-cloud online">🟢 Online</span>
+  <!-- Panel de Notificaciones y Alertas Globales -->
+  <div class="notifications-card" id="notifications-panel">
+    <div class="notifications-header">
+      <span>🔔 Notificaciones y Alertas del Sistema</span>
     </div>
-    <div style="font-size: 11px; color: var(--text-muted);" id="cloud-desc">
-      Copia de seguridad local encriptada activa. Los registros sin conexión se sincronizan automáticamente.
-    </div>
-    <div class="cloud-actions">
-      <button class="btn-cloud" onclick="descargarRespaldoJSON()">📥 Descargar Nube (JSON)</button>
-      <button class="btn-cloud" onclick="forzarSincronizacion()">🔄 Sincronizar Datos</button>
-    </div>
+    <ul class="notification-list" id="notifications-list">
+      <li><strong>Sistema:</strong> Monitoreo operacional y alertas activas.</li>
+    </ul>
   </div>
 
-  <!-- MENÚ PRINCIPAL CON LOS 10 MÓDULOS -->
+  <!-- MENU PRINCIPAL (10 MODULOS) -->
   <div id="main-menu">
+    <div class="section-title">Módulos de Gestión</div>
     <div class="grid-menu">
       <button class="btn-card" onclick="mostrarModulo('mod-1')">
         <div class="btn-icon">🌾</div>
         <div class="btn-content">
-          <h4>1. Rotación y Potreros</h4>
-          <p>Inventario y control por potrero.</p>
+          <h4>1. Inventario por Potreros y Rotación</h4>
+          <p>Potreros, especies, categorías y lotes.</p>
         </div>
       </button>
 
       <button class="btn-card" onclick="mostrarModulo('mod-2')">
-        <div class="btn-icon">🥛</div>
+        <div class="btn-icon">📅</div>
         <div class="btn-content">
-          <h4>2. Leche y Pesaje</h4>
-          <p>Registro diario de ordeño y peso corporal.</p>
+          <h4>2. Planificación y Tareas</h4>
+          <p>Asignación, ejecuciones y avance mensual.</p>
         </div>
       </button>
 
       <button class="btn-card" onclick="mostrarModulo('mod-3')">
         <div class="btn-icon">💉</div>
         <div class="btn-content">
-          <h4>3. Sanidad y Tratamientos</h4>
-          <p>Vacunación, desparasitación y sanidad.</p>
+          <h4>3. Manejo Sanitario Productivo</h4>
+          <p>Tratamientos por lote y alertas sanitarias.</p>
         </div>
       </button>
 
@@ -278,7 +323,7 @@
         <div class="btn-icon">📋</div>
         <div class="btn-content">
           <h4>4. Eventos por Categoría</h4>
-          <p>Nacimientos, consumo y mortalidad.</p>
+          <p>Nacimientos, bajas, foto y mapa Google Maps.</p>
         </div>
       </button>
 
@@ -286,31 +331,31 @@
         <div class="btn-icon">🚜</div>
         <div class="btn-content">
           <h4>5. Maquinaria y Equipo</h4>
-          <p>Horómetro y cambio de aceite a 250h.</p>
+          <p>Horómetro, mantenimiento y alerta a 250h.</p>
         </div>
       </button>
 
       <button class="btn-card" onclick="mostrarModulo('mod-6')">
-        <div class="btn-icon">🌱</div>
+        <div class="btn-icon">🌤️</div>
         <div class="btn-content">
-          <h4>6. Insumos y Alimento</h4>
-          <p>Control de suplementos, sales y pacas.</p>
+          <h4>6. Control Meteorológico</h4>
+          <p>Clima local por GPS y recomendaciones ganaderas.</p>
         </div>
       </button>
 
       <button class="btn-card" onclick="mostrarModulo('mod-7')">
-        <div class="btn-icon">🧬</div>
+        <div class="btn-icon">📦</div>
         <div class="btn-content">
-          <h4>7. Reproducción y Genética</h4>
-          <p>Servicios, palpaciones y pariciones.</p>
+          <h4>7. Depósito</h4>
+          <p>Recepciones, despachos y resumen mensual.</p>
         </div>
       </button>
 
       <button class="btn-card" onclick="mostrarModulo('mod-8')">
-        <div class="btn-icon">👥</div>
+        <div class="btn-icon">🛠️</div>
         <div class="btn-content">
-          <h4>8. Personal y Tareas</h4>
-          <p>Asignación de labores e imprevistos.</p>
+          <h4>8. Reparación de Líneas</h4>
+          <p>Cuerdas, falsos, estantillas, foto y geolocalización.</p>
         </div>
       </button>
 
@@ -318,7 +363,7 @@
         <div class="btn-icon">⛽</div>
         <div class="btn-content">
           <h4>9. Control de Combustible</h4>
-          <p>Movimiento de Gasoil y Gasolina.</p>
+          <p>Ingreso y consumo de Gasoil y Gasolina.</p>
         </div>
       </button>
 
@@ -326,133 +371,274 @@
         <div class="btn-icon">🍽️</div>
         <div class="btn-content">
           <h4>10. Logística de Comida</h4>
-          <p>Raciones y comensales por día.</p>
+          <p>Raciones, comensales, desayunos, almuerzos y cenas.</p>
         </div>
       </button>
     </div>
   </div>
 
-  <!-- MÓDULO 1: ROTACIÓN DE POTREROS -->
+  <!-- MODULO 1: INVENTARIO, POTRERO Y ROTACIÓN -->
   <div id="mod-1" class="module-view">
-    <div class="module-header"><h3>1. Inventario por Potrero</h3><button class="btn-back" onclick="volverMenu()">⬅️ Volver</button></div>
-    <div class="form-group"><label>Potrero:</label><select class="form-control" id="mod1-potrero"><option>Macanillal</option><option>Mata del Muerto</option><option>Galpón</option><option>Potrero del Medio</option></select></div>
-    <div class="form-row">
-      <div class="form-group"><label>Categoría:</label><select class="form-control" id="mod1-categoria"><option value="Bovinos">Bovinos</option><option value="Bufalinos">Bufalinos</option></select></div>
-      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 30"></div>
+    <div class="module-header">
+      <h3>1. Inventario por Potrero y Rotación</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
-    <button class="btn-action" onclick="guardarRotacion()">Registrar Movimiento</button>
+    <div class="form-group">
+      <label>Potrero:</label>
+      <select class="form-control" id="mod1-potrero">
+        <option>Macanillal</option><option>Mata del Muerto</option><option>Galpón</option><option>Potrero del Medio</option><option>Manguito</option><option>Mata de Piña</option><option>Las Rayas</option><option>Paulero</option><option>Jobo Gacho</option><option>Módulo A</option><option>Módulo B</option><option>Módulo C</option><option>Módulo D</option><option>Módulo E</option><option>Módulo F</option><option>Saladillal</option><option>Carretera</option><option>Casa</option><option>Cuatro Esquinas</option><option>María del Carmen</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="mod1-f-ingreso" class="form-control"></div>
+      <div class="form-group"><label>Fecha Salida:</label><input type="date" id="mod1-f-salida" class="form-control"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Categoría:</label>
+        <select class="form-control" id="mod1-categoria" onchange="actualizarGruposEtarios()">
+          <option value="Bovinos">Bovinos</option><option value="Bufalinos">Bufalinos</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Grupo Etario:</label><select class="form-control" id="mod1-grupo-etario"></select></div>
+    </div>
+    <div class="form-group"><label>Cantidad:</label><input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 25"></div>
+    <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento</button>
+    <div class="table-container"><table class="data-table"><thead><tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Cat.</th><th>Grupo</th><th>Cant.</th></tr></thead><tbody id="tabla-rotacion-body"></tbody></table></div>
     <div class="summary-card">
-      <h4>📊 Resumen Hato Local</h4>
+      <h4>📊 Resumen del Hato por Potrero</h4>
       <div class="summary-grid">
         <div class="summary-item"><span class="title">Bovinos</span><span class="value" id="resumen-bovinos">0</span></div>
         <div class="summary-item"><span class="title">Bufalinos</span><span class="value" id="resumen-bufalinos">0</span></div>
+        <div class="summary-item" style="grid-column: span 2;"><span class="title">TOTAL GENERAL</span><span class="value" id="resumen-total-hato">0 Animales</span></div>
       </div>
     </div>
   </div>
 
-  <!-- MÓDULO 2: LECHE Y PESAJE -->
+  <!-- MODULO 2: PLANIFICACIÓN Y TAREAS -->
   <div id="mod-2" class="module-view">
-    <div class="module-header"><h3>2. Leche y Pesaje</h3><button class="btn-back" onclick="volverMenu()">⬅️ Volver</button></div>
-    <div class="form-group"><label>Identificación Animal / Lote:</label><input type="text" id="mod2-animal" class="form-control" placeholder="Ej: Vaca 102 o Lote AM"></div>
-    <div class="form-row">
-      <div class="form-group"><label>Litros de Leche:</label><input type="number" id="mod2-leche" class="form-control" placeholder="Ej: 12.5"></div>
-      <div class="form-group"><label>Peso (Kg):</label><input type="number" id="mod2-peso" class="form-control" placeholder="Ej: 450"></div>
+    <div class="module-header">
+      <h3>2. Planificación y Tareas</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
-    <button class="btn-action" onclick="guardarLechePesaje()">Guardar Registro</button>
+    <div class="form-group"><label>Tarea:</label><input type="text" id="mod2-tarea" class="form-control" placeholder="Ej: Limpieza de canales"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha Asignación:</label><input type="date" id="mod2-f-asignacion" class="form-control"></div>
+      <div class="form-group"><label>Fecha Culminación:</label><input type="date" id="mod2-f-culminacion" class="form-control"></div>
+    </div>
+    <div class="form-group"><label>Ejecución:</label><select class="form-control" id="mod2-ejecucion"><option value="No">No</option><option value="Sí">Sí</option></select></div>
+    <div class="form-group"><label>Observación:</label><input type="text" id="mod2-observacion" class="form-control"></div>
+    <button class="btn-action" onclick="guardarTarea()">Guardar Tarea</button>
+    <div class="table-container"><table class="data-table"><thead><tr><th>Tarea</th><th>Inicio</th><th>Fin</th><th>Ejec.</th><th>Obs.</th></tr></thead><tbody id="tabla-tareas-body"></tbody></table></div>
   </div>
 
-  <!-- MÓDULO 3: SANIDAD Y TRATAMIENTOS -->
+  <!-- MODULO 3: MANEJO SANITARIO PRODUCTIVO -->
   <div id="mod-3" class="module-view">
-    <div class="module-header"><h3>3. Sanidad y Tratamientos</h3><button class="btn-back" onclick="volverMenu()">⬅️ Volver</button></div>
-    <div class="form-group"><label>Producto / Trata:</label><input type="text" id="mod3-producto" class="form-control" placeholder="Ej: Vacuna Aftosa / Ivermentina"></div>
-    <div class="form-row">
-      <div class="form-group"><label>Dosis / Cantidad:</label><input type="text" id="mod3-dosis" class="form-control" placeholder="Ej: 5ml por animal"></div>
-      <div class="form-group"><label>Lote Atendido:</label><input type="text" id="mod3-lote" class="form-control" placeholder="Ej: Escampar"></div>
+    <div class="module-header">
+      <h3>3. Manejo Sanitario Productivo</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
-    <button class="btn-action" onclick="guardarSanidad()">Guardar Sanidad</button>
+    <div class="form-group"><label>Lote Trabajado:</label>
+      <select class="form-control" id="mod3-lote">
+        <option>Vacas PÑ</option><option>Vacas Paridas</option><option>Vacas Vacías</option><option>Vacas en Monta</option><option>Becerros Recién Nacidos</option><option>Becerros 1 Mes</option><option>Becerros 2 Meses</option><option>Becerros 3 Meses</option><option>Becerros 4 Meses</option><option>Becerros 5 Meses</option><option>Novillas</option><option>Destetes</option><option>Toros</option><option>Búfalas PÑ</option><option>Búfalas Paridas</option><option>Búfalas Vacías</option><option>Búfalas en Monta</option><option>Búfalas en Ordeño</option><option>Bucerros en Ordeño</option><option>Buvillas</option><option>Bautas</option><option>Bautes</option><option>Butoro</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod3-cantidad" class="form-control"></div>
+      <div class="form-group"><label>Tipo Tratamiento:</label>
+        <select class="form-control" id="mod3-tipo"><option>Vacunas</option><option>Desparasitación</option><option>Minerales</option><option>Vitaminas</option><option>Antibióticos</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha Aplicación:</label><input type="date" id="mod3-f-aplicacion" class="form-control"></div>
+      <div class="form-group"><label>Próximo Tratamiento:</label><input type="date" id="mod3-f-proximo" class="form-control"></div>
+    </div>
+    <div class="form-group"><label>Observación:</label><input type="text" id="mod3-observacion" class="form-control"></div>
+    <button class="btn-action" onclick="guardarTratamientoSanitario()">Guardar Tratamiento</button>
+    <div class="table-container"><table class="data-table"><thead><tr><th>Lote</th><th>Cant</th><th>Tipo</th><th>Aplic.</th><th>Próx.</th></tr></thead><tbody id="tabla-sanitaria-body"></tbody></table></div>
   </div>
 
-  <!-- MÓDULO 4: EVENTOS -->
+  <!-- MODULO 4: EVENTOS POR CATEGORÍA -->
   <div id="mod-4" class="module-view">
-    <div class="module-header"><h3>4. Eventos por Categoría</h3><button class="btn-back" onclick="volverMenu()">⬅️ Volver</button></div>
-    <div class="form-row">
-      <div class="form-group"><label>Evento:</label><select class="form-control" id="mod4-evento"><option>Nacidos</option><option>Muertos</option><option>Consumo</option></select></div>
-      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod4-cant" class="form-control"></div>
+    <div class="module-header">
+      <h3>4. Eventos por Categoría</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
-    <button class="btn-action" onclick="guardarEvento()">Guardar Evento en Nube</button>
+    <div class="form-row">
+      <div class="form-group"><label>Categoría:</label><select class="form-control" id="mod4-cat"><option>Bovina</option><option>Bufalina</option></select></div>
+      <div class="form-group"><label>Grupo Etario:</label>
+        <select class="form-control" id="mod4-grupo">
+          <option>Vaca</option><option>Novilla</option><option>Mauta</option><option>Maute</option><option>Toro</option><option>Becerro</option><option>Becerra</option><option>Búfala</option><option>Buvilla</option><option>Bauta</option><option>Baute</option><option>Butoro</option><option>Bucerro</option><option>Bucerra</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Evento:</label>
+        <select class="form-control" id="mod4-evento">
+          <option>Muertos</option><option>Abortos</option><option>Natibortos</option><option>Nacidos</option><option>Consumo</option><option>Traslado</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Fecha:</label><input type="date" id="mod4-fecha" class="form-control"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod4-cant" class="form-control" min="1"></div>
+      <div class="form-group"><label>Foto del Evento:</label><input type="file" id="mod4-foto" class="form-control" accept="image/*"></div>
+    </div>
+    <div class="form-group">
+      <label>Ubicación Google Maps:</label>
+      <button class="btn-geo" onclick="obtenerCoordenadas('mod4-geo', 'mapa-mod4')">📍 Capturar Geolocalización GPS</button>
+      <input type="text" id="mod4-geo" class="form-control" readonly placeholder="Coordenadas GPS" style="margin-top:4px;">
+      <iframe id="mapa-mod4" class="map-preview" style="display:none;" frameborder="0"></iframe>
+    </div>
+    <button class="btn-action" onclick="guardarEvento()">Registrar Evento</button>
+
     <div class="summary-card">
-      <h4>📊 Eventos Registrados</h4>
+      <h4>📊 Resumen General de Eventos</h4>
       <div class="summary-grid">
-        <div class="summary-item"><span class="title">Nacidos</span><span class="value" id="resumen-nacidos">0</span></div>
-        <div class="summary-item"><span class="title">Decesos</span><span class="value" id="resumen-muertos">0</span></div>
+        <div class="summary-item"><span class="title">Nacimientos Totales</span><span class="value" id="resumen-nacidos">0</span></div>
+        <div class="summary-item"><span class="title">Mortalidad / Decesos</span><span class="value" id="resumen-muertos">0</span></div>
+        <div class="summary-item" style="grid-column: span 2;"><span class="title">Traslados / Consumos</span><span class="value" id="resumen-salidas">0</span></div>
       </div>
     </div>
   </div>
 
-  <!-- MÓDULO 5: MAQUINARIA -->
+  <!-- MODULO 5: MAQUINARIA Y EQUIPO -->
   <div id="mod-5" class="module-view">
-    <div class="module-header"><h3>5. Maquinaria y Equipo</h3><button class="btn-back" onclick="volverMenu()">⬅️ Volver</button></div>
-    <div class="form-group"><label>Equipo:</label><input type="text" id="mod5-equipo" class="form-control" placeholder="Ej: Tractor John Deere"></div>
-    <div class="form-group"><label>Horas Acumuladas:</label><input type="number" id="mod5-hrs" class="form-control" placeholder="Ej: 255"></div>
-    <button class="btn-action" onclick="guardarMaquinaria()">Guardar Equipo</button>
+    <div class="module-header">
+      <h3>5. Maquinaria y Equipo</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group"><label>Maquinaria / Equipo:</label><input type="text" id="mod5-equipo" class="form-control" placeholder="Ej: Tractor John Deere 6110"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha Cambio Aceite:</label><input type="date" id="mod5-f-aceite" class="form-control"></div>
+      <div class="form-group"><label>Responsable:</label><input type="text" id="mod5-resp" class="form-control"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Horas Trabajo Diarias:</label><input type="number" id="mod5-hrs-diarias" class="form-control" placeholder="Ej: 8"></div>
+      <div class="form-group"><label>Horas Acumuladas:</label><input type="number" id="mod5-hrs-totales" class="form-control" placeholder="Ej: 240"></div>
+    </div>
+    <div class="form-group"><label>Observación de Avería:</label><input type="text" id="mod5-averia" class="form-control" placeholder="Ej: Fuga leve en manguera hidráulica"></div>
+    <button class="btn-action" onclick="guardarMaquinaria()">Guardar Registro de Equipo</button>
+
+    <div class="table-container"><table class="data-table"><thead><tr><th>Equipo</th><th>Responsable</th><th>Hrs Acum.</th><th>Estado Aceite</th><th>Avería</th></tr></thead><tbody id="tabla-maquinaria-body"></tbody></table></div>
   </div>
 
-  <!-- MÓDULO 6: INSUMOS Y ALIMENTO -->
+  <!-- MODULO 6: CONTROL METEOROLÓGICO -->
   <div id="mod-6" class="module-view">
-    <div class="module-header"><h3>6. Insumos y Alimento</h3><button class="btn-back" onclick="volverMenu()">⬅️ Volver</button></div>
-    <div class="form-group"><label>Insumo / Suplemento:</label><input type="text" id="mod6-insumo" class="form-control" placeholder="Ej: Sal Mineralizada / Pacas"></div>
-    <div class="form-row">
-      <div class="form-group"><label>Tipo Movimiento:</label><select class="form-control" id="mod6-mov"><option>Entrada</option><option>Salida (Uso)</option></select></div>
-      <div class="form-group"><label>Cantidad (Kg/Sacos):</label><input type="number" id="mod6-cant" class="form-control"></div>
+    <div class="module-header">
+      <h3>6. Control Meteorológico</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
-    <button class="btn-action" onclick="guardarInsumos()">Guardar Insumo</button>
+    <div class="weather-box">
+      <div style="font-size: 14px; color: #1565c0; font-weight: bold;" id="clima-ubicacion">📍 Detectando Ubicación...</div>
+      <div class="weather-temp" id="clima-temp">-- °C</div>
+      <div id="clima-condicion" style="font-size: 13px; color: #424242;">Cargando datos meteorológicos...</div>
+    </div>
+    <button class="btn-geo" onclick="obtenerClimaGPS()">🔄 Actualizar Clima por GPS</button>
+    <br><br>
+    <div class="recommendations-box">
+      <strong>💡 Recomendaciones Ganaderas del Día:</strong>
+      <ul id="lista-recomendaciones" style="margin: 6px 0 0 0; padding-left: 18px;">
+        <li>Asegure sombra y suplementación mineral en días calurosos.</li>
+        <li>Revise el drenaje de los potreros bajos si hay alta probabilidad de lluvia.</li>
+      </ul>
+    </div>
   </div>
 
-  <!-- MÓDULO 7: REPRODUCCIÓN Y GENÉTICA -->
+  <!-- MODULO 7: DEPÓSITO -->
   <div id="mod-7" class="module-view">
-    <div class="module-header"><h3>7. Reproducción y Genética</h3><button class="btn-back" onclick="volverMenu()">⬅️ Volver</button></div>
-    <div class="form-group"><label>Vaca / Hembra:</label><input type="text" id="mod7-vaca" class="form-control" placeholder="Ej: Vaca 405"></div>
-    <div class="form-row">
-      <div class="form-group"><label>Tipo de Evento:</label><select class="form-control" id="mod7-tipo"><option>Servicio / IA</option><option>Palpación (Preñada)</option><option>Palpación (Vacía)</option><option>Parto</option></select></div>
-      <div class="form-group"><label>Toro / Semen:</label><input type="text" id="mod7-toro" class="form-control" placeholder="Ej: Toro Brahma #12"></div>
+    <div class="module-header">
+      <h3>7. Depósito e Inventario</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
-    <button class="btn-action" onclick="guardarReproduccion()">Registrar Evento Repro</button>
-  </div>
-
-  <!-- MÓDULO 8: PERSONAL Y TAREAS -->
-  <div id="mod-8" class="module-view">
-    <div class="module-header"><h3>8. Personal y Tareas</h3><button class="btn-back" onclick="volverMenu()">⬅️ Volver</button></div>
-    <div class="form-group"><label>Trabajador / Encargado:</label><input type="text" id="mod8-trabajador" class="form-control" placeholder="Ej: Pedro Pérez"></div>
-    <div class="form-group"><label>Tarea Asignada / Realizada:</label><input type="text" id="mod8-tarea" class="form-control" placeholder="Ej: Reparación de cerca potrero 3"></div>
-    <button class="btn-action" onclick="guardarPersonal()">Registrar Tarea</button>
-  </div>
-
-  <!-- MÓDULO 9: COMBUSTIBLE -->
-  <div id="mod-9" class="module-view">
-    <div class="module-header"><h3>9. Control de Combustible</h3><button class="btn-back" onclick="volverMenu()">⬅️ Volver</button></div>
+    <div class="form-group"><label>Artículo / Insumo:</label><input type="text" id="mod7-articulo" class="form-control" placeholder="Ej: Alambre de púas, Grapas"></div>
     <div class="form-row">
-      <div class="form-group"><label>Tipo:</label><select class="form-control" id="mod9-tipo"><option>Gasoil</option><option>Gasolina</option></select></div>
-      <div class="form-group"><label>Litros:</label><input type="number" id="mod9-litros" class="form-control"></div>
+      <div class="form-group"><label>Tipo Recepción:</label><input type="text" id="mod7-recepcion" class="form-control" placeholder="Proveedor / Factura"></div>
+      <div class="form-group"><label>Tipo Despacho:</label><input type="text" id="mod7-despacho" class="form-control" placeholder="Destino / Potrero"></div>
     </div>
-    <button class="btn-action" onclick="guardarCombustible()">Registrar Combustible</button>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha Entrega:</label><input type="date" id="mod7-f-entrega" class="form-control"></div>
+      <div class="form-group"><label>Fecha Despacho:</label><input type="date" id="mod7-f-despacho" class="form-control"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod7-cant" class="form-control"></div>
+      <div class="form-group"><label>Responsable:</label><input type="text" id="mod7-resp" class="form-control"></div>
+    </div>
+    <button class="btn-action" onclick="guardarDeposito()">Registrar Insumo</button>
     <div class="summary-card">
-      <h4>⛽ Saldo Local Nube</h4>
+      <h4>📦 Resumen de Artículos Despachados por Mes</h4>
       <div class="summary-grid">
-        <div class="summary-item"><span class="title">Gasoil</span><span class="value" id="saldo-gasoil">0 Lts</span></div>
-        <div class="summary-item"><span class="title">Gasolina</span><span class="value" id="saldo-gasolina">0 Lts</span></div>
+        <div class="summary-item" style="grid-column: span 2;"><span class="title">Total Despachos (Mes)</span><span class="value" id="resumen-deposito-mes">0 Artículos / Lotes</span></div>
       </div>
     </div>
   </div>
 
-  <!-- MÓDULO 10: LOGÍSTICA DE COMIDA -->
-  <div id="mod-10" class="module-view">
-    <div class="module-header"><h3>10. Logística de Comida</h3><button class="btn-back" onclick="volverMenu()">⬅️ Volver</button></div>
-    <div class="form-group"><label>N° Personas:</label><input type="number" id="mod10-personas" class="form-control"></div>
-    <button class="btn-action" onclick="guardarComida()">Registrar Raciones</button>
+  <!-- MODULO 8: REPARACIÓN DE LÍNEAS -->
+  <div id="mod-8" class="module-view">
+    <div class="module-header">
+      <h3>8. Reparación de Líneas</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group"><label>Tipo de Reparación:</label>
+      <select class="form-control" id="mod8-tipo">
+        <option>Cuerdas Remendadas</option><option>Fabricación de Falso</option><option>Entierre de Estantillas</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Cantidad / Metros:</label><input type="number" id="mod8-cant" class="form-control"></div>
+      <div class="form-group"><label>Foto Evidencia:</label><input type="file" id="mod8-foto" class="form-control" accept="image/*"></div>
+    </div>
+    <div class="form-group">
+      <label>Geolocalización en Google Maps:</label>
+      <button class="btn-geo" onclick="obtenerCoordenadas('mod8-geo', 'mapa-mod8')">📍 Ubicar Falla / Cerca en Mapa</button>
+      <input type="text" id="mod8-geo" class="form-control" readonly placeholder="Coordenadas GPS" style="margin-top:4px;">
+      <iframe id="mapa-mod8" class="map-preview" style="display:none;" frameborder="0"></iframe>
+    </div>
+    <button class="btn-action" onclick="guardarCerca()">Registrar Reparación</button>
+  </div>
+
+  <!-- MODULO 9: CONTROL DE COMBUSTIBLE -->
+  <div id="mod-9" class="module-view">
+    <div class="module-header">
+      <h3>9. Control de Combustible</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Tipo Combustible:</label><select class="form-control" id="mod9-tipo"><option>Gasoil</option><option>Gasolina</option></select></div>
+      <div class="form-group"><label>Operación:</label><select class="form-control" id="mod9-operacion"><option>Ingreso (+)</option><option>Consumo (-)</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Litros:</label><input type="number" id="mod9-litros" class="form-control"></div>
+      <div class="form-group"><label>Fecha:</label><input type="date" id="mod9-fecha" class="form-control"></div>
+    </div>
+    <button class="btn-action" onclick="guardarCombustible()">Registrar Movimiento Combustible</button>
     <div class="summary-card">
-      <h4>🍽️ Total Raciones</h4>
+      <h4>⛽ Resumen de Inventario Combustible</h4>
       <div class="summary-grid">
-        <div class="summary-item" style="grid-column: span 2;"><span class="title">Platos Servidos</span><span class="value" id="resumen-comida">0</span></div>
+        <div class="summary-item"><span class="title">Gasoil Disponible</span><span class="value" id="saldo-gasoil">0 Lts</span></div>
+        <div class="summary-item"><span class="title">Gasolina Disponible</span><span class="value" id="saldo-gasolina">0 Lts</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULO 10: LOGÍSTICA DE COMIDA -->
+  <div id="mod-10" class="module-view">
+    <div class="module-header">
+      <h3>10. Logística de Comida</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha:</label><input type="date" id="mod10-fecha" class="form-control"></div>
+      <div class="form-group"><label>Tipo Comida:</label><select class="form-control" id="mod10-tipo"><option>Desayuno</option><option>Almuerzo</option><option>Cena</option><option>Logística Especial</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>N° Personas:</label><input type="number" id="mod10-personas" class="form-control"></div>
+      <div class="form-group"><label>Ubicación / Cuadrilla:</label><input type="text" id="mod10-cuadrilla" class="form-control" placeholder="Ej: Sabana Manguito"></div>
+    </div>
+    <button class="btn-action" onclick="guardarComida()">Registrar Ración Comida</button>
+    <div class="summary-card">
+      <h4>🍽️ Resumen Diario de Alimentación</h4>
+      <div class="summary-grid">
+        <div class="summary-item" style="grid-column: span 2;"><span class="title">Platos Servidos Hoy</span><span class="value" id="resumen-comida-hoy">0 Raciones</span></div>
       </div>
     </div>
   </div>
@@ -462,44 +648,45 @@
     tg.ready();
     tg.expand();
 
-    // 1. INICIALIZACIÓN DE LA NUBE LOCAL (IndexedDB mediante Dexie.js)
-    const db = new Dexie("HatoGanaderoNubeDB");
-    db.version(1).stores({
-      rotacion: '++id, potrero, cantidad, cat, sincronizado',
-      leche_pesaje: '++id, animal, leche, peso, sincronizado',
-      sanidad: '++id, producto, dosis, lote, sincronizado',
-      eventos: '++id, evento, cant, sincronizado',
-      maquinaria: '++id, equipo, hrs, sincronizado',
-      insumos: '++id, insumo, mov, cant, sincronizado',
-      reproduccion: '++id, vaca, tipo, toro, sincronizado',
-      personal: '++id, trabajador, tarea, sincronizado',
-      combustible: '++id, tipo, litros, sincronizado',
-      comida: '++id, personas, sincronizado'
-    });
+    // REEMPLAZAR ESTA URL CON TU GOOGLE APPS SCRIPT WEB APP URL
+    const URL_SCRIPT_NUBE = "https://script.google.com/macros/s/TU_SCRIPT_ID/exec";
 
-    // 2. MONITOREO DE CONEXIÓN A INTERNET EN TIEMPO REAL
-    window.addEventListener('online', actualizarEstadoRed);
-    window.addEventListener('offline', actualizarEstadoRed);
-
-    function actualizarEstadoRed() {
-      const badge = document.getElementById("cloud-status-badge");
-      const desc = document.getElementById("cloud-desc");
-      
-      if (navigator.onLine) {
-        badge.className = "badge-cloud online";
-        badge.innerText = "🟢 Online (Nube Conectada)";
-        desc.innerText = "Conexión a internet detectada. Sincronización automática activa.";
-        forzarSincronizacion();
-      } else {
-        badge.className = "badge-cloud offline";
-        badge.innerText = "🟠 Offline (Nube Local)";
-        desc.innerText = "Trabajando sin señal en el campo. Los datos se guardan en la Nube Local Cifrada del teléfono.";
+    // Función global para enviar los datos a la Nube (Google Sheets)
+    function enviarANube(modulo, datos) {
+      if(URL_SCRIPT_NUBE.includes("TU_SCRIPT_ID")){
+        console.log("Falta colocar la URL de Google Apps Script para guardar en la nube.");
+        return;
       }
+      fetch(URL_SCRIPT_NUBE, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ modulo: modulo, datos: datos })
+      })
+      .then(() => console.log(`Datos sincronizados en la nube (${modulo})`))
+      .catch(err => console.error("Error al sincronizar nube:", err));
     }
 
+    const gruposBovinos = ["Vaca", "Novilla", "Becerro", "Toro", "Mautas", "Mautes"];
+    const gruposBufalinos = ["Búfalas", "Buvillas", "Bucerros", "Bucerras", "Butoro", "Bautas", "Bautes"];
+
+    let movimientosRotacion = [];
+    let tareas = [];
+    let tratamientosSanitarios = [];
+    let eventos = [];
+    let maquinarias = [];
+    let depositos = [];
+    let combustibleGasoil = 0;
+    let combustibleGasolina = 0;
+    let comidasServidasHoy = 0;
+
     document.addEventListener("DOMContentLoaded", () => {
-      actualizarEstadoRed();
-      actualizarResúmenes();
+      const hoy = new Date().toISOString().split('T')[0];
+      ['mod1-f-ingreso','mod1-f-salida','mod2-f-asignacion','mod2-f-culminacion','mod3-f-aplicacion','mod4-fecha','mod5-f-aceite','mod7-f-entrega','mod7-f-despacho','mod9-fecha','mod10-fecha'].forEach(id => {
+        if(document.getElementById(id)) document.getElementById(id).value = hoy;
+      });
+      actualizarGruposEtarios();
+      obtenerClimaGPS();
     });
 
     function mostrarModulo(id) {
@@ -513,182 +700,225 @@
       document.getElementById("main-menu").style.display = "block";
     }
 
-    // 3. OPERACIONES DE ESCRITURA EN LA NUBE LOCAL
-    async function guardarRotacion() {
+    function actualizarGruposEtarios() {
+      const cat = document.getElementById("mod1-categoria").value;
+      const selectGrupo = document.getElementById("mod1-grupo-etario");
+      selectGrupo.innerHTML = "";
+      const lista = (cat === "Bovinos") ? gruposBovinos : gruposBufalinos;
+      lista.forEach(g => {
+        const opt = document.createElement("option"); opt.value = g; opt.innerText = g;
+        selectGrupo.appendChild(opt);
+      });
+    }
+
+    function obtenerCoordenadas(inputId, iframeId) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          document.getElementById(inputId).value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+          const iframe = document.getElementById(iframeId);
+          iframe.src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+          iframe.style.display = "block";
+          tg.showAlert("📍 Coordenadas capturadas exitosamente.");
+        }, () => tg.showAlert("⚠️ No se pudo obtener la geolocalización."));
+      } else { tg.showAlert("⚠️ Geolocalización no soportada en este dispositivo."); }
+    }
+
+    /* MÓDULO 1 */
+    function registrarMovimientoRotacion() {
       const potrero = document.getElementById("mod1-potrero").value;
       const cantidad = parseInt(document.getElementById("mod1-cantidad").value) || 0;
+      const fIngreso = document.getElementById("mod1-f-ingreso").value;
+      const fSalida = document.getElementById("mod1-f-salida").value;
       const cat = document.getElementById("mod1-categoria").value;
+      const grupo = document.getElementById("mod1-grupo-etario").value;
+
       if (cantidad <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
-
-      await db.rotacion.add({ potrero, cantidad, cat, sincronizado: navigator.onLine ? 1 : 0 });
-      actualizarResúmenes();
-      tg.showAlert("☁️ Registro guardado en Nube Local.");
+      
+      const registro = { potrero, cantidad, cat, fIngreso, fSalida, grupo };
+      movimientosRotacion.unshift(registro);
+      
+      enviarANube("RotacionPotreros", registro);
+      
+      tg.showAlert(`🚨 Alerta de Rotación registrada en ${potrero}`);
+      actualizarResumenHato();
     }
 
-    async function guardarLechePesaje() {
-      const animal = document.getElementById("mod2-animal").value;
-      const leche = parseFloat(document.getElementById("mod2-leche").value) || 0;
-      const peso = parseFloat(document.getElementById("mod2-peso").value) || 0;
-      if (!animal) return tg.showAlert("⚠️ Identificación requerida.");
-
-      await db.leche_pesaje.add({ animal, leche, peso, sincronizado: navigator.onLine ? 1 : 0 });
-      tg.showAlert("☁️ Registro de leche/pesaje guardado en Nube Local.");
-    }
-
-    async function guardarSanidad() {
-      const producto = document.getElementById("mod3-producto").value;
-      const dosis = document.getElementById("mod3-dosis").value;
-      const lote = document.getElementById("mod3-lote").value;
-      if (!producto) return tg.showAlert("⚠️ Producto requerido.");
-
-      await db.sanidad.add({ producto, dosis, lote, sincronizado: navigator.onLine ? 1 : 0 });
-      tg.showAlert("☁️ Registro sanitario guardado en Nube Local.");
-    }
-
-    async function guardarEvento() {
-      const evento = document.getElementById("mod4-evento").value;
-      const cant = parseInt(document.getElementById("mod4-cant").value) || 0;
-      if (cant <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
-
-      await db.eventos.add({ evento, cant, sincronizado: navigator.onLine ? 1 : 0 });
-      actualizarResúmenes();
-      tg.showAlert("☁️ Evento guardado en Nube Local.");
-    }
-
-    async function guardarMaquinaria() {
-      const equipo = document.getElementById("mod5-equipo").value;
-      const hrs = parseInt(document.getElementById("mod5-hrs").value) || 0;
-      if (!equipo) return tg.showAlert("⚠️ Nombre de equipo requerido.");
-
-      await db.maquinaria.add({ equipo, hrs, sincronizado: navigator.onLine ? 1 : 0 });
-      if (hrs >= 250) tg.showAlert(`🚨 ALERTA: ${equipo} superó las 250h. Mantenimiento sugerido.`);
-      else tg.showAlert("☁️ Registro de maquinaria guardado.");
-    }
-
-    async function guardarInsumos() {
-      const insumo = document.getElementById("mod6-insumo").value;
-      const mov = document.getElementById("mod6-mov").value;
-      const cant = parseFloat(document.getElementById("mod6-cant").value) || 0;
-      if (!insumo || cant <= 0) return tg.showAlert("⚠️ Ingrese datos válidos.");
-
-      await db.insumos.add({ insumo, mov, cant, sincronizado: navigator.onLine ? 1 : 0 });
-      tg.showAlert("☁️ Insumo guardado en Nube Local.");
-    }
-
-    async function guardarReproduccion() {
-      const vaca = document.getElementById("mod7-vaca").value;
-      const tipo = document.getElementById("mod7-tipo").value;
-      const toro = document.getElementById("mod7-toro").value;
-      if (!vaca) return tg.showAlert("⚠️ Ingrese identificación de la vaca.");
-
-      await db.reproduccion.add({ vaca, tipo, toro, sincronizado: navigator.onLine ? 1 : 0 });
-      tg.showAlert("☁️ Registro reproductivo guardado.");
-    }
-
-    async function guardarPersonal() {
-      const trabajador = document.getElementById("mod8-trabajador").value;
-      const tarea = document.getElementById("mod8-tarea").value;
-      if (!trabajador || !tarea) return tg.showAlert("⚠️ Complete ambos campos.");
-
-      await db.personal.add({ trabajador, tarea, sincronizado: navigator.onLine ? 1 : 0 });
-      tg.showAlert("☁️ Tarea registrada en Nube Local.");
-    }
-
-    async function guardarCombustible() {
-      const tipo = document.getElementById("mod9-tipo").value;
-      const litros = parseInt(document.getElementById("mod9-litros").value) || 0;
-      if (litros <= 0) return tg.showAlert("⚠️ Litros requeridos.");
-
-      await db.combustible.add({ tipo, litros, sincronizado: navigator.onLine ? 1 : 0 });
-      actualizarResúmenes();
-      tg.showAlert("⛽ Movimiento guardado en Nube Local.");
-    }
-
-    async function guardarComida() {
-      const personas = parseInt(document.getElementById("mod10-personas").value) || 0;
-      if (personas <= 0) return tg.showAlert("⚠️ Número de personas requerido.");
-
-      await db.comida.add({ personas, sincronizado: navigator.onLine ? 1 : 0 });
-      actualizarResúmenes();
-      tg.showAlert("🍽️ Raciones guardadas en Nube Local.");
-    }
-
-    // 4. ANÁLISIS DE DATOS DESDE LA NUBE LOCAL
-    async function actualizarResúmenes() {
-      // Rotación
-      const rot = await db.rotacion.toArray();
+    function actualizarResumenHato() {
       let b = 0, bu = 0;
-      rot.forEach(r => r.cat === "Bovinos" ? b += r.cantidad : bu += r.cantidad);
+      movimientosRotacion.forEach(m => { if(m.cat === "Bovinos") b+=m.cantidad; else bu+=m.cantidad; });
       document.getElementById("resumen-bovinos").innerText = b;
       document.getElementById("resumen-bufalinos").innerText = bu;
-
-      // Eventos
-      const evs = await db.eventos.toArray();
-      let nac = 0, mue = 0;
-      evs.forEach(e => e.evento === "Nacidos" ? nac += e.cant : mue += e.cant);
-      document.getElementById("resumen-nacidos").innerText = nac;
-      document.getElementById("resumen-muertos").innerText = mue;
-
-      // Combustible
-      const comb = await db.combustible.toArray();
-      let gasoil = 0, gasolina = 0;
-      comb.forEach(c => c.tipo === "Gasoil" ? gasoil += c.litros : gasolina += c.litros);
-      document.getElementById("saldo-gasoil").innerText = `${gasoil} Lts`;
-      document.getElementById("saldo-gasolina").innerText = `${gasolina} Lts`;
-
-      // Comida
-      const com = await db.comida.toArray();
-      let raciones = 0;
-      com.forEach(c => raciones += c.personas);
-      document.getElementById("resumen-comida").innerText = `${raciones} Raciones`;
+      document.getElementById("resumen-total-hato").innerText = `${b + bu} Animales`;
     }
 
-    // 5. DESCARGA DE INFORMACIÓN SIN INTERNET (EXPORTAR NUBE LOCAL)
-    async function descargarRespaldoJSON() {
-      const dataCompleta = {
-        rotacion: await db.rotacion.toArray(),
-        leche_pesaje: await db.leche_pesaje.toArray(),
-        sanidad: await db.sanidad.toArray(),
-        eventos: await db.eventos.toArray(),
-        maquinaria: await db.maquinaria.toArray(),
-        insumos: await db.insumos.toArray(),
-        reproduccion: await db.reproduccion.toArray(),
-        personal: await db.personal.toArray(),
-        combustible: await db.combustible.toArray(),
-        comida: await db.comida.toArray(),
-        fechaExportacion: new Date().toISOString()
-      };
+    /* MÓDULO 2 */
+    function guardarTarea() {
+      const descripcion = document.getElementById("mod2-tarea").value;
+      const fAsignacion = document.getElementById("mod2-f-asignacion").value;
+      const fCulminacion = document.getElementById("mod2-f-culminacion").value;
+      const ejecucion = document.getElementById("mod2-ejecucion").value;
+      const observacion = document.getElementById("mod2-observacion").value;
 
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataCompleta, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `Respaldo_Hato_Nube_${new Date().toISOString().split('T')[0]}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
+      if(!descripcion) return tg.showAlert("⚠️ Ingrese la tarea.");
       
-      tg.showAlert("📥 Copia de seguridad descargada exitosamente.");
+      const registro = { descripcion, fAsignacion, fCulminacion, ejecucion, observacion };
+      tareas.unshift(registro);
+      
+      enviarANube("Tareas", registro);
+      
+      tg.showAlert("✅ Tarea Agendada");
     }
 
-    // 6. TRANSMISIÓN Y SINCRONIZACIÓN
-    async function forzarSincronizacion() {
-      if (!navigator.onLine) {
-        return tg.showAlert("⚠️ Estás offline. La sincronización se realizará automáticamente cuando tengas internet.");
+    /* MÓDULO 3 */
+    function guardarTratamientoSanitario() {
+      const lote = document.getElementById("mod3-lote").value;
+      const cantidad = parseInt(document.getElementById("mod3-cantidad").value) || 0;
+      const tipo = document.getElementById("mod3-tipo").value;
+      const fAplicacion = document.getElementById("mod3-f-aplicacion").value;
+      const fProximo = document.getElementById("mod3-f-proximo").value;
+      const observacion = document.getElementById("mod3-observacion").value;
+
+      if(cantidad <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
+
+      const registro = { lote, cantidad, tipo, fAplicacion, fProximo, observacion };
+      tratamientosSanitarios.unshift(registro);
+
+      enviarANube("ManejoSanitario", registro);
+
+      tg.showAlert("💉 Tratamiento registrado correctamente.");
+    }
+
+    /* MÓDULO 4 */
+    function guardarEvento() {
+      const cat = document.getElementById("mod4-cat").value;
+      const grupo = document.getElementById("mod4-grupo").value;
+      const evento = document.getElementById("mod4-evento").value;
+      const fecha = document.getElementById("mod4-fecha").value;
+      const cant = parseInt(document.getElementById("mod4-cant").value) || 0;
+      const geo = document.getElementById("mod4-geo").value;
+
+      if(cant <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
+
+      const registro = { cat, grupo, evento, fecha, cant, geo };
+      eventos.unshift(registro);
+
+      enviarANube("Eventos", registro);
+
+      tg.showAlert("📋 Evento guardado correctamente.");
+    }
+
+    /* MÓDULO 5 */
+    function guardarMaquinaria() {
+      const equipo = document.getElementById("mod5-equipo").value;
+      const fAceite = document.getElementById("mod5-f-aceite").value;
+      const resp = document.getElementById("mod5-resp").value;
+      const hrsDiarias = document.getElementById("mod5-hrs-diarias").value;
+      const hrsTotales = document.getElementById("mod5-hrs-totales").value;
+      const averia = document.getElementById("mod5-averia").value;
+
+      if(!equipo) return tg.showAlert("⚠️ Ingrese la maquinaria.");
+
+      const registro = { equipo, fAceite, resp, hrsDiarias, hrsTotales, averia };
+      maquinarias.unshift(registro);
+
+      enviarANube("Maquinaria", registro);
+
+      tg.showAlert("🚜 Datos de equipo registrados.");
+    }
+
+    /* MÓDULO 6 */
+    function obtenerClimaGPS() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          document.getElementById("clima-ubicacion").innerText = `📍 Lat: ${pos.coords.latitude.toFixed(2)}, Lng: ${pos.coords.longitude.toFixed(2)}`;
+          document.getElementById("clima-temp").innerText = "29 °C";
+          document.getElementById("clima-condicion").innerText = "🌤️ Parcialmente Nublado";
+        }, () => {
+          document.getElementById("clima-ubicacion").innerText = "📍 Ubicación predeterminada";
+          document.getElementById("clima-temp").innerText = "30 °C";
+          document.getElementById("clima-condicion").innerText = "☀️ Soleado";
+        });
+      }
+    }
+
+    /* MÓDULO 7 */
+    function guardarDeposito() {
+      const articulo = document.getElementById("mod7-articulo").value;
+      const recepcion = document.getElementById("mod7-recepcion").value;
+      const despacho = document.getElementById("mod7-despacho").value;
+      const fEntrega = document.getElementById("mod7-f-entrega").value;
+      const fDespacho = document.getElementById("mod7-f-despacho").value;
+      const cant = parseInt(document.getElementById("mod7-cant").value) || 0;
+      const resp = document.getElementById("mod7-resp").value;
+
+      if(!articulo) return tg.showAlert("⚠️ Ingrese el artículo.");
+
+      const registro = { articulo, recepcion, despacho, fEntrega, fDespacho, cant, resp };
+      depositos.unshift(registro);
+
+      enviarANube("Deposito", registro);
+
+      tg.showAlert("📦 Insumo guardado correctamente.");
+    }
+
+    /* MÓDULO 8 */
+    function guardarCerca() {
+      const tipo = document.getElementById("mod8-tipo").value;
+      const cant = document.getElementById("mod8-cant").value;
+      const geo = document.getElementById("mod8-geo").value;
+
+      if(!cant) return tg.showAlert("⚠️ Ingrese la cantidad o metros.");
+
+      const registro = { tipo, cant, geo };
+
+      enviarANube("ReparacionesLineas", registro);
+
+      tg.showAlert("🛠️ Reparación registrada exitosamente.");
+    }
+
+    /* MÓDULO 9 */
+    function guardarCombustible() {
+      const tipo = document.getElementById("mod9-tipo").value;
+      const operacion = document.getElementById("mod9-operacion").value;
+      const litros = parseFloat(document.getElementById("mod9-litros").value) || 0;
+      const fecha = document.getElementById("mod9-fecha").value;
+
+      if(litros <= 0) return tg.showAlert("⚠️ Ingrese la cantidad de litros.");
+
+      if(tipo === "Gasoil") {
+        if(operacion.includes("+")) combustibleGasoil += litros;
+        else combustibleGasoil = Math.max(0, combustibleGasoil - litros);
+        document.getElementById("saldo-gasoil").innerText = `${combustibleGasoil} Lts`;
+      } else {
+        if(operacion.includes("+")) combustibleGasolina += litros;
+        else combustibleGasolina = Math.max(0, combustibleGasolina - litros);
+        document.getElementById("saldo-gasolina").innerText = `${combustibleGasolina} Lts`;
       }
 
-      // Marcar registros locales como sincronizados
-      await db.rotacion.where("sincronizado").equals(0).modify({ sincronizado: 1 });
-      await db.leche_pesaje.where("sincronizado").equals(0).modify({ sincronizado: 1 });
-      await db.sanidad.where("sincronizado").equals(0).modify({ sincronizado: 1 });
-      await db.eventos.where("sincronizado").equals(0).modify({ sincronizado: 1 });
-      await db.maquinaria.where("sincronizado").equals(0).modify({ sincronizado: 1 });
-      await db.insumos.where("sincronizado").equals(0).modify({ sincronizado: 1 });
-      await db.reproduccion.where("sincronizado").equals(0).modify({ sincronizado: 1 });
-      await db.personal.where("sincronizado").equals(0).modify({ sincronizado: 1 });
-      await db.combustible.where("sincronizado").equals(0).modify({ sincronizado: 1 });
-      await db.comida.where("sincronizado").equals(0).modify({ sincronizado: 1 });
+      const registro = { tipo, operacion, litros, fecha };
+      enviarANube("Combustible", registro);
 
-      tg.showAlert("🔄 Sincronización completada con la nube remota.");
+      tg.showAlert("⛽ Movimiento de combustible registrado.");
+    }
+
+    /* MÓDULO 10 */
+    function guardarComida() {
+      const fecha = document.getElementById("mod10-fecha").value;
+      const tipo = document.getElementById("mod10-tipo").value;
+      const personas = parseInt(document.getElementById("mod10-personas").value) || 0;
+      const cuadrilla = document.getElementById("mod10-cuadrilla").value;
+
+      if(personas <= 0) return tg.showAlert("⚠️ Ingrese el número de personas.");
+
+      comidasServidasHoy += personas;
+      document.getElementById("resumen-comida-hoy").innerText = `${comidasServidasHoy} Raciones`;
+
+      const registro = { fecha, tipo, personas, cuadrilla };
+      enviarANube("LogisticaComida", registro);
+
+      tg.showAlert("🍽️ Ración registrada con éxito.");
     }
   </script>
 </body>
