@@ -45,6 +45,15 @@
     .header-card h2 { margin: 0 0 4px 0; font-size: 20px; }
     .header-card p { margin: 0; opacity: 0.9; font-size: 13px; }
 
+    .sync-status {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.2);
+      display: inline-block;
+      margin-top: 6px;
+    }
+
     .notifications-card {
       background-color: var(--alert-bg);
       border: 1px solid #f8b4b4;
@@ -223,16 +232,6 @@
       white-space: nowrap;
     }
 
-    .badge-status {
-      padding: 3px 6px;
-      border-radius: 4px;
-      font-weight: bold;
-      font-size: 10px;
-      display: inline-block;
-    }
-    .badge-si { background-color: var(--success-bg); color: var(--success-color); }
-    .badge-no { background-color: var(--alert-bg); color: var(--alert-color); }
-
     .summary-card {
       background-color: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -279,9 +278,10 @@
   <div class="header-card">
     <h2 id="saludo">¡Hola, Ganadero! 🤠</h2>
     <p>Sistema de Control y Operaciones del Hato</p>
+    <div class="sync-status" id="estado-nube">☁️ Conectando con la Nube...</div>
   </div>
 
-  <!-- Panel de Notificaciones y Alertas Globales -->
+  <!-- Panel de Notificaciones -->
   <div class="notifications-card" id="notifications-panel">
     <div class="notifications-header">
       <span>🔔 Notificaciones y Alertas del Sistema</span>
@@ -291,7 +291,7 @@
     </ul>
   </div>
 
-  <!-- MENU PRINCIPAL (10 MODULOS) -->
+  <!-- MENU PRINCIPAL -->
   <div id="main-menu">
     <div class="section-title">Módulos de Gestión</div>
     <div class="grid-menu">
@@ -519,7 +519,7 @@
     <div class="form-group"><label>Observación de Avería:</label><input type="text" id="mod5-averia" class="form-control" placeholder="Ej: Fuga leve en manguera hidráulica"></div>
     <button class="btn-action" onclick="guardarMaquinaria()">Guardar Registro de Equipo</button>
 
-    <div class="table-container"><table class="data-table"><thead><tr><th>Equipo</th><th>Responsable</th><th>Hrs Acum.</th><th>Estado Aceite</th><th>Avería</th></tr></thead><tbody id="tabla-maquinaria-body"></tbody></table></div>
+    <div class="table-container"><table class="data-table"><thead><tr><th>Equipo</th><th>Responsable</th><th>Hrs Acum.</th><th>Avería</th></tr></thead><tbody id="tabla-maquinaria-body"></tbody></table></div>
   </div>
 
   <!-- MODULO 6: CONTROL METEOROLÓGICO -->
@@ -648,24 +648,8 @@
     tg.ready();
     tg.expand();
 
-    // REEMPLAZAR ESTA URL CON TU GOOGLE APPS SCRIPT WEB APP URL
+    // PEGA AQUÍ LA URL DESPLEGADA DE TU GOOGLE APPS SCRIPT
     const URL_SCRIPT_NUBE = "https://script.google.com/macros/s/TU_SCRIPT_ID/exec";
-
-    // Función global para enviar los datos a la Nube (Google Sheets)
-    function enviarANube(modulo, datos) {
-      if(URL_SCRIPT_NUBE.includes("TU_SCRIPT_ID")){
-        console.log("Falta colocar la URL de Google Apps Script para guardar en la nube.");
-        return;
-      }
-      fetch(URL_SCRIPT_NUBE, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ modulo: modulo, datos: datos })
-      })
-      .then(() => console.log(`Datos sincronizados en la nube (${modulo})`))
-      .catch(err => console.error("Error al sincronizar nube:", err));
-    }
 
     const gruposBovinos = ["Vaca", "Novilla", "Becerro", "Toro", "Mautas", "Mautes"];
     const gruposBufalinos = ["Búfalas", "Buvillas", "Bucerros", "Bucerras", "Butoro", "Bautas", "Bautes"];
@@ -680,6 +664,7 @@
     let combustibleGasolina = 0;
     let comidasServidasHoy = 0;
 
+    // Inicialización del sistema
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date().toISOString().split('T')[0];
       ['mod1-f-ingreso','mod1-f-salida','mod2-f-asignacion','mod2-f-culminacion','mod3-f-aplicacion','mod4-fecha','mod5-f-aceite','mod7-f-entrega','mod7-f-despacho','mod9-fecha','mod10-fecha'].forEach(id => {
@@ -687,7 +672,54 @@
       });
       actualizarGruposEtarios();
       obtenerClimaGPS();
+
+      // Cargar datos automáticamente de la nube al iniciar
+      cargarDatosAutoNube();
     });
+
+    // AUTO-GUARDADO EN LA NUBE
+    function autoGuardarNube(modulo, datos) {
+      document.getElementById("estado-nube").innerText = "⏳ Guardando en la nube...";
+      
+      if(URL_SCRIPT_NUBE.includes("TU_SCRIPT_ID")) {
+        console.log("Modo offline: Falta configurar URL_SCRIPT_NUBE");
+        document.getElementById("estado-nube").innerText = "⚠️ Sin enlace a la nube";
+        return;
+      }
+
+      fetch(URL_SCRIPT_NUBE, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ modulo: modulo, datos: datos })
+      })
+      .then(() => {
+        document.getElementById("estado-nube").innerText = "☁️ Sincronizado";
+      })
+      .catch(err => {
+        console.error("Error auto-guardado:", err);
+        document.getElementById("estado-nube").innerText = "❌ Error al guardar";
+      });
+    }
+
+    // AUTO-CARGA DE LA NUBE
+    function cargarDatosAutoNube() {
+      if(URL_SCRIPT_NUBE.includes("TU_SCRIPT_ID")) {
+        document.getElementById("estado-nube").innerText = "⚠️ Modo Local";
+        return;
+      }
+
+      fetch(URL_SCRIPT_NUBE)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("estado-nube").innerText = "☁️ Datos actualizados";
+          console.log("Datos cargados desde Google Sheets:", data);
+        })
+        .catch(err => {
+          console.error("Error cargando datos:", err);
+          document.getElementById("estado-nube").innerText = "☁️ Listo";
+        });
+    }
 
     function mostrarModulo(id) {
       document.getElementById("main-menu").style.display = "none";
@@ -722,10 +754,11 @@
           iframe.style.display = "block";
           tg.showAlert("📍 Coordenadas capturadas exitosamente.");
         }, () => tg.showAlert("⚠️ No se pudo obtener la geolocalización."));
-      } else { tg.showAlert("⚠️ Geolocalización no soportada en este dispositivo."); }
+      } else { tg.showAlert("⚠️ Geolocalización no soportada."); }
     }
 
-    /* MÓDULO 1 */
+    /* REGISTROS CON AUTO-GUARDADO AUTOMÁTICO */
+
     function registrarMovimientoRotacion() {
       const potrero = document.getElementById("mod1-potrero").value;
       const cantidad = parseInt(document.getElementById("mod1-cantidad").value) || 0;
@@ -738,9 +771,10 @@
       
       const registro = { potrero, cantidad, cat, fIngreso, fSalida, grupo };
       movimientosRotacion.unshift(registro);
-      
-      enviarANube("RotacionPotreros", registro);
-      
+
+      // Guardar automático en la nube
+      autoGuardarNube("RotacionPotreros", registro);
+
       tg.showAlert(`🚨 Alerta de Rotación registrada en ${potrero}`);
       actualizarResumenHato();
     }
@@ -753,7 +787,6 @@
       document.getElementById("resumen-total-hato").innerText = `${b + bu} Animales`;
     }
 
-    /* MÓDULO 2 */
     function guardarTarea() {
       const descripcion = document.getElementById("mod2-tarea").value;
       const fAsignacion = document.getElementById("mod2-f-asignacion").value;
@@ -765,13 +798,11 @@
       
       const registro = { descripcion, fAsignacion, fCulminacion, ejecucion, observacion };
       tareas.unshift(registro);
-      
-      enviarANube("Tareas", registro);
-      
+
+      autoGuardarNube("Tareas", registro);
       tg.showAlert("✅ Tarea Agendada");
     }
 
-    /* MÓDULO 3 */
     function guardarTratamientoSanitario() {
       const lote = document.getElementById("mod3-lote").value;
       const cantidad = parseInt(document.getElementById("mod3-cantidad").value) || 0;
@@ -780,17 +811,15 @@
       const fProximo = document.getElementById("mod3-f-proximo").value;
       const observacion = document.getElementById("mod3-observacion").value;
 
-      if(cantidad <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
+      if(cantidad <= 0) return tg.showAlert("⚠️ Ingrese cantidad.");
 
       const registro = { lote, cantidad, tipo, fAplicacion, fProximo, observacion };
       tratamientosSanitarios.unshift(registro);
 
-      enviarANube("ManejoSanitario", registro);
-
+      autoGuardarNube("ManejoSanitario", registro);
       tg.showAlert("💉 Tratamiento registrado correctamente.");
     }
 
-    /* MÓDULO 4 */
     function guardarEvento() {
       const cat = document.getElementById("mod4-cat").value;
       const grupo = document.getElementById("mod4-grupo").value;
@@ -804,12 +833,10 @@
       const registro = { cat, grupo, evento, fecha, cant, geo };
       eventos.unshift(registro);
 
-      enviarANube("Eventos", registro);
-
+      autoGuardarNube("Eventos", registro);
       tg.showAlert("📋 Evento guardado correctamente.");
     }
 
-    /* MÓDULO 5 */
     function guardarMaquinaria() {
       const equipo = document.getElementById("mod5-equipo").value;
       const fAceite = document.getElementById("mod5-f-aceite").value;
@@ -823,12 +850,10 @@
       const registro = { equipo, fAceite, resp, hrsDiarias, hrsTotales, averia };
       maquinarias.unshift(registro);
 
-      enviarANube("Maquinaria", registro);
-
+      autoGuardarNube("Maquinaria", registro);
       tg.showAlert("🚜 Datos de equipo registrados.");
     }
 
-    /* MÓDULO 6 */
     function obtenerClimaGPS() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
@@ -836,14 +861,13 @@
           document.getElementById("clima-temp").innerText = "29 °C";
           document.getElementById("clima-condicion").innerText = "🌤️ Parcialmente Nublado";
         }, () => {
-          document.getElementById("clima-ubicacion").innerText = "📍 Ubicación predeterminada";
+          document.getElementById("clima-ubicacion").innerText = "📍 Ubicación por defecto";
           document.getElementById("clima-temp").innerText = "30 °C";
           document.getElementById("clima-condicion").innerText = "☀️ Soleado";
         });
       }
     }
 
-    /* MÓDULO 7 */
     function guardarDeposito() {
       const articulo = document.getElementById("mod7-articulo").value;
       const recepcion = document.getElementById("mod7-recepcion").value;
@@ -858,34 +882,29 @@
       const registro = { articulo, recepcion, despacho, fEntrega, fDespacho, cant, resp };
       depositos.unshift(registro);
 
-      enviarANube("Deposito", registro);
-
-      tg.showAlert("📦 Insumo guardado correctamente.");
+      autoGuardarNube("Deposito", registro);
+      tg.showAlert("📦 Insumo guardado.");
     }
 
-    /* MÓDULO 8 */
     function guardarCerca() {
       const tipo = document.getElementById("mod8-tipo").value;
       const cant = document.getElementById("mod8-cant").value;
       const geo = document.getElementById("mod8-geo").value;
 
-      if(!cant) return tg.showAlert("⚠️ Ingrese la cantidad o metros.");
+      if(!cant) return tg.showAlert("⚠️ Ingrese cantidad.");
 
       const registro = { tipo, cant, geo };
-
-      enviarANube("ReparacionesLineas", registro);
-
-      tg.showAlert("🛠️ Reparación registrada exitosamente.");
+      autoGuardarNube("ReparacionesLineas", registro);
+      tg.showAlert("🛠️ Reparación registrada.");
     }
 
-    /* MÓDULO 9 */
     function guardarCombustible() {
       const tipo = document.getElementById("mod9-tipo").value;
       const operacion = document.getElementById("mod9-operacion").value;
       const litros = parseFloat(document.getElementById("mod9-litros").value) || 0;
       const fecha = document.getElementById("mod9-fecha").value;
 
-      if(litros <= 0) return tg.showAlert("⚠️ Ingrese la cantidad de litros.");
+      if(litros <= 0) return tg.showAlert("⚠️ Ingrese litros.");
 
       if(tipo === "Gasoil") {
         if(operacion.includes("+")) combustibleGasoil += litros;
@@ -898,26 +917,23 @@
       }
 
       const registro = { tipo, operacion, litros, fecha };
-      enviarANube("Combustible", registro);
-
+      autoGuardarNube("Combustible", registro);
       tg.showAlert("⛽ Movimiento de combustible registrado.");
     }
 
-    /* MÓDULO 10 */
     function guardarComida() {
       const fecha = document.getElementById("mod10-fecha").value;
       const tipo = document.getElementById("mod10-tipo").value;
       const personas = parseInt(document.getElementById("mod10-personas").value) || 0;
       const cuadrilla = document.getElementById("mod10-cuadrilla").value;
 
-      if(personas <= 0) return tg.showAlert("⚠️ Ingrese el número de personas.");
+      if(personas <= 0) return tg.showAlert("⚠️ Ingrese número de personas.");
 
       comidasServidasHoy += personas;
       document.getElementById("resumen-comida-hoy").innerText = `${comidasServidasHoy} Raciones`;
 
       const registro = { fecha, tipo, personas, cuadrilla };
-      enviarANube("LogisticaComida", registro);
-
+      autoGuardarNube("LogisticaComida", registro);
       tg.showAlert("🍽️ Ración registrada con éxito.");
     }
   </script>
