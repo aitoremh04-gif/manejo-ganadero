@@ -12,8 +12,9 @@
     :root {
       --blue-primary: #1d72b8;
       --blue-hover: #155a92;
-      --blue-light: #eef6fc;
-      --text-color: #222222;
+      --bg-card: #ffffff;
+      --text-main: #1c252e;
+      --text-muted: #637381;
     }
 
     body {
@@ -21,21 +22,22 @@
       margin: 0;
       padding: 16px;
       background-color: var(--tg-theme-bg-color, #f4f6f8);
-      color: var(--tg-theme-text-color, var(--text-color));
+      color: var(--tg-theme-text-color, var(--text-main));
     }
 
+    /* Header Azul */
     .header-card {
       background: linear-gradient(135deg, #1d72b8, #0d47a1);
       color: #ffffff;
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(29, 114, 184, 0.2);
       text-align: center;
     }
 
     .header-card h2 {
-      margin: 0 0 8px 0;
+      margin: 0 0 6px 0;
       font-size: 22px;
     }
 
@@ -46,109 +48,133 @@
     }
 
     .section-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       text-transform: uppercase;
-      color: #666;
-      margin: 0 0 10px 4px;
+      color: var(--text-muted);
+      margin: 0 0 12px 4px;
       letter-spacing: 0.5px;
     }
 
+    /* Grid de Botones Azules */
     .grid-menu {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 12px;
       margin-bottom: 20px;
     }
 
-    .btn-blue {
-      background-color: var(--blue-primary);
-      color: #ffffff;
-      border: none;
-      padding: 16px 12px;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
+    .btn-card {
+      background-color: var(--bg-card);
+      border: 2px solid var(--blue-primary);
+      border-radius: 14px;
+      padding: 16px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 2px 6px rgba(29, 114, 184, 0.25);
-      transition: background-color 0.2s, transform 0.1s;
+      gap: 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
     }
 
-    .btn-blue:active {
-      background-color: var(--blue-hover);
+    .btn-card:active {
+      background-color: #ebf4fc;
       transform: scale(0.98);
     }
 
-    .btn-blue.full-width {
-      grid-column: span 2;
-      flex-direction: row;
-      padding: 14px;
+    .btn-icon {
+      background-color: var(--blue-primary);
+      color: #ffffff;
+      font-size: 22px;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
-    .icon {
-      font-size: 22px;
+    .btn-content h4 {
+      margin: 0 0 4px 0;
+      font-size: 16px;
+      color: var(--blue-primary);
+    }
+
+    .btn-content p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--text-muted);
     }
   </style>
 </head>
 <body>
 
-  <!-- Tarjeta de Encabezado Azul -->
+  <!-- Encabezado -->
   <div class="header-card">
     <h2 id="saludo">¡Hola, Ganadero! 🤠</h2>
-    <p>Panel de Control de Finca</p>
+    <p>Sistema de Control y Gestión de Finca</p>
   </div>
 
-  <!-- Menú de Botones Azules -->
-  <div class="section-title">Acciones Rápidas</div>
+  <div class="section-title">Módulos de Trabajo</div>
   
+  <!-- Lista de Botones con Descripción -->
   <div class="grid-menu">
-    <button class="btn-blue" onclick="abrirModulo('Registro de Animal')">
-      <span class="icon">🐄</span>
-      <span>Nuevo Animal</span>
+    
+    <!-- 1. Registro de Animales -->
+    <button class="btn-card" onclick="abrirModulo('Registro de Animales')">
+      <div class="btn-icon">🐄</div>
+      <div class="btn-content">
+        <h4>Registro de Animales</h4>
+        <p>Ingresa arete, chapeta, peso, raza y sexo del ganado.</p>
+      </div>
     </button>
 
-    <button class="btn-blue" onclick="abrirModulo('Inventario')">
-      <span class="icon">📋</span>
-      <span>Inventario</span>
+    <!-- 2. Control de Salud -->
+    <button class="btn-card" onclick="abrirModulo('Control de Salud')">
+      <div class="btn-icon">💉</div>
+      <div class="btn-content">
+        <h4>Control de Salud</h4>
+        <p>Registro de vacunas, desparasitaciones y tratamientos.</p>
+      </div>
     </button>
 
-    <button class="btn-blue" onclick="abrirModulo('Control de Salud')">
-      <span class="icon">💉</span>
-      <span>Vacunación</span>
+    <!-- 3. Producción -->
+    <button class="btn-card" onclick="abrirModulo('Producción')">
+      <div class="btn-icon">🥛</div>
+      <div class="btn-content">
+        <h4>Producción</h4>
+        <p>Captura diaria de pesajes de carne y litros de leche.</p>
+      </div>
     </button>
 
-    <button class="btn-blue" onclick="abrirModulo('Producción de Leche/Carne')">
-      <span class="icon">🥛</span>
-      <span>Producción</span>
+    <!-- 4. Potreros / Lotes -->
+    <button class="btn-card" onclick="abrirModulo('Potreros y Lotes')">
+      <div class="btn-icon">🌾</div>
+      <div class="btn-content">
+        <h4>Potreros / Lotes</h4>
+        <p>Organización y ubicación del ganado por potrero.</p>
+      </div>
     </button>
 
-    <button class="btn-blue full-width" onclick="abrirModulo('Reporte General')">
-      <span class="icon">📊</span>
-      <span>Generar Reporte</span>
-    </button>
   </div>
 
   <script>
-    // 1. Inicializar el SDK de Telegram
+    // Inicializar Telegram WebApp SDK
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    // 2. Personalizar el saludo con los datos del usuario de Telegram
+    // Saludo personalizadocon el nombre del usuario en Telegram
     const user = tg.initDataUnsafe?.user;
     if (user) {
       document.getElementById("saludo").innerText = `¡Hola, ${user.first_name}! 🤠`;
     }
 
-    // 3. Función para gestionar las acciones de los botones
+    // Respuesta al hacer clic en los botones
     function abrirModulo(nombreModulo) {
-      // Muestra una ventana emergente nativa dentro de Telegram
-      tg.showAlert(`Has seleccionado: ${nombreModulo}`);
+      tg.showAlert(`Abriendo: ${nombreModulo}`);
     }
   </script>
 </body>
