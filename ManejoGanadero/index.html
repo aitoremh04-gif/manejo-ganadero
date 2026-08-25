@@ -181,9 +181,9 @@
       margin-top: 8px;
     }
 
-    .btn-undo {
+    .btn-redo {
       width: 100%;
-      background-color: #d32f2f;
+      background-color: #2e7d32;
       color: #ffffff;
       border: none;
       padding: 10px;
@@ -203,18 +203,6 @@
       font-size: 10px;
       font-weight: bold;
       cursor: pointer;
-    }
-
-    .btn-undo-small {
-      background-color: #d32f2f;
-      color: #ffffff;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 8px;
     }
 
     .btn-geo {
@@ -310,8 +298,9 @@
     .charts-wrapper {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
       align-items: center;
+      width: 100%;
     }
 
     @media (min-width: 480px) {
@@ -326,48 +315,59 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 8px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px;
       width: 100%;
-      max-width: 200px;
+      max-width: 240px;
+      box-sizing: border-box;
     }
     .chart-box span.subtitle {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: bold;
-      color: var(--text-main);
-      margin-bottom: 4px;
+      color: var(--blue-primary);
+      margin-bottom: 10px;
       text-align: center;
+      border-bottom: 1px solid #edf2f7;
+      width: 100%;
+      padding-bottom: 4px;
     }
 
     canvas.potrero-chart {
-      width: 120px !important;
-      height: 120px !important;
+      width: 140px !important;
+      height: 140px !important;
     }
 
     .chart-legend {
       display: flex;
-      flex-wrap: wrap;
-      gap: 3px;
-      justify-content: center;
-      font-size: 9px;
-      margin-top: 6px;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 11px;
+      margin-top: 12px;
       width: 100%;
     }
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 3px;
-      background: #ffffff;
-      padding: 2px 4px;
-      border-radius: 3px;
+      justify-content: space-between;
+      background: #f8fafc;
+      padding: 4px 8px;
+      border-radius: 6px;
       border: 1px solid #e2e8f0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .legend-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     .legend-color {
-      width: 6px;
-      height: 6px;
-      border-radius: 2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
     }
 
     .weather-box {
@@ -526,7 +526,7 @@
     </div>
     <div class="form-group"><label>Cantidad:</label><input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 25"></div>
     <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento</button>
-    <button class="btn-undo" onclick="deshacerUltimoMovimientoRotacion()">↩️ Deshacer Último Registro Global</button>
+    <button class="btn-redo" onclick="rehacerUltimoRegistroBorrado()">🔄 Rehacer Último Registro Borrado</button>
 
     <div class="table-container">
       <table class="data-table">
@@ -808,6 +808,8 @@
     const capacidadBasePotrero = 50; 
 
     let movimientosRotacion = JSON.parse(localStorage.getItem('ato_rotacion')) || [];
+    let ultimoRegistroEliminado = null; // Buffer para la función de Rehacer
+
     let tareas = JSON.parse(localStorage.getItem('ato_tareas')) || [];
     let tratamientosSanitarios = JSON.parse(localStorage.getItem('ato_sanitario')) || [];
     let eventos = JSON.parse(localStorage.getItem('ato_eventos')) || [];
@@ -908,35 +910,45 @@
       tg.showAlert(`🚨 Movimiento registrado en ${potrero}`);
     }
 
-    function deshacerUltimoMovimientoRotacion() {
-      if (movimientosRotacion.length === 0) {
-        return tg.showAlert("⚠️ No hay registros previos para deshacer.");
+    function rehacerUltimoRegistroBorrado() {
+      if (!ultimoRegistroEliminado) {
+        return tg.showAlert("⚠️ No hay ningún registro borrado recientemente para rehacer.");
       }
       
-      const eliminado = movimientosRotacion.shift(); 
-      localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion)); 
+      movimientosRotacion.unshift(ultimoRegistroEliminado);
+      localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion));
+      
+      const potreroRehabilitado = ultimoRegistroEliminado.potrero;
+      ultimoRegistroEliminado = null; // Limpiar buffer tras rehacer
       
       actualizarTablaRotacion();
       actualizarResumenHato();
-      tg.showAlert(`↩️ Se deshizo el último registro del potrero: ${eliminado.potrero}`);
+
+      const selectResumen = document.getElementById("select-resumen-potrero");
+      if (selectResumen && selectResumen.value === potreroRehabilitado) {
+        generarGraficoDesdeSelector();
+      }
+
+      tg.showAlert(`🔄 Se ha restaurado y rehecho el registro del potrero: ${potreroRehabilitado}`);
     }
 
-    // Función para eliminar un registro específico por su índice en la lista global
     function eliminarRegistroPorIndice(index) {
       if (index >= 0 && index < movimientosRotacion.length) {
+        // Guardar respaldo para poder rehacerlo después
+        ultimoRegistroEliminado = movimientosRotacion[index];
+        
         const eliminado = movimientosRotacion.splice(index, 1)[0];
         localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion));
 
         actualizarTablaRotacion();
         actualizarResumenHato();
         
-        // Actualizar visualización general si el selector apunta al potrero afectado
         const selectResumen = document.getElementById("select-resumen-potrero");
         if (selectResumen && selectResumen.value === eliminado.potrero) {
           generarGraficoDesdeSelector();
         }
 
-        tg.showAlert(`🗑️ Se eliminó el registro del potrero: ${eliminado.potrero}`);
+        tg.showAlert(`🗑️ Se eliminó el registro. Puedes recuperarlo con el botón "Rehacer".`);
       }
     }
 
@@ -1008,12 +1020,12 @@
             <div class="charts-wrapper">
               <div class="chart-box">
                 <span class="subtitle">Categoría (Especie)</span>
-                <canvas id="chart-cat-${datosId}" class="potrero-chart" width="120" height="120"></canvas>
+                <canvas id="chart-cat-${datosId}" class="potrero-chart" width="140" height="140"></canvas>
                 <div class="chart-legend" id="legend-cat-${datosId}"></div>
               </div>
               <div class="chart-box">
                 <span class="subtitle">Grupo Etario</span>
-                <canvas id="chart-grp-${datosId}" class="potrero-chart" width="120" height="120"></canvas>
+                <canvas id="chart-grp-${datosId}" class="potrero-chart" width="140" height="140"></canvas>
                 <div class="chart-legend" id="legend-grp-${datosId}"></div>
               </div>
             </div>
@@ -1028,7 +1040,6 @@
       }
     }
 
-    // Función para manejar el botón superior que genera los gráficos generales duales del potrero seleccionado
     function generarGraficoDesdeSelector() {
       const potreroSeleccionado = document.getElementById("select-resumen-potrero").value;
       const containerDisplay = document.getElementById("general-chart-display-container");
@@ -1053,12 +1064,12 @@
         <div class="charts-wrapper">
           <div class="chart-box">
             <span class="subtitle">Categoría (Especie)</span>
-            <canvas id="chart-cat-gen" class="potrero-chart" width="120" height="120"></canvas>
+            <canvas id="chart-cat-gen" class="potrero-chart" width="140" height="140"></canvas>
             <div class="chart-legend" id="legend-cat-gen"></div>
           </div>
           <div class="chart-box">
             <span class="subtitle">Grupo Etario</span>
-            <canvas id="chart-grp-gen" class="potrero-chart" width="120" height="120"></canvas>
+            <canvas id="chart-grp-gen" class="potrero-chart" width="140" height="140"></canvas>
             <div class="chart-legend" id="legend-grp-gen"></div>
           </div>
         </div>
@@ -1101,7 +1112,7 @@
       let colorIndex = 0;
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const radius = 45;
+      const radius = 55; // Radio ajustado para mejor visualización
 
       for (let clave in mapaDatos) {
         let cantidad = mapaDatos[clave];
@@ -1121,8 +1132,11 @@
         let legendItem = document.createElement("div");
         legendItem.className = "legend-item";
         legendItem.innerHTML = `
-          <div class="legend-color" style="background-color: ${color};"></div>
-          <span>${clave}: <strong>${porcentaje}%</strong></span>
+          <div class="legend-left">
+            <div class="legend-color" style="background-color: ${color};"></div>
+            <span>${clave}</span>
+          </div>
+          <span><strong>${cantidad} (${porcentaje}%)</strong></span>
         `;
         legendContainer.appendChild(legendItem);
 
