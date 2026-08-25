@@ -17,9 +17,7 @@
       --text-muted: #637381;
       --bg-body: #f4f6f8;
       --alert-color: #d32f2f;
-      --alert-bg: #fde8e8;
       --success-color: #2e7d32;
-      --success-bg: #e8f5e9;
     }
 
     body {
@@ -147,7 +145,7 @@
 
     .btn-redo {
       width: 100%;
-      background-color: #2e7d32;
+      background-color: var(--success-color);
       color: #ffffff;
       border: none;
       padding: 10px;
@@ -159,7 +157,7 @@
     }
 
     .btn-delete-item {
-      background-color: #d32f2f;
+      background-color: var(--alert-color);
       color: white;
       border: none;
       padding: 4px 8px;
@@ -184,24 +182,16 @@
       text-align: left;
     }
 
-    .data-table th {
-      background-color: #f0f4f8;
-      color: var(--text-main);
-      padding: 8px 6px;
-      border-bottom: 1px solid #cfd8dc;
-      white-space: nowrap;
-    }
-
-    .data-table td {
+    .data-table th, .data-table td {
       padding: 8px 6px;
       border-bottom: 1px solid #eef0f2;
       white-space: nowrap;
     }
+    .data-table th { background-color: #f0f4f8; }
   </style>
 </head>
 <body>
 
-  <!-- Encabezado -->
   <div class="header-card">
     <h2>¡Hola, Ganadero! 🤠</h2>
     <p>Sistema de Control y Operaciones del Hato</p>
@@ -211,18 +201,55 @@
   <div id="main-menu">
     <div class="section-title">Módulos de Gestión</div>
     <div class="grid-menu">
+      <button class="btn-card" onclick="mostrarModulo('mod-1')">
+        <div class="btn-icon">🐄</div>
+        <div class="btn-content">
+          <h4>1. Registro de Ganado</h4>
+          <p>Control de animales, pesos y datos básicos.</p>
+        </div>
+      </button>
+
       <button class="btn-card" onclick="mostrarModulo('mod-2')">
         <div class="btn-icon">📅</div>
         <div class="btn-content">
           <h4>2. Planificación y Tareas</h4>
-          <p>Asignación, ejecuciones, borrar y rehacer tareas.</p>
+          <p>Asignación, ejecuciones, borrar y rehacer.</p>
         </div>
       </button>
     </div>
   </div>
 
+  <!-- MODULO 1: REGISTRO DE GANADO -->
+  <div id="mod-1" class="module-view">
+    <div class="module-header">
+      <h3>1. Registro de Ganado</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    
+    <div class="form-group">
+      <label>Número / Identificación:</label>
+      <input type="text" id="mod1-arete" class="form-control" placeholder="Ej: V-045">
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Categoría:</label><input type="text" id="mod1-cat" class="form-control" placeholder="Vaca / Toro"></div>
+      <div class="form-group"><label>Peso (Kg):</label><input type="number" id="mod1-peso" class="form-control" placeholder="450"></div>
+    </div>
+
+    <button class="btn-action" onclick="guardarGanado()">Guardar Animal</button>
+    <button class="btn-redo" onclick="rehacerUltimoGanadoBorrado()">🔄 Rehacer Registros Borrados (<span id="contador-ganado-rehacer">0</span>)</button>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr><th>Arete</th><th>Categoría</th><th>Peso</th><th>Acción</th></tr>
+        </thead>
+        <tbody id="tabla-ganado-body"></tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- MODULO 2: PLANIFICACIÓN Y TAREAS -->
-  <div id="mod-2" class="module-view" style="display: block;">
+  <div id="mod-2" class="module-view">
     <div class="module-header">
       <h3>2. Planificación y Tareas</h3>
       <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
@@ -236,16 +263,6 @@
       <div class="form-group"><label>Fecha Asignación:</label><input type="date" id="mod2-f-asignacion" class="form-control"></div>
       <div class="form-group"><label>Fecha Culminación:</label><input type="date" id="mod2-f-culminacion" class="form-control"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Ejecución:</label>
-        <select class="form-control" id="mod2-ejecucion"><option value="No">No</option><option value="Sí">Sí</option></select>
-      </div>
-      <div class="form-group">
-        <label>Observación:</label>
-        <input type="text" id="mod2-observacion" class="form-control" placeholder="Detalles">
-      </div>
-    </div>
 
     <button class="btn-action" onclick="guardarTarea()">Guardar Tarea</button>
     <button class="btn-redo" onclick="rehacerUltimaTareaBorrada()">🔄 Rehacer Tareas Borradas (<span id="contador-tareas-rehacer">0</span>)</button>
@@ -253,14 +270,7 @@
     <div class="table-container">
       <table class="data-table">
         <thead>
-          <tr>
-            <th>Tarea</th>
-            <th>Inicio</th>
-            <th>Fin</th>
-            <th>Ejec.</th>
-            <th>Obs.</th>
-            <th>Acción</th>
-          </tr>
+          <tr><th>Tarea</th><th>Inicio</th><th>Fin</th><th>Acción</th></tr>
         </thead>
         <tbody id="tabla-tareas-body"></tbody>
       </table>
@@ -272,14 +282,20 @@
     tg.ready();
     tg.expand();
 
+    // Datos y Pilas Módulo 1 (Ganado)
+    let ganado = JSON.parse(localStorage.getItem('ato_ganado')) || [];
+    let pilaGanadoEliminado = [];
+
+    // Datos y Pilas Módulo 2 (Tareas)
     let tareas = JSON.parse(localStorage.getItem('ato_tareas')) || [];
-    let pilaTareasEliminadas = []; // Pila para almacenar tareas borradas y poder rehacerlas
+    let pilaTareasEliminadas = [];
 
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date().toISOString().split('T')[0];
       if(document.getElementById('mod2-f-asignacion')) document.getElementById('mod2-f-asignacion').value = hoy;
       if(document.getElementById('mod2-f-culminacion')) document.getElementById('mod2-f-culminacion').value = hoy;
       
+      actualizarTablaGanado();
       actualizarTablaTareas();
     });
 
@@ -294,79 +310,89 @@
       document.getElementById("main-menu").style.display = "block";
     }
 
+    /* --- LOGICA MODULO 1 --- */
+    function guardarGanado() {
+      const arete = document.getElementById("mod1-arete").value.trim();
+      const categoria = document.getElementById("mod1-cat").value.trim();
+      const peso = document.getElementById("mod1-peso").value;
+
+      if(!arete) return tg.showAlert("⚠️ Ingrese el número de arete.");
+      
+      ganado.unshift({ arete, categoria, peso });
+      localStorage.setItem('ato_ganado', JSON.stringify(ganado));
+      actualizarTablaGanado();
+      
+      document.getElementById("mod1-arete").value = "";
+      document.getElementById("mod1-cat").value = "";
+      document.getElementById("mod1-peso").value = "";
+      tg.showAlert("✅ Ganado Registrado");
+    }
+
+    function eliminarGanadoPorIndice(index) {
+      pilaGanadoEliminado.push(ganado[index]);
+      document.getElementById("contador-ganado-rehacer").innerText = pilaGanadoEliminado.length;
+      
+      ganado.splice(index, 1);
+      localStorage.setItem('ato_ganado', JSON.stringify(ganado));
+      actualizarTablaGanado();
+    }
+
+    function rehacerUltimoGanadoBorrado() {
+      if (pilaGanadoEliminado.length === 0) return tg.showAlert("⚠️ No hay registros para rehacer.");
+      ganado.unshift(pilaGanadoEliminado.pop());
+      document.getElementById("contador-ganado-rehacer").innerText = pilaGanadoEliminado.length;
+      localStorage.setItem('ato_ganado', JSON.stringify(ganado));
+      actualizarTablaGanado();
+      tg.showAlert("🔄 Registro restaurado con éxito.");
+    }
+
+    function actualizarTablaGanado() {
+      const tbody = document.getElementById("tabla-ganado-body");
+      tbody.innerHTML = ganado.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:var(--text-muted)">Sin registros.</td></tr>` : '';
+      ganado.forEach((g, index) => {
+        tbody.innerHTML += `<tr><td>${g.arete}</td><td>${g.categoria || '-'}</td><td>${g.peso || '-'} kg</td><td><button class="btn-delete-item" onclick="eliminarGanadoPorIndice(${index})">🗑️ Borrar</button></td></tr>`;
+      });
+    }
+
+    /* --- LOGICA MODULO 2 --- */
     function guardarTarea() {
       const descripcion = document.getElementById("mod2-tarea").value.trim();
       const inicio = document.getElementById("mod2-f-asignacion").value;
       const fin = document.getElementById("mod2-f-culminacion").value;
-      const ejecucion = document.getElementById("mod2-ejecucion").value;
-      const observacion = document.getElementById("mod2-observacion").value;
 
-      if(!descripcion) return tg.showAlert("⚠️ Ingrese la descripción de la tarea.");
+      if(!descripcion) return tg.showAlert("⚠️ Ingrese la tarea.");
       
-      tareas.unshift({ descripcion, inicio, fin, ejecucion, observacion });
-      localStorage.setItem('ato_tareas', JSON.stringify(tareas)); 
-      
+      tareas.unshift({ descripcion, inicio, fin });
+      localStorage.setItem('ato_tareas', JSON.stringify(tareas));
       actualizarTablaTareas();
+      
       document.getElementById("mod2-tarea").value = "";
-      document.getElementById("mod2-observacion").value = "";
-      tg.showAlert("✅ Tarea Agendada Correctamente");
-    }
-
-    function actualizarContadorRehacerTareas() {
-      const badge = document.getElementById("contador-tareas-rehacer");
-      if(badge) badge.innerText = pilaTareasEliminadas.length;
+      tg.showAlert("✅ Tarea Guardada");
     }
 
     function eliminarTareaPorIndice(index) {
-      if (index >= 0 && index < tareas.length) {
-        // Guardamos la tarea eliminada en la pila de rehacer
-        pilaTareasEliminadas.push(tareas[index]);
-        actualizarContadorRehacerTareas();
-        
-        // Removemos de la lista principal
-        tareas.splice(index, 1);
-        localStorage.setItem('ato_tareas', JSON.stringify(tareas));
-
-        actualizarTablaTareas();
-        tg.showAlert(`🗑️ Tarea borrada. Quedan ${pilaTareasEliminadas.length} tareas listas para rehacer.`);
-      }
+      pilaTareasEliminadas.push(tareas[index]);
+      document.getElementById("contador-tareas-rehacer").innerText = pilaTareasEliminadas.length;
+      
+      tareas.splice(index, 1);
+      localStorage.setItem('ato_tareas', JSON.stringify(tareas));
+      actualizarTablaTareas();
     }
 
     function rehacerUltimaTareaBorrada() {
-      if (pilaTareasEliminadas.length === 0) {
-        return tg.showAlert("⚠️ No hay tareas borradas para rehacer.");
-      }
-      
-      const tareaRestaurada = pilaTareasEliminadas.pop();
-      actualizarContadorRehacerTareas();
-
-      tareas.unshift(tareaRestaurada);
+      if (pilaTareasEliminadas.length === 0) return tg.showAlert("⚠️ No hay tareas para rehacer.");
+      tareas.unshift(pilaTareasEliminadas.pop());
+      document.getElementById("contador-tareas-rehacer").innerText = pilaTareasEliminadas.length;
       localStorage.setItem('ato_tareas', JSON.stringify(tareas));
-      
       actualizarTablaTareas();
-      tg.showAlert(`🔄 Se ha rehecho y restaurado la tarea: "${tareaRestaurada.descripcion}"`);
+      tg.showAlert("🔄 Tarea restaurada con éxito.");
     }
 
     function actualizarTablaTareas() {
       const tbody = document.getElementById("tabla-tareas-body");
-      tbody.innerHTML = "";
-      
-      if (tareas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 12px;">No hay tareas registradas.</td></tr>`;
-        return;
-      }
-
+      tbody.innerHTML = tareas.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:var(--text-muted)">Sin tareas.</td></tr>` : '';
       tareas.forEach((t, index) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${t.descripcion}</td>
-          <td>${t.inicio}</td>
-          <td>${t.fin}</td>
-          <td>${t.ejecucion}</td>
-          <td>${t.observacion || '-'}</td>
-          <td><button class="btn-delete-item" onclick="eliminarTareaPorIndice(${index})">🗑️ Borrar</button></td>
-        `;
-        tbody.appendChild(tr);
+        tbody.innerHTML += `<tr><td>${t.descripcion}</td><td>${t.inicio}</td><td>${t.fin}</td><td><button class="btn-delete-item" onclick="eliminarTareaPorIndice(${index})">🗑️ Borrar</button></td></tr>`;
       });
     }
   </script>
