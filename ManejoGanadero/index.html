@@ -247,7 +247,6 @@
     .summary-card h4 { margin: 0 0 10px 0; font-size: 13px; color: var(--blue-primary); }
     .summary-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
     
-    /* Estilos interactivos para la tarjeta del potrero */
     .summary-item { 
       background: #ffffff; 
       padding: 12px; 
@@ -275,7 +274,6 @@
       margin-bottom: 6px;
     }
 
-    /* Contenedor expandible de gráficos al hacer clic */
     .potrero-details-container {
       display: none;
       margin-top: 12px;
@@ -509,11 +507,26 @@
 
     <div class="table-container"><table class="data-table"><thead><tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Cat.</th><th>Grupo</th><th>Cant.</th></tr></thead><tbody id="tabla-rotacion-body"></tbody></table></div>
     
+    <!-- SECCIÓN DE RESUMEN E INDICADORES CON BOTÓN DE GENERACIÓN GENERAL DE GRÁFICOS -->
     <div class="summary-card">
       <h4>📊 Resumen e Indicadores por Potrero</h4>
-      <p style="font-size: 11px; color: var(--text-muted); margin-top: -6px; margin-bottom: 10px;">Haz clic en cualquier potrero para ver sus gráficos de categoría y grupos etarios.</p>
+      
+      <!-- Selector y Botón en la parte superior del resumen general -->
+      <div style="background: #ffffff; padding: 10px; border-radius: 8px; border: 1.5px solid #e2e8f0; margin-bottom: 12px;">
+        <label for="select-resumen-potrero" style="font-size: 12px; font-weight: bold; color: var(--blue-primary); margin-bottom: 4px; display: block;">🔍 Seleccionar Potrero para Gráfico General:</label>
+        <div style="display: flex; gap: 8px;">
+          <select class="form-control" id="select-resumen-potrero" style="flex: 1;">
+            <!-- Se llenará dinámicamente con la lista de potreros -->
+          </select>
+          <button class="btn-action" style="margin-top: 0; padding: 8px 12px; width: auto; font-size: 12px;" onclick="generarGraficoDesdeSelector()">Generar Gráfico General</button>
+        </div>
+        <!-- Contenedor del gráfico general generado por el selector superior -->
+        <div id="general-chart-display-container" style="display: none; margin-top: 12px; border-top: 1px dashed #cbd5e1; padding-top: 10px;"></div>
+      </div>
+
+      <p style="font-size: 11px; color: var(--text-muted); margin-top: -2px; margin-bottom: 10px;">O haz clic directamente en cualquier tarjeta de potrero abajo para desplegar sus gráficos.</p>
       <div class="summary-grid" id="resumen-agrupado-container">
-        <!-- Contenido generado dinámicamente con interacción de clic -->
+        <!-- Contenido generado dinámicamente -->
       </div>
     </div>
   </div>
@@ -754,6 +767,13 @@
 
     const gruposBovinos = ["Vaca", "Novilla", "Becerro", "Toro", "Mautas", "Mautes"];
     const gruposBufalinos = ["Búfalas", "Buvillas", "Bucerros", "Bucerras", "Butoro", "Bautas", "Bautes"];
+    
+    const listaPotrerosGlobales = [
+      "Macanillal", "Mata del Muerto", "Galpón", "Potrero del Medio", "Manguito", 
+      "Mata de Piña", "Las Rayas", "Paulero", "Jobo Gacho", "Módulo A", 
+      "Módulo B", "Módulo C", "Módulo D", "Módulo E", "Módulo F", 
+      "Saladillal", "Carretera", "Casa", "Cuatro Esquinas", "María del Carmen"
+    ];
 
     const capacidadBasePotrero = 50; 
 
@@ -766,12 +786,16 @@
     let combustibleGasoil = parseFloat(localStorage.getItem('ato_gasoil')) || 0;
     let combustibleGasolina = parseFloat(localStorage.getItem('ato_gasolina')) || 0;
     let comidasServidasHoy = parseInt(localStorage.getItem('ato_comidas')) || 0;
+    
+    let ultimoMapaPotrerosGlobal = {};
 
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date().toISOString().split('T')[0];
       ['mod1-f-ingreso','mod1-f-salida','mod2-f-asignacion','mod2-f-culminacion','mod3-f-aplicacion','mod4-fecha','mod5-f-aceite','mod7-f-entrega','mod7-f-despacho','mod9-fecha','mod10-fecha'].forEach(id => {
         if(document.getElementById(id)) document.getElementById(id).value = hoy;
       });
+      
+      poblarSelectorPotrerosResumen();
       actualizarGruposEtarios();
       obtenerClimaGPS();
 
@@ -796,6 +820,18 @@
     function volverMenu() {
       document.querySelectorAll('.module-view').forEach(m => m.style.display = "none");
       document.getElementById("main-menu").style.display = "block";
+    }
+
+    function poblarSelectorPotrerosResumen() {
+      const select = document.getElementById("select-resumen-potrero");
+      if(!select) return;
+      select.innerHTML = "";
+      listaPotrerosGlobales.forEach(potrero => {
+        const opt = document.createElement("option");
+        opt.value = potrero;
+        opt.innerText = potrero;
+        select.appendChild(opt);
+      });
     }
 
     function actualizarGruposEtarios() {
@@ -869,11 +905,6 @@
       const contenedor = document.getElementById("resumen-agrupado-container");
       contenedor.innerHTML = "";
 
-      if (movimientosRotacion.length === 0) {
-        contenedor.innerHTML = `<div class="summary-item"><span class="title">Sin registros</span><span class="value">No hay animales distribuidos actualmente en los potreros.</span></div>`;
-        return;
-      }
-
       let potrerosMap = {};
 
       movimientosRotacion.forEach(m => {
@@ -881,13 +912,11 @@
           potrerosMap[m.potrero] = { categorias: {}, grupos: {}, totalPotrero: 0 };
         }
         
-        // Acumular por Categoría (Ej: Bovinos, Bufalinos)
         if (!potrerosMap[m.potrero].categorias[m.cat]) {
           potrerosMap[m.potrero].categorias[m.cat] = 0;
         }
         potrerosMap[m.potrero].categorias[m.cat] += m.cantidad;
 
-        // Acumular por Grupo Etario (Ej: Vaca, Novilla, etc.)
         if (!potrerosMap[m.potrero].grupos[m.grupo]) {
           potrerosMap[m.potrero].grupos[m.grupo] = 0;
         }
@@ -896,7 +925,13 @@
         potrerosMap[m.potrero].totalPotrero += m.cantidad;
       });
 
-      // Renderizar tarjetas clickeables con doble gráfico (Categorías y Grupos Etarios)
+      ultimoMapaPotrerosGlobal = potrerosMap;
+
+      if (Object.keys(potrerosMap).length === 0) {
+        contenedor.innerHTML = `<div class="summary-item"><span class="title">Sin registros</span><span class="value">No hay animales distribuidos actualmente en los potreros.</span></div>`;
+        return;
+      }
+
       for (let potrero in potrerosMap) {
         let datosId = potreroSanitizadoId(potrero);
         let totalPotrero = potrerosMap[potrero].totalPotrero;
@@ -915,13 +950,11 @@
           
           <div class="potrero-details-container" id="details-${datosId}">
             <div class="charts-wrapper">
-              <!-- Gráfico de Categorías -->
               <div class="chart-box">
                 <span class="subtitle">Categorías</span>
                 <canvas id="chart-cat-${datosId}" class="potrero-chart" width="120" height="120"></canvas>
                 <div class="chart-legend" id="legend-cat-${datosId}"></div>
               </div>
-              <!-- Gráfico de Grupos Etarios -->
               <div class="chart-box">
                 <span class="subtitle">Grupos Etarios</span>
                 <canvas id="chart-grp-${datosId}" class="potrero-chart" width="120" height="120"></canvas>
@@ -932,7 +965,6 @@
         `;
         contenedor.appendChild(itemDiv);
 
-        // Renderizar ambos gráficos individualmente para este potrero
         setTimeout((dId, datosPotrero) => {
           renderizarGraficoTorta(`chart-cat-${dId}`, `legend-cat-${dId}`, datosPotrero.categorias, datosPotrero.totalPotrero);
           renderizarGraficoTorta(`chart-grp-${dId}`, `legend-grp-${dId}`, datosPotrero.grupos, datosPotrero.totalPotrero);
@@ -940,7 +972,48 @@
       }
     }
 
-    // Función para mostrar/ocultar los gráficos al hacer clic en el potrero
+    // Función para manejar el botón superior que genera el gráfico general del potrero seleccionado
+    function generarGraficoDesdeSelector() {
+      const potreroSeleccionado = document.getElementById("select-resumen-potrero").value;
+      const containerDisplay = document.getElementById("general-chart-display-container");
+      
+      containerDisplay.style.display = "block";
+      
+      let datosPotrero = ultimoMapaPotrerosGlobal[potreroSeleccionado];
+      
+      if (!datosPotrero || datosPotrero.totalPotrero === 0) {
+        containerDisplay.innerHTML = `
+          <div style="text-align: center; font-size: 12px; color: var(--alert-color); padding: 8px;">
+            ⚠️ El potrero <strong>${potreroSeleccionado}</strong> no tiene animales registrados actualmente.
+          </div>
+        `;
+        return;
+      }
+
+      containerDisplay.innerHTML = `
+        <div style="font-size: 12px; font-weight: bold; color: var(--blue-primary); margin-bottom: 8px; text-align: center;">
+          📈 Gráficos Generales: ${potreroSeleccionado} (${datosPotrero.totalPotrero} animales)
+        </div>
+        <div class="charts-wrapper">
+          <div class="chart-box">
+            <span class="subtitle">Categorías</span>
+            <canvas id="chart-cat-gen" class="potrero-chart" width="120" height="120"></canvas>
+            <div class="chart-legend" id="legend-cat-gen"></div>
+          </div>
+          <div class="chart-box">
+            <span class="subtitle">Grupos Etarios</span>
+            <canvas id="chart-grp-gen" class="potrero-chart" width="120" height="120"></canvas>
+            <div class="chart-legend" id="legend-grp-gen"></div>
+          </div>
+        </div>
+      `;
+
+      setTimeout(() => {
+        renderizarGraficoTorta("chart-cat-gen", "legend-cat-gen", datosPotrero.categorias, datosPotrero.totalPotrero);
+        renderizarGraficoTorta("chart-grp-gen", "legend-grp-gen", datosPotrero.grupos, datosPotrero.totalPotrero);
+      }, 50);
+    }
+
     function alternarDetallesPotrero(datosId) {
       const container = document.getElementById(`details-${datosId}`);
       if (container) {
@@ -952,7 +1025,6 @@
       return nombre.replace(/[^a-zA-Z0-9]/g, "_");
     }
 
-    // Función genérica para renderizar un gráfico de torta individual con porcentajes
     function renderizarGraficoTorta(canvasId, legendId, mapaDatos, total) {
       const canvas = document.getElementById(canvasId);
       if (!canvas) return;
@@ -981,7 +1053,6 @@
         let sliceAngle = (cantidad / total) * 2 * Math.PI;
         let color = colores[colorIndex % colores.length];
 
-        // Dibujar porción de la torta
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, sumaAngulo, sumaAngulo + sliceAngle);
@@ -991,7 +1062,6 @@
 
         sumaAngulo += sliceAngle;
 
-        // Crear elemento de leyenda con porcentaje
         let legendItem = document.createElement("div");
         legendItem.className = "legend-item";
         legendItem.innerHTML = `
