@@ -251,6 +251,40 @@
     .summary-item .value { font-size: 13px; color: var(--text-main); }
     .group-tag { display: inline-block; background: #eef6fc; color: var(--blue-primary); padding: 2px 6px; border-radius: 6px; font-size: 11px; margin: 2px; font-weight: 500; }
     
+    /* Estilos para el Gráfico de Torta y Leyenda */
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    canvas#pie-chart {
+      max-width: 180px;
+      max-height: 180px;
+    }
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      font-size: 11px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: #ffffff;
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
     .weather-box {
       background: linear-gradient(135deg, #e3f2fd, #bbdefb);
       border-radius: 12px;
@@ -413,6 +447,16 @@
     
     <div class="summary-card">
       <h4>📊 Resumen Agrupado y Desglosado del Hato</h4>
+      
+      <!-- Gráfico de Torta Porcentual Dinámico -->
+      <div class="summary-item" style="text-align: center; margin-bottom: 10px;">
+        <span class="title">📈 Distribución Porcentual por Grupo Etario</span>
+        <div class="chart-container">
+          <canvas id="pie-chart" width="180" height="180"></canvas>
+          <div class="chart-legend" id="chart-legend-container"></div>
+        </div>
+      </div>
+
       <div class="summary-grid" id="resumen-agrupado-container">
         <!-- Contenido generado dinámicamente con desglose de grupos etarios y categorías -->
       </div>
@@ -748,8 +792,8 @@
         return tg.showAlert("⚠️ No hay registros previos para deshacer.");
       }
       
-      const eliminado = movimientosRotacion.shift(); // Elimina el primero (más reciente debido a unshift)
-      localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion)); // Actualiza localStorage
+      const eliminado = movimientosRotacion.shift(); 
+      localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion)); 
       
       actualizarTablaRotacion();
       actualizarResumenHato();
@@ -772,15 +816,21 @@
 
       if (movimientosRotacion.length === 0) {
         contenedor.innerHTML = `<div class="summary-item"><span class="title">Sin registros</span><span class="value">No hay animales distribuidos actualmente.</span></div>`;
+        limpiarGraficoTorta();
         return;
       }
 
-      // Agrupar dinámicamente por Potrero -> Categoría -> Grupo Etario
       let potrerosMap = {};
       let totalBovinosGeneral = 0;
       let totalBufalinosGeneral = 0;
+      let gruposTotalesMap = {};
 
       movimientosRotacion.forEach(m => {
+        // Agrupación general por grupo etario para el gráfico
+        if (!gruposTotalesMap[m.grupo]) gruposTotalesMap[m.grupo] = 0;
+        gruposTotalesMap[m.grupo] += m.cantidad;
+
+        // Agrupación por potrero
         if (!potrerosMap[m.potrero]) {
           potrerosMap[m.potrero] = { Bovinos: {}, Bufalinos: {}, totalPotrero: 0 };
         }
@@ -793,6 +843,9 @@
         if (m.cat === "Bovinos") totalBovinosGeneral += m.cantidad;
         if (m.cat === "Bufalinos") totalBufalinosGeneral += m.cantidad;
       });
+
+      // Renderizar Gráfico de Torta con los porcentajes por grupos etarios
+      renderizarGraficoTorta(gruposTotalesMap, totalBovinosGeneral + totalBufalinosGeneral);
 
       // Renderizar tarjetas de resumen agrupadas por potrero
       for (let potrero in potrerosMap) {
@@ -833,6 +886,64 @@
       contenedor.appendChild(totalGeneralDiv);
     }
 
+    // Función para dibujar el Gráfico de Torta en Canvas con porcentajes
+    function renderizarGraficoTorta(dataMap, totalGeneral) {
+      const canvas = document.getElementById("pie-chart");
+      const ctx = canvas.getContext("2d");
+      const legendContainer = document.getElementById("chart-legend-container");
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      legendContainer.innerHTML = "";
+
+      if (totalGeneral === 0) return;
+
+      const colores = [
+        "#1d72b8", "#2e7d32", "#ed6c02", "#9c27b0", 
+        "#00bcd4", "#ff9800", "#795548", "#e91e63", "#607d8b"
+      ];
+
+      let sumaAngulo = 0;
+      let colorIndex = 0;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = 75;
+
+      for (let grupo in dataMap) {
+        let cantidad = dataMap[grupo];
+        let porcentaje = ((cantidad / totalGeneral) * 100).toFixed(1);
+        let sliceAngle = (cantidad / totalGeneral) * 2 * Math.PI;
+        let color = colores[colorIndex % colores.length];
+
+        // Dibujar porción de la torta
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, sumaAngulo, sumaAngulo + sliceAngle);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        sumaAngulo += sliceAngle;
+
+        // Crear elemento de leyenda con porcentaje
+        let legendItem = document.createElement("div");
+        legendItem.className = "legend-item";
+        legendItem.innerHTML = `
+          <div class="legend-color" style="background-color: ${color};"></div>
+          <span>${grupo}: <strong>${porcentaje}%</strong> (${cantidad})</span>
+        `;
+        legendContainer.appendChild(legendItem);
+
+        colorIndex++;
+      }
+    }
+
+    function limpiarGraficoTorta() {
+      const canvas = document.getElementById("pie-chart");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      document.getElementById("chart-legend-container").innerHTML = "";
+    }
+
     /* MÓDULO 2 */
     function guardarTarea() {
       const descripcion = document.getElementById("mod2-tarea").value;
@@ -844,7 +955,7 @@
       if(!descripcion) return tg.showAlert("⚠️ Ingrese la tarea.");
       
       tareas.unshift({ descripcion, inicio, fin, ejecucion, observacion });
-      localStorage.setItem('ato_tareas', JSON.stringify(tareas)); // Guardar local
+      localStorage.setItem('ato_tareas', JSON.stringify(tareas)); 
       
       actualizarTablaTareas();
       tg.showAlert("✅ Tarea Agendada");
@@ -871,7 +982,7 @@
       if(!cantidad) return tg.showAlert("⚠️ Ingrese la cantidad.");
 
       tratamientosSanitarios.unshift({ lote, cantidad, tipo, aplicacion, proximo });
-      localStorage.setItem('ato_sanitario', JSON.stringify(tratamientosSanitarios)); // Guardar local
+      localStorage.setItem('ato_sanitario', JSON.stringify(tratamientosSanitarios)); 
       
       actualizarTablaSanitaria();
       tg.showAlert("✅ Tratamiento Registrado");
@@ -897,7 +1008,7 @@
       if(cant <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
 
       eventos.push({ cat, grupo, evento, cant });
-      localStorage.setItem('ato_eventos', JSON.stringify(eventos)); // Guardar local
+      localStorage.setItem('ato_eventos', JSON.stringify(eventos)); 
       
       actualizarResumenEventos();
       tg.showAlert("✅ Evento Registrado Exitosamente");
@@ -925,7 +1036,7 @@
       if(!equipo) return tg.showAlert("⚠️ Ingrese el equipo.");
 
       maquinarias.unshift({ equipo, resp, hrsTotales, averia });
-      localStorage.setItem('ato_maquinaria', JSON.stringify(maquinarias)); // Guardar local
+      localStorage.setItem('ato_maquinaria', JSON.stringify(maquinarias)); 
       
       actualizarTablaMaquinaria();
       tg.showAlert("✅ Registro de Maquinaria Guardado");
@@ -965,7 +1076,7 @@
       const articulo = document.getElementById("mod7-articulo").value;
       if(!articulo) return tg.showAlert("⚠️ Ingrese el artículo.");
       depositos.push(articulo);
-      localStorage.setItem('ato_depositos', JSON.stringify(depositos)); // Guardar local
+      localStorage.setItem('ato_depositos', JSON.stringify(depositos)); 
       
       document.getElementById("resumen-deposito-mes").innerText = `${depositos.length} Artículos / Lotes`;
       tg.showAlert("✅ Insumo registrado en Depósito");
@@ -990,12 +1101,12 @@
       if(tipo === "Gasoil") {
         if(operacion.includes("Ingreso")) combustibleGasoil += litros;
         else combustibleGasoil -= litros;
-        localStorage.setItem('ato_gasoil', combustibleGasoil); // Guardar local
+        localStorage.setItem('ato_gasoil', combustibleGasoil); 
         document.getElementById("saldo-gasoil").innerText = `${combustibleGasoil} Lts`;
       } else {
         if(operacion.includes("Ingreso")) combustibleGasolina += litros;
         else combustibleGasolina -= litros;
-        localStorage.setItem('ato_gasolina', combustibleGasolina); // Guardar local
+        localStorage.setItem('ato_gasolina', combustibleGasolina); 
         document.getElementById("saldo-gasolina").innerText = `${combustibleGasolina} Lts`;
       }
       tg.showAlert("✅ Movimiento de combustible registrado.");
@@ -1006,7 +1117,7 @@
       const personas = parseInt(document.getElementById("mod10-personas").value) || 0;
       if(personas <= 0) return tg.showAlert("⚠️ Ingrese el número de personas.");
       comidasServidasHoy += personas;
-      localStorage.setItem('ato_comidas', comidasServidasHoy); // Guardar local
+      localStorage.setItem('ato_comidas', comidasServidasHoy); 
       
       document.getElementById("resumen-comida-hoy").innerText = `${comidasServidasHoy} Raciones`;
       tg.showAlert("✅ Ración de comida registrada.");
