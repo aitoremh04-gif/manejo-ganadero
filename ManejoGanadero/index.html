@@ -17,11 +17,7 @@
       --text-muted: #637381;
       --bg-body: #f4f6f8;
       --alert-color: #d32f2f;
-      --alert-bg: #fde8e8;
       --success-color: #2e7d32;
-      --success-bg: #e8f5e9;
-      --warning-color: #ed6c02;
-      --warning-bg: #fff4e5;
     }
 
     body {
@@ -44,33 +40,6 @@
 
     .header-card h2 { margin: 0 0 4px 0; font-size: 20px; }
     .header-card p { margin: 0; opacity: 0.9; font-size: 13px; }
-
-    .notifications-card {
-      background-color: var(--alert-bg);
-      border: 1px solid #f8b4b4;
-      border-radius: 12px;
-      padding: 12px 16px;
-      margin-bottom: 20px;
-    }
-
-    .notifications-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--alert-color);
-      font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 6px;
-    }
-
-    .notification-list {
-      margin: 0;
-      padding-left: 18px;
-      font-size: 12px;
-      color: #5f2121;
-      max-height: 120px;
-      overflow-y: auto;
-    }
 
     .section-title {
       font-size: 13px;
@@ -98,14 +67,7 @@
       gap: 12px;
       text-align: left;
       cursor: pointer;
-      transition: all 0.2s ease;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-    }
-
-    .btn-card:active {
-      background-color: #ebf4fc;
-      border-color: var(--blue-primary);
-      transform: scale(0.98);
     }
 
     .btn-icon {
@@ -183,7 +145,7 @@
 
     .btn-redo {
       width: 100%;
-      background-color: #2e7d32;
+      background-color: var(--success-color);
       color: #ffffff;
       border: none;
       padding: 10px;
@@ -195,7 +157,7 @@
     }
 
     .btn-delete-item {
-      background-color: #d32f2f;
+      background-color: var(--alert-color);
       color: white;
       border: none;
       padding: 4px 8px;
@@ -203,19 +165,6 @@
       font-size: 10px;
       font-weight: bold;
       cursor: pointer;
-    }
-
-    .btn-geo {
-      background-color: #2e7d32;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 4px;
-      width: 100%;
     }
 
     .table-container {
@@ -233,224 +182,30 @@
       text-align: left;
     }
 
-    .data-table th {
-      background-color: #f0f4f8;
-      color: var(--text-main);
-      padding: 8px 6px;
-      border-bottom: 1px solid #cfd8dc;
-      white-space: nowrap;
-    }
-
-    .data-table td {
+    .data-table th, .data-table td {
       padding: 8px 6px;
       border-bottom: 1px solid #eef0f2;
       white-space: nowrap;
     }
-
-    .summary-card {
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 12px;
-      margin-top: 16px;
-    }
-
-    .summary-card h4 { margin: 0 0 10px 0; font-size: 13px; color: var(--blue-primary); }
-    .summary-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
-    
-    .summary-item { 
-      background: #ffffff; 
-      padding: 12px; 
-      border-radius: 8px; 
-      border: 1.5px solid #e2e8f0; 
-      margin-bottom: 8px; 
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .summary-item:hover {
-      border-color: var(--blue-primary);
-      background-color: #fafbfc;
-    }
-    .summary-item .title { font-size: 13px; font-weight: bold; color: var(--blue-primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-    
-    .badges-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 6px;
-    }
-
-    .carga-animal-badge {
-      display: inline-block;
-      background: #e8f5e9;
-      color: #2e7d32;
-      border: 1px solid #c8e6c9;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 11px;
-    }
-
-    .dias-badge {
-      display: inline-block;
-      background: #e3f2fd;
-      color: #0d47a1;
-      border: 1px solid #bbdefb;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 11px;
-    }
-
-    .descanso-badge {
-      display: inline-block;
-      background: #fff8e1;
-      color: #f57c00;
-      border: 1px solid #ffe082;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 11px;
-    }
-
-    .potrero-details-container {
-      display: none;
-      margin-top: 12px;
-      border-top: 1px dashed #cbd5e1;
-      padding-top: 12px;
-    }
-    .potrero-details-container.active {
-      display: block;
-    }
-    
-    .charts-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      align-items: center;
-      width: 100%;
-    }
-
-    @media (min-width: 480px) {
-      .charts-wrapper {
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: flex-start;
-      }
-    }
-
-    .chart-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: #ffffff;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 10px;
-      padding: 12px;
-      width: 100%;
-      max-width: 240px;
-      box-sizing: border-box;
-    }
-    .chart-box span.subtitle {
-      font-size: 12px;
-      font-weight: bold;
-      color: var(--blue-primary);
-      margin-bottom: 10px;
-      text-align: center;
-      border-bottom: 1px solid #edf2f7;
-      width: 100%;
-      padding-bottom: 4px;
-    }
-
-    canvas.potrero-chart {
-      width: 140px !important;
-      height: 140px !important;
-    }
-
-    .chart-legend {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      font-size: 11px;
-      margin-top: 12px;
-      width: 100%;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #f8fafc;
-      padding: 4px 8px;
-      border-radius: 6px;
-      border: 1px solid #e2e8f0;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .legend-left {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .legend-color {
-      width: 10px;
-      height: 10px;
-      border-radius: 3px;
-      flex-shrink: 0;
-    }
-
-    .weather-box {
-      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-      border-radius: 12px;
-      padding: 14px;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-    .weather-temp { font-size: 28px; font-weight: bold; color: #0d47a1; }
-    .recommendations-box {
-      background: #fff8e1;
-      border: 1px solid #ffe082;
-      border-radius: 10px;
-      padding: 10px;
-      font-size: 12px;
-      color: #5d4037;
-    }
-    
-    .map-preview {
-      width: 100%;
-      height: 150px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-top: 6px;
-    }
+    .data-table th { background-color: #f0f4f8; }
   </style>
 </head>
 <body>
 
-  <!-- Encabezado -->
   <div class="header-card">
-    <h2 id="saludo">¡Hola, Ganadero! 🤠</h2>
+    <h2>¡Hola, Ganadero! 🤠</h2>
     <p>Sistema de Control y Operaciones del Hato</p>
   </div>
 
-  <!-- Panel de Notificaciones y Alertas Globales -->
-  <div class="notifications-card" id="notifications-panel">
-    <div class="notifications-header">
-      <span>🔔 Notificaciones y Alertas del Sistema</span>
-    </div>
-    <ul class="notification-list" id="notifications-list">
-      <li><strong>Sistema:</strong> Monitoreo operacional y alertas activas.</li>
-    </ul>
-  </div>
-
-  <!-- MENU PRINCIPAL (10 MODULOS) -->
+  <!-- MENU PRINCIPAL -->
   <div id="main-menu">
     <div class="section-title">Módulos de Gestión</div>
     <div class="grid-menu">
       <button class="btn-card" onclick="mostrarModulo('mod-1')">
-        <div class="btn-icon">🌾</div>
+        <div class="btn-icon">🐄</div>
         <div class="btn-content">
-          <h4>1. Inventario por Potreros y Rotación</h4>
-          <p>Potreros, especies, categorías y lotes.</p>
+          <h4>1. Registro de Ganado</h4>
+          <p>Control de animales, pesos y datos básicos.</p>
         </div>
       </button>
 
@@ -458,134 +213,38 @@
         <div class="btn-icon">📅</div>
         <div class="btn-content">
           <h4>2. Planificación y Tareas</h4>
-          <p>Asignación, ejecuciones y avance mensual.</p>
-        </div>
-      </button>
-
-      <button class="btn-card" onclick="mostrarModulo('mod-3')">
-        <div class="btn-icon">💉</div>
-        <div class="btn-content">
-          <h4>3. Manejo Sanitario Productivo</h4>
-          <p>Tratamientos por lote y alertas sanitarias.</p>
-        </div>
-      </button>
-
-      <button class="btn-card" onclick="mostrarModulo('mod-4')">
-        <div class="btn-icon">📋</div>
-        <div class="btn-content">
-          <h4>4. Eventos por Categoría</h4>
-          <p>Nacimientos, bajas, foto y mapa Google Maps.</p>
-        </div>
-      </button>
-
-      <button class="btn-card" onclick="mostrarModulo('mod-5')">
-        <div class="btn-icon">🚜</div>
-        <div class="btn-content">
-          <h4>5. Maquinaria y Equipo</h4>
-          <p>Horómetro, mantenimiento y alerta a 250h.</p>
-        </div>
-      </button>
-
-      <button class="btn-card" onclick="mostrarModulo('mod-6')">
-        <div class="btn-icon">🌤️</div>
-        <div class="btn-content">
-          <h4>6. Control Meteorológico</h4>
-          <p>Clima local por GPS y recomendaciones ganaderas.</p>
-        </div>
-      </button>
-
-      <button class="btn-card" onclick="mostrarModulo('mod-7')">
-        <div class="btn-icon">📦</div>
-        <div class="btn-content">
-          <h4>7. Depósito</h4>
-          <p>Recepciones, despachos y resumen mensual.</p>
-        </div>
-      </button>
-
-      <button class="btn-card" onclick="mostrarModulo('mod-8')">
-        <div class="btn-icon">🛠️</div>
-        <div class="btn-content">
-          <h4>8. Reparación de Líneas</h4>
-          <p>Cuerdas, falsos, estantillas, foto y geolocalización.</p>
-        </div>
-      </button>
-
-      <button class="btn-card" onclick="mostrarModulo('mod-9')">
-        <div class="btn-icon">⛽</div>
-        <div class="btn-content">
-          <h4>9. Control de Combustible</h4>
-          <p>Ingreso y consumo de Gasoil y Gasolina.</p>
-        </div>
-      </button>
-
-      <button class="btn-card" onclick="mostrarModulo('mod-10')">
-        <div class="btn-icon">🍽️</div>
-        <div class="btn-content">
-          <h4>10. Logística de Comida</h4>
-          <p>Raciones, comensales, desayunos, almuerzos y cenas.</p>
+          <p>Asignación, ejecuciones y control operativo.</p>
         </div>
       </button>
     </div>
   </div>
 
-  <!-- MODULO 1: INVENTARIO, POTRERO Y ROTACIÓN -->
+  <!-- MODULO 1: REGISTRO DE GANADO -->
   <div id="mod-1" class="module-view">
     <div class="module-header">
-      <h3>1. Inventario por Potrero y Rotación</h3>
+      <h3>1. Registro de Ganado</h3>
       <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
+    
     <div class="form-group">
-      <label>Potrero:</label>
-      <select class="form-control" id="mod1-potrero">
-        <option>Macanillal</option><option>Mata del Muerto</option><option>Galpón</option><option>Potrero del Medio</option><option>Manguito</option><option>Mata de Piña</option><option>Las Rayas</option><option>Paulero</option><option>Jobo Gacho</option><option>Módulo A</option><option>Módulo B</option><option>Módulo C</option><option>Módulo D</option><option>Módulo E</option><option>Módulo F</option><option>Saladillal</option><option>Carretera</option><option>Casa</option><option>Cuatro Esquinas</option><option>María del Carmen</option>
-      </select>
+      <label>Número / Identificación:</label>
+      <input type="text" id="mod1-arete" class="form-control" placeholder="Ej: V-045">
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="mod1-f-ingreso" class="form-control"></div>
-      <div class="form-group"><label>Fecha Salida:</label><input type="date" id="mod1-f-salida" class="form-control"></div>
+      <div class="form-group"><label>Categoría:</label><input type="text" id="mod1-cat" class="form-control" placeholder="Vaca / Toro"></div>
+      <div class="form-group"><label>Peso (Kg):</label><input type="number" id="mod1-peso" class="form-control" placeholder="450"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Categoría:</label>
-        <select class="form-control" id="mod1-categoria" onchange="actualizarGruposEtarios()">
-          <option value="Bovinos">Bovinos</option><option value="Bufalinos">Bufalinos</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Grupo Etario:</label><select class="form-control" id="mod1-grupo-etario"></select></div>
-    </div>
-    <div class="form-group"><label>Cantidad:</label><input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 25"></div>
-    <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento</button>
-    <button class="btn-redo" onclick="rehacerUltimoRegistroBorrado()">🔄 Rehacer Registros Borrados (<span id="contador-pila-rehacer">0</span>)</button>
+
+    <button class="btn-action" onclick="guardarGanado()">Guardar Animal</button>
+    <button class="btn-redo" onclick="rehacerUltimoGanadoBorrado()">🔄 Rehacer Registros Borrados (<span id="contador-ganado-rehacer">0</span>)</button>
 
     <div class="table-container">
       <table class="data-table">
         <thead>
-          <tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Cat.</th><th>Grupo</th><th>Cant.</th><th>Acción</th></tr>
+          <tr><th>Arete</th><th>Categoría</th><th>Peso</th><th>Acción</th></tr>
         </thead>
-        <tbody id="tabla-rotacion-body"></tbody>
+        <tbody id="tabla-ganado-body"></tbody>
       </table>
-    </div>
-    
-    <!-- SECCIÓN DE RESUMEN E INDICADORES -->
-    <div class="summary-card">
-      <h4>📊 Resumen e Indicadores por Potrero</h4>
-      
-      <!-- Selector y Botón en la parte superior del resumen general -->
-      <div style="background: #ffffff; padding: 10px; border-radius: 8px; border: 1.5px solid #e2e8f0; margin-bottom: 12px;">
-        <label for="select-resumen-potrero" style="font-size: 12px; font-weight: bold; color: var(--blue-primary); margin-bottom: 4px; display: block;">🔍 Seleccionar Potrero para Gráfico General:</label>
-        <div style="display: flex; gap: 8px;">
-          <select class="form-control" id="select-resumen-potrero" style="flex: 1;">
-            <!-- Se llenará dinámicamente -->
-          </select>
-          <button class="btn-action" style="margin-top: 0; padding: 8px 12px; width: auto; font-size: 12px;" onclick="generarGraficoDesdeSelector()">Generar Gráfico General</button>
-        </div>
-        <!-- Contenedor del gráfico general generado por el selector superior -->
-        <div id="general-chart-display-container" style="display: none; margin-top: 12px; border-top: 1px dashed #cbd5e1; padding-top: 10px;"></div>
-      </div>
-
-      <p style="font-size: 11px; color: var(--text-muted); margin-top: -2px; margin-bottom: 10px;">O haz clic directamente en cualquier tarjeta de potrero abajo para desplegar sus gráficos agrupados.</p>
-      <div class="summary-grid" id="resumen-agrupado-container">
-        <!-- Contenido generado dinámicamente -->
-      </div>
     </div>
   </div>
 
@@ -595,226 +254,36 @@
       <h3>2. Planificación y Tareas</h3>
       <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
-    <div class="form-group"><label>Tarea:</label><input type="text" id="mod2-tarea" class="form-control" placeholder="Ej: Limpieza de canales"></div>
+    
+    <div class="form-group">
+      <label>Tarea:</label>
+      <input type="text" id="mod2-tarea" class="form-control" placeholder="Ej: Limpieza de canales">
+    </div>
     <div class="form-row">
       <div class="form-group"><label>Fecha Asignación:</label><input type="date" id="mod2-f-asignacion" class="form-control"></div>
       <div class="form-group"><label>Fecha Culminación:</label><input type="date" id="mod2-f-culminacion" class="form-control"></div>
     </div>
-    <div class="form-group"><label>Ejecución:</label><select class="form-control" id="mod2-ejecucion"><option value="No">No</option><option value="Sí">Sí</option></select></div>
-    <div class="form-group"><label>Observación:</label><input type="text" id="mod2-observacion" class="form-control"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Ejecución:</label>
+        <select class="form-control" id="mod2-ejecucion"><option value="No">No</option><option value="Sí">Sí</option></select>
+      </div>
+      <div class="form-group">
+        <label>Observación:</label>
+        <input type="text" id="mod2-observacion" class="form-control" placeholder="Detalles">
+      </div>
+    </div>
+
     <button class="btn-action" onclick="guardarTarea()">Guardar Tarea</button>
-    <div class="table-container"><table class="data-table"><thead><tr><th>Tarea</th><th>Inicio</th><th>Fin</th><th>Ejec.</th><th>Obs.</th></tr></thead><tbody id="tabla-tareas-body"></tbody></table></div>
-  </div>
+    <button class="btn-redo" onclick="rehacerUltimaTareaBorrada()">🔄 Rehacer Tareas Borradas (<span id="contador-tareas-rehacer">0</span>)</button>
 
-  <!-- MODULO 3: MANEJO SANITARIO PRODUCTIVO -->
-  <div id="mod-3" class="module-view">
-    <div class="module-header">
-      <h3>3. Manejo Sanitario Productivo</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group"><label>Lote Trabajado:</label>
-      <select class="form-control" id="mod3-lote">
-        <option>Vacas PÑ</option><option>Vacas Paridas</option><option>Vacas Vacías</option><option>Vacas en Monta</option><option>Becerros Recién Nacidos</option><option>Becerros 1 Mes</option><option>Becerros 2 Meses</option><option>Becerros 3 Meses</option><option>Becerros 4 Meses</option><option>Becerros 5 Meses</option><option>Novillas</option><option>Destetes</option><option>Toros</option><option>Búfalas PÑ</option><option>Búfalas Paridas</option><option>Búfalas Vacías</option><option>Búfalas en Monta</option><option>Búfalas en Ordeño</option><option>Bucerros en Ordeño</option><option>Buvillas</option><option>Bautas</option><option>Bautes</option><option>Butoro</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod3-cantidad" class="form-control"></div>
-      <div class="form-group"><label>Tipo Tratamiento:</label>
-        <select class="form-control" id="mod3-tipo"><option>Vacunas</option><option>Desparasitación</option><option>Minerales</option><option>Vitaminas</option><option>Antibióticos</option></select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Fecha Aplicación:</label><input type="date" id="mod3-f-aplicacion" class="form-control"></div>
-      <div class="form-group"><label>Próximo Tratamiento:</label><input type="date" id="mod3-f-proximo" class="form-control"></div>
-    </div>
-    <div class="form-group"><label>Observación:</label><input type="text" id="mod3-observacion" class="form-control"></div>
-    <button class="btn-action" onclick="guardarTratamientoSanitario()">Guardar Tratamiento</button>
-    <div class="table-container"><table class="data-table"><thead><tr><th>Lote</th><th>Cant</th><th>Tipo</th><th>Aplic.</th><th>Próx.</th></tr></thead><tbody id="tabla-sanitaria-body"></tbody></table></div>
-  </div>
-
-  <!-- MODULO 4: EVENTOS POR CATEGORÍA -->
-  <div id="mod-4" class="module-view">
-    <div class="module-header">
-      <h3>4. Eventos por Categoría</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Categoría:</label><select class="form-control" id="mod4-cat"><option>Bovina</option><option>Bufalina</option></select></div>
-      <div class="form-group"><label>Grupo Etario:</label>
-        <select class="form-control" id="mod4-grupo">
-          <option>Vaca</option><option>Novilla</option><option>Mauta</option><option>Maute</option><option>Toro</option><option>Becerro</option><option>Becerra</option><option>Búfala</option><option>Buvilla</option><option>Bauta</option><option>Baute</option><option>Butoro</option><option>Bucerro</option><option>Bucerra</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Evento:</label>
-        <select class="form-control" id="mod4-evento">
-          <option>Muertos</option><option>Abortos</option><option>Natibortos</option><option>Nacidos</option><option>Consumo</option><option>Traslado</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Fecha:</label><input type="date" id="mod4-fecha" class="form-control"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod4-cant" class="form-control" min="1"></div>
-      <div class="form-group"><label>Foto del Evento:</label><input type="file" id="mod4-foto" class="form-control" accept="image/*"></div>
-    </div>
-    <div class="form-group">
-      <label>Ubicación Google Maps:</label>
-      <button class="btn-geo" onclick="obtenerCoordenadas('mod4-geo', 'mapa-mod4')">📍 Capturar Geolocalización GPS</button>
-      <input type="text" id="mod4-geo" class="form-control" readonly placeholder="Coordenadas GPS" style="margin-top:4px;">
-      <iframe id="mapa-mod4" class="map-preview" style="display:none;" frameborder="0"></iframe>
-    </div>
-    <button class="btn-action" onclick="guardarEvento()">Registrar Evento</button>
-
-    <div class="summary-card">
-      <h4>📊 Resumen General de Eventos</h4>
-      <div class="summary-grid">
-        <div class="summary-item"><span class="title">Nacimientos Totales</span><span class="value" id="resumen-nacidos">0</span></div>
-        <div class="summary-item"><span class="title">Mortalidad / Decesos</span><span class="value" id="resumen-muertos">0</span></div>
-        <div class="summary-item" style="grid-column: span 2;"><span class="title">Traslados / Consumos</span><span class="value" id="resumen-salidas">0</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODULO 5: MAQUINARIA Y EQUIPO -->
-  <div id="mod-5" class="module-view">
-    <div class="module-header">
-      <h3>5. Maquinaria y Equipo</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group"><label>Maquinaria / Equipo:</label><input type="text" id="mod5-equipo" class="form-control" placeholder="Ej: Tractor John Deere 6110"></div>
-    <div class="form-row">
-      <div class="form-group"><label>Fecha Cambio Aceite:</label><input type="date" id="mod5-f-aceite" class="form-control"></div>
-      <div class="form-group"><label>Responsable:</label><input type="text" id="mod5-resp" class="form-control"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Horas Trabajo Diarias:</label><input type="number" id="mod5-hrs-diarias" class="form-control" placeholder="Ej: 8"></div>
-      <div class="form-group"><label>Horas Acumuladas:</label><input type="number" id="mod5-hrs-totales" class="form-control" placeholder="Ej: 240"></div>
-    </div>
-    <div class="form-group"><label>Observación de Avería:</label><input type="text" id="mod5-averia" class="form-control" placeholder="Ej: Fuga leve en manguera hidráulica"></div>
-    <button class="btn-action" onclick="guardarMaquinaria()">Guardar Registro de Equipo</button>
-
-    <div class="table-container"><table class="data-table"><thead><tr><th>Equipo</th><th>Responsable</th><th>Hrs Acum.</th><th>Estado Aceite</th><th>Avería</th></tr></thead><tbody id="tabla-maquinaria-body"></tbody></table></div>
-  </div>
-
-  <!-- MODULO 6: CONTROL METEOROLÓGICO -->
-  <div id="mod-6" class="module-view">
-    <div class="module-header">
-      <h3>6. Control Meteorológico</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="weather-box">
-      <div style="font-size: 14px; color: #1565c0; font-weight: bold;" id="clima-ubicacion">📍 Detectando Ubicación...</div>
-      <div class="weather-temp" id="clima-temp">-- °C</div>
-      <div id="clima-condicion" style="font-size: 13px; color: #424242;">Cargando datos meteorológicos...</div>
-    </div>
-    <button class="btn-geo" onclick="obtenerClimaGPS()">🔄 Actualizar Clima por GPS</button>
-    <br><br>
-    <div class="recommendations-box">
-      <strong>💡 Recomendaciones Ganaderas del Día:</strong>
-      <ul id="lista-recomendaciones" style="margin: 6px 0 0 0; padding-left: 18px;">
-        <li>Asegure sombra y suplementación mineral en días calurosos.</li>
-        <li>Revise el drenaje de los potreros bajos si hay alta probabilidad de lluvia.</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- MODULO 7: DEPÓSITO -->
-  <div id="mod-7" class="module-view">
-    <div class="module-header">
-      <h3>7. Depósito e Inventario</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group"><label>Artículo / Insumo:</label><input type="text" id="mod7-articulo" class="form-control" placeholder="Ej: Alambre de púas, Grapas"></div>
-    <div class="form-row">
-      <div class="form-group"><label>Tipo Recepción:</label><input type="text" id="mod7-recepcion" class="form-control" placeholder="Proveedor / Factura"></div>
-      <div class="form-group"><label>Tipo Despacho:</label><input type="text" id="mod7-despacho" class="form-control" placeholder="Destino / Potrero"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Fecha Entrega:</label><input type="date" id="mod7-f-entrega" class="form-control"></div>
-      <div class="form-group"><label>Fecha Despacho:</label><input type="date" id="mod7-f-despacho" class="form-control"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod7-cant" class="form-control"></div>
-      <div class="form-group"><label>Responsable:</label><input type="text" id="mod7-resp" class="form-control"></div>
-    </div>
-    <button class="btn-action" onclick="guardarDeposito()">Registrar Insumo</button>
-    <div class="summary-card">
-      <h4>📦 Resumen de Artículos Despachados por Mes</h4>
-      <div class="summary-grid">
-        <div class="summary-item" style="grid-column: span 2;"><span class="title">Total Despachos (Mes)</span><span class="value" id="resumen-deposito-mes">0 Artículos / Lotes</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODULO 8: REPARACIÓN DE LÍNEAS -->
-  <div id="mod-8" class="module-view">
-    <div class="module-header">
-      <h3>8. Reparación de Líneas</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-group"><label>Tipo de Reparación:</label>
-      <select class="form-control" id="mod8-tipo">
-        <option>Cuerdas Remendadas</option><option>Fabricación de Falso</option><option>Entierre de Estantillas</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Cantidad / Metros:</label><input type="number" id="mod8-cant" class="form-control"></div>
-      <div class="form-group"><label>Foto Evidencia:</label><input type="file" id="mod8-foto" class="form-control" accept="image/*"></div>
-    </div>
-    <div class="form-group">
-      <label>Geolocalización en Google Maps:</label>
-      <button class="btn-geo" onclick="obtenerCoordenadas('mod8-geo', 'mapa-mod8')">📍 Ubicar Falla / Cerca en Mapa</button>
-      <input type="text" id="mod8-geo" class="form-control" readonly placeholder="Coordenadas GPS" style="margin-top:4px;">
-      <iframe id="mapa-mod8" class="map-preview" style="display:none;" frameborder="0"></iframe>
-    </div>
-    <button class="btn-action" onclick="guardarCerca()">Registrar Reparación</button>
-  </div>
-
-  <!-- MODULO 9: CONTROL DE COMBUSTIBLE -->
-  <div id="mod-9" class="module-view">
-    <div class="module-header">
-      <h3>9. Control de Combustible</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Tipo Combustible:</label><select class="form-control" id="mod9-tipo"><option>Gasoil</option><option>Gasolina</option></select></div>
-      <div class="form-group"><label>Operación:</label><select class="form-control" id="mod9-operacion"><option>Ingreso (+)</option><option>Consumo (-)</option></select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Litros:</label><input type="number" id="mod9-litros" class="form-control"></div>
-      <div class="form-group"><label>Fecha:</label><input type="date" id="mod9-fecha" class="form-control"></div>
-    </div>
-    <button class="btn-action" onclick="guardarCombustible()">Registrar Movimiento Combustible</button>
-    <div class="summary-card">
-      <h4>⛽ Resumen de Inventario Combustible</h4>
-      <div class="summary-grid">
-        <div class="summary-item"><span class="title">Gasoil Disponible</span><span class="value" id="saldo-gasoil">0 Lts</span></div>
-        <div class="summary-item"><span class="title">Gasolina Disponible</span><span class="value" id="saldo-gasolina">0 Lts</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODULO 10: LOGÍSTICA DE COMIDA -->
-  <div id="mod-10" class="module-view">
-    <div class="module-header">
-      <h3>10. Logística de Comida</h3>
-      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Fecha:</label><input type="date" id="mod10-fecha" class="form-control"></div>
-      <div class="form-group"><label>Tipo Comida:</label><select class="form-control" id="mod10-tipo"><option>Desayuno</option><option>Almuerzo</option><option>Cena</option><option>Logística Especial</option></select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>N° Personas:</label><input type="number" id="mod10-personas" class="form-control"></div>
-      <div class="form-group"><label>Ubicación / Cuadrilla:</label><input type="text" id="mod10-cuadrilla" class="form-control" placeholder="Ej: Sabana Manguito"></div>
-    </div>
-    <button class="btn-action" onclick="guardarComida()">Registrar Ración Comida</button>
-    <div class="summary-card">
-      <h4>🍽️ Resumen Diario de Alimentación</h4>
-      <div class="summary-grid">
-        <div class="summary-item" style="grid-column: span 2;"><span class="title">Platos Servidos Hoy</span><span class="value" id="resumen-comida-hoy">0 Raciones</span></div>
-      </div>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr><th>Tarea</th><th>Inicio</th><th>Fin</th><th>Ejec.</th><th>Obs.</th><th>Acción</th></tr>
+        </thead>
+        <tbody id="tabla-tareas-body"></tbody>
+      </table>
     </div>
   </div>
 
@@ -823,52 +292,21 @@
     tg.ready();
     tg.expand();
 
-    const gruposBovinos = ["Vaca", "Novilla", "Becerro", "Toro", "Mautas", "Mautes"];
-    const gruposBufalinos = ["Búfalas", "Buvillas", "Bucerros", "Bucerras", "Butoro", "Bautas", "Bautes"];
-    
-    const listaPotrerosGlobales = [
-      "Macanillal", "Mata del Muerto", "Galpón", "Potrero del Medio", "Manguito", 
-      "Mata de Piña", "Las Rayas", "Paulero", "Jobo Gacho", "Módulo A", 
-      "Módulo B", "Módulo C", "Módulo D", "Módulo E", "Módulo F", 
-      "Saladillal", "Carretera", "Casa", "Cuatro Esquinas", "María del Carmen"
-    ];
+    // Datos y Pilas Módulo 1 (Ganado)
+    let ganado = JSON.parse(localStorage.getItem('ato_ganado')) || [];
+    let pilaGanadoEliminado = [];
 
-    const capacidadBasePotrero = 50; 
-
-    let movimientosRotacion = JSON.parse(localStorage.getItem('ato_rotacion')) || [];
-    let pilaRegistrosEliminados = []; // Pila multicapa para múltiples rehacer
-
+    // Datos y Pilas Módulo 2 (Tareas)
     let tareas = JSON.parse(localStorage.getItem('ato_tareas')) || [];
-    let tratamientosSanitarios = JSON.parse(localStorage.getItem('ato_sanitario')) || [];
-    let eventos = JSON.parse(localStorage.getItem('ato_eventos')) || [];
-    let maquinarias = JSON.parse(localStorage.getItem('ato_maquinaria')) || [];
-    let depositos = JSON.parse(localStorage.getItem('ato_depositos')) || [];
-    let combustibleGasoil = parseFloat(localStorage.getItem('ato_gasoil')) || 0;
-    let combustibleGasolina = parseFloat(localStorage.getItem('ato_gasolina')) || 0;
-    let comidasServidasHoy = parseInt(localStorage.getItem('ato_comidas')) || 0;
-    
-    let ultimoMapaPotrerosGlobal = {};
+    let pilaTareasEliminadas = [];
 
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date().toISOString().split('T')[0];
-      ['mod1-f-ingreso','mod1-f-salida','mod2-f-asignacion','mod2-f-culminacion','mod3-f-aplicacion','mod4-fecha','mod5-f-aceite','mod7-f-entrega','mod7-f-despacho','mod9-fecha','mod10-fecha'].forEach(id => {
-        if(document.getElementById(id)) document.getElementById(id).value = hoy;
-      });
+      if(document.getElementById('mod2-f-asignacion')) document.getElementById('mod2-f-asignacion').value = hoy;
+      if(document.getElementById('mod2-f-culminacion')) document.getElementById('mod2-f-culminacion').value = hoy;
       
-      poblarSelectorPotrerosResumen();
-      actualizarGruposEtarios();
-      obtenerClimaGPS();
-
-      actualizarTablaRotacion();
-      actualizarResumenHato();
+      actualizarTablaGanado();
       actualizarTablaTareas();
-      actualizarTablaSanitaria();
-      actualizarResumenEventos();
-      actualizarTablaMaquinaria();
-      document.getElementById("resumen-deposito-mes").innerText = `${depositos.length} Artículos / Lotes`;
-      document.getElementById("saldo-gasoil").innerText = `${combustibleGasoil} Lts`;
-      document.getElementById("saldo-gasolina").innerText = `${combustibleGasolina} Lts`;
-      document.getElementById("resumen-comida-hoy").innerText = `${comidasServidasHoy} Raciones`;
     });
 
     function mostrarModulo(id) {
@@ -882,361 +320,53 @@
       document.getElementById("main-menu").style.display = "block";
     }
 
-    function poblarSelectorPotrerosResumen() {
-      const select = document.getElementById("select-resumen-potrero");
-      if(!select) return;
-      select.innerHTML = "";
-      listaPotrerosGlobales.forEach(potrero => {
-        const opt = document.createElement("option");
-        opt.value = potrero;
-        opt.innerText = potrero;
-        select.appendChild(opt);
+    /* --- LOGICA MODULO 1 --- */
+    function guardarGanado() {
+      const arete = document.getElementById("mod1-arete").value.trim();
+      const categoria = document.getElementById("mod1-cat").value.trim();
+      const peso = document.getElementById("mod1-peso").value;
+
+      if(!arete) return tg.showAlert("⚠️ Ingrese el número de arete.");
+      
+      ganado.unshift({ arete, categoria, peso });
+      localStorage.setItem('ato_ganado', JSON.stringify(ganado));
+      actualizarTablaGanado();
+      
+      document.getElementById("mod1-arete").value = "";
+      document.getElementById("mod1-cat").value = "";
+      document.getElementById("mod1-peso").value = "";
+      tg.showAlert("✅ Ganado Registrado");
+    }
+
+    function eliminarGanadoPorIndice(index) {
+      pilaGanadoEliminado.push(ganado[index]);
+      document.getElementById("contador-ganado-rehacer").innerText = pilaGanadoEliminado.length;
+      
+      ganado.splice(index, 1);
+      localStorage.setItem('ato_ganado', JSON.stringify(ganado));
+      actualizarTablaGanado();
+    }
+
+    function rehacerUltimoGanadoBorrado() {
+      if (pilaGanadoEliminado.length === 0) return tg.showAlert("⚠️ No hay registros para rehacer.");
+      ganado.unshift(pilaGanadoEliminado.pop());
+      document.getElementById("contador-ganado-rehacer").innerText = pilaGanadoEliminado.length;
+      localStorage.setItem('ato_ganado', JSON.stringify(ganado));
+      actualizarTablaGanado();
+      tg.showAlert("🔄 Registro restaurado con éxito.");
+    }
+
+    function actualizarTablaGanado() {
+      const tbody = document.getElementById("tabla-ganado-body");
+      tbody.innerHTML = ganado.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:var(--text-muted)">Sin registros.</td></tr>` : '';
+      ganado.forEach((g, index) => {
+        tbody.innerHTML += `<tr><td>${g.arete}</td><td>${g.categoria || '-'}</td><td>${g.peso || '-'} kg</td><td><button class="btn-delete-item" onclick="eliminarGanadoPorIndice(${index})">🗑️ Borrar</button></td></tr>`;
       });
     }
 
-    function actualizarGruposEtarios() {
-      const cat = document.getElementById("mod1-categoria").value;
-      const selectGrupo = document.getElementById("mod1-grupo-etario");
-      selectGrupo.innerHTML = "";
-      const lista = (cat === "Bovinos") ? gruposBovinos : gruposBufalinos;
-      lista.forEach(g => {
-        const opt = document.createElement("option"); opt.value = g; opt.innerText = g;
-        selectGrupo.appendChild(opt);
-      });
-    }
-
-    function obtenerCoordenadas(inputId, iframeId) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          document.getElementById(inputId).value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-          const iframe = document.getElementById(iframeId);
-          iframe.src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
-          iframe.style.display = "block";
-          tg.showAlert("📍 Coordenadas capturadas exitosamente.");
-        }, () => tg.showAlert("⚠️ No se pudo obtener la geolocalización."));
-      } else { tg.showAlert("⚠️ Geolocalización no soportada en este dispositivo."); }
-    }
-
-    /* MÓDULO 1: ROTACIÓN E INVENTARIO INTERACTIVO */
-    function registrarMovimientoRotacion() {
-      const potrero = document.getElementById("mod1-potrero").value;
-      const fIngreso = document.getElementById("mod1-f-ingreso").value;
-      const fSalida = document.getElementById("mod1-f-salida").value;
-      const cat = document.getElementById("mod1-categoria").value;
-      const grupo = document.getElementById("mod1-grupo-etario").value;
-      const cantidad = parseInt(document.getElementById("mod1-cantidad").value) || 0;
-      
-      if (cantidad <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
-
-      // VALIDACIÓN ESTRICTA DE FECHAS (No años distintos, ni meses adelantados, ni días futuros)
-      const hoyStr = new Date().toISOString().split('T')[0];
-      const anioActual = new Date().getFullYear();
-
-      const [anioIng, mesIng, diaIng] = fIngreso.split('-').map(Number);
-      const [anioSal, mesSal, diaSal] = fSalida.split('-').map(Number);
-
-      if (anioIng !== anioActual || anioSal !== anioActual) {
-        return tg.showAlert(`⚠️ Error de fecha: Las fechas deben corresponder al año actual (${anioActual}).`);
-      }
-
-      if (fIngreso > hoyStr || fSalida > hoyStr) {
-        return tg.showAlert("⚠️ Error de fecha: No se permiten fechas adelantadas o futuras (meses/días posteriores al actual).");
-      }
-
-      if (fSalida < fIngreso) {
-        return tg.showAlert("⚠️ Error: La fecha de salida no puede ser anterior a la fecha de ingreso.");
-      }
-      
-      movimientosRotacion.unshift({ potrero, fIngreso, fSalida, cat, grupo, cantidad });
-      localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion)); 
-      
-      actualizarTablaRotacion();
-      actualizarResumenHato();
-      tg.showAlert(`🚨 Movimiento registrado en ${potrero}`);
-    }
-
-    function actualizarContadorRehacer() {
-      const badge = document.getElementById("contador-pila-rehacer");
-      if(badge) badge.innerText = pilaRegistrosEliminados.length;
-    }
-
-    function rehacerUltimoRegistroBorrado() {
-      if (pilaRegistrosEliminados.length === 0) {
-        return tg.showAlert("⚠️ No hay registros borrados para rehacer.");
-      }
-      
-      const registroRestaurado = pilaRegistrosEliminados.pop();
-      actualizarContadorRehacer();
-
-      movimientosRotacion.unshift(registroRestaurado);
-      localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion));
-      
-      actualizarTablaRotacion();
-      actualizarResumenHato();
-
-      const selectResumen = document.getElementById("select-resumen-potrero");
-      if (selectResumen && selectResumen.value === registroRestaurado.potrero) {
-        generarGraficoDesdeSelector();
-      }
-
-      tg.showAlert(`🔄 Se ha rehecho y restaurado el registro del potrero: ${registroRestaurado.potrero}`);
-    }
-
-    function eliminarRegistroPorIndice(index) {
-      if (index >= 0 && index < movimientosRotacion.length) {
-        pilaRegistrosEliminados.push(movimientosRotacion[index]);
-        actualizarContadorRehacer();
-        
-        const eliminado = movimientosRotacion.splice(index, 1)[0];
-        localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion));
-
-        actualizarTablaRotacion();
-        actualizarResumenHato();
-        
-        const selectResumen = document.getElementById("select-resumen-potrero");
-        if (selectResumen && selectResumen.value === eliminado.potrero) {
-          generarGraficoDesdeSelector();
-        }
-
-        tg.showAlert(`🗑️ Registro borrado. Quedan ${pilaRegistrosEliminados.length} registros listos para rehacer.`);
-      }
-    }
-
-    function actualizarTablaRotacion() {
-      const tbody = document.getElementById("tabla-rotacion-body");
-      tbody.innerHTML = "";
-      movimientosRotacion.forEach((m, index) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${m.potrero}</td>
-          <td>${m.fIngreso}</td>
-          <td>${m.fSalida}</td>
-          <td>${m.cat}</td>
-          <td>${m.grupo}</td>
-          <td>${m.cantidad}</td>
-          <td><button class="btn-delete-item" onclick="eliminarRegistroPorIndice(${index})">🗑️ Borrar</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function actualizarResumenHato() {
-      const contenedor = document.getElementById("resumen-agrupado-container");
-      contenedor.innerHTML = "";
-
-      let potrerosMap = {};
-      const hoyDate = new Date();
-      hoyDate.setHours(0,0,0,0);
-
-      // Inicializar estructura para todos los potreros globales conocidos
-      listaPotrerosGlobales.forEach(potrero => {
-        potrerosMap[potrero] = { 
-          categorias: {}, 
-          grupos: {}, 
-          totalPotrero: 0, 
-          diasUsoMax: 0,
-          ultimaSalida: null
-        };
-      });
-
-      // Procesar movimientos registrados
-      movimientosRotacion.forEach(m => {
-        if (!potrerosMap[m.potrero]) {
-          potrerosMap[m.potrero] = { categorias: {}, grupos: {}, totalPotrero: 0, diasUsoMax: 0, ultimaSalida: null };
-        }
-        
-        if (!potrerosMap[m.potrero].categorias[m.cat]) {
-          potrerosMap[m.potrero].categorias[m.cat] = 0;
-        }
-        potrerosMap[m.potrero].categorias[m.cat] += m.cantidad;
-
-        if (!potrerosMap[m.potrero].grupos[m.grupo]) {
-          potrerosMap[m.potrero].grupos[m.grupo] = 0;
-        }
-        potrerosMap[m.potrero].grupos[m.grupo] += m.cantidad;
-
-        potrerosMap[m.potrero].totalPotrero += m.cantidad;
-
-        // Calcular días de uso (Diferencia entre F. Salida y F. Ingreso + 1)
-        if (m.fIngreso && m.fSalida) {
-          const dIng = new Date(m.fIngreso + 'T00:00:00');
-          const dSal = new Date(m.fSalida + 'T00:00:00');
-          const diffTime = dSal - dIng;
-          const diffDays = Math.max(0, Math.round(diffTime / (1000 * 60 * 60 * 24))) + 1;
-          if (diffDays > potrerosMap[m.potrero].diasUsoMax) {
-            potrerosMap[m.potrero].diasUsoMax = diffDays;
-          }
-
-          // Rastrear la última salida registrada para el cálculo de descanso
-          if (!potrerosMap[m.potrero].ultimaSalida || dSal > potrerosMap[m.potrero].ultimaSalida) {
-            potrerosMap[m.potrero].ultimaSalida = dSal;
-          }
-        }
-      });
-
-      ultimoMapaPotrerosGlobal = potrerosMap;
-
-      for (let potrero in potrerosMap) {
-        let datosPotrero = potrerosMap[potrero];
-        let datosId = potreroSanitizadoId(potrero);
-        let totalPotrero = datosPotrero.totalPotrero;
-        let porcentajeCarga = Math.min(Math.round((totalPotrero / capacidadBasePotrero) * 100), 200);
-
-        // Cálculo de días de descanso (días transcurridos desde la última salida hasta hoy, si no hay animales activos)
-        let descansoTexto = "Sin historial de salida";
-        if (datosPotrero.ultimaSalida) {
-          const diffDescansoTime = hoyDate - datosPotrero.ultimaSalida;
-          const diffDescansoDays = Math.max(0, Math.round(diffDescansoTime / (1000 * 60 * 60 * 24)));
-          descansoTexto = `${diffDescansoDays} días de descanso`;
-        }
-
-        let itemDiv = document.createElement("div");
-        itemDiv.className = "summary-item";
-        
-        itemDiv.innerHTML = `
-          <div class="title" onclick="alternarDetallesPotrero('${datosId}')">
-            <span>🌾 Potrero: ${potrero}</span>
-            <span style="font-size:11px; font-weight:normal; color:var(--blue-primary);">🔍 Toca para ver gráficos 📊</span>
-          </div>
-          <div class="badges-container">
-            <span class="carga-animal-badge">🐂 Carga: ${porcentajeCarga}% (${totalPotrero} animales)</span>
-            <span class="dias-badge">⏱️ Días de Uso: ${datosPotrero.diasUsoMax} días</span>
-            <span class="descanso-badge">🌱 Descanso: ${descansoTexto}</span>
-          </div>
-          
-          <div class="potrero-details-container" id="details-${datosId}">
-            <div class="charts-wrapper">
-              <div class="chart-box">
-                <span class="subtitle">Categoría (Especie)</span>
-                <canvas id="chart-cat-${datosId}" class="potrero-chart" width="140" height="140"></canvas>
-                <div class="chart-legend" id="legend-cat-${datosId}"></div>
-              </div>
-              <div class="chart-box">
-                <span class="subtitle">Grupo Etario</span>
-                <canvas id="chart-grp-${datosId}" class="potrero-chart" width="140" height="140"></canvas>
-                <div class="chart-legend" id="legend-grp-${datosId}"></div>
-              </div>
-            </div>
-          </div>
-        `;
-        contenedor.appendChild(itemDiv);
-
-        setTimeout((dId, datosP) => {
-          renderizarGraficoTorta(`chart-cat-${dId}`, `legend-cat-${dId}`, datosP.categorias, datosP.totalPotrero);
-          renderizarGraficoTorta(`chart-grp-${dId}`, `legend-grp-${dId}`, datosP.grupos, datosP.totalPotrero);
-        }, 50, datosId, datosPotrero);
-      }
-    }
-
-    function generarGraficoDesdeSelector() {
-      const potreroSeleccionado = document.getElementById("select-resumen-potrero").value;
-      const containerDisplay = document.getElementById("general-chart-display-container");
-      
-      containerDisplay.style.display = "block";
-      
-      let datosPotrero = ultimoMapaPotrerosGlobal[potreroSeleccionado];
-      
-      if (!datosPotrero || datosPotrero.totalPotrero === 0) {
-        containerDisplay.innerHTML = `
-          <div style="text-align: center; font-size: 12px; color: var(--alert-color); padding: 8px;">
-            ⚠️ El potrero <strong>${potreroSeleccionado}</strong> no tiene animales registrados actualmente.
-          </div>
-        `;
-        return;
-      }
-
-      containerDisplay.innerHTML = `
-        <div style="font-size: 12px; font-weight: bold; color: var(--blue-primary); margin-bottom: 8px; text-align: center;">
-          📈 Gráficos Generales (Categoría y Grupo Etario): ${potreroSeleccionado} (${datosPotrero.totalPotrero} animales)
-        </div>
-        <div class="charts-wrapper">
-          <div class="chart-box">
-            <span class="subtitle">Categoría (Especie)</span>
-            <canvas id="chart-cat-gen" class="potrero-chart" width="140" height="140"></canvas>
-            <div class="chart-legend" id="legend-cat-gen"></div>
-          </div>
-          <div class="chart-box">
-            <span class="subtitle">Grupo Etario</span>
-            <canvas id="chart-grp-gen" class="potrero-chart" width="140" height="140"></canvas>
-            <div class="chart-legend" id="legend-grp-gen"></div>
-          </div>
-        </div>
-      `;
-
-      setTimeout(() => {
-        renderizarGraficoTorta("chart-cat-gen", "legend-cat-gen", datosPotrero.categorias, datosPotrero.totalPotrero);
-        renderizarGraficoTorta("chart-grp-gen", "legend-grp-gen", datosPotrero.grupos, datosPotrero.totalPotrero);
-      }, 50);
-    }
-
-    function alternarDetallesPotrero(datosId) {
-      const container = document.getElementById(`details-${datosId}`);
-      if (container) {
-        container.classList.toggle('active');
-      }
-    }
-
-    function potreroSanitizadoId(nombre) {
-      return nombre.replace(/[^a-zA-Z0-9]/g, "_");
-    }
-
-    function renderizarGraficoTorta(canvasId, legendId, mapaDatos, total) {
-      const canvas = document.getElementById(canvasId);
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      const legendContainer = document.getElementById(legendId);
-      
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      legendContainer.innerHTML = "";
-
-      if (total === 0) return;
-
-      const colores = [
-        "#1d72b8", "#2e7d32", "#ed6c02", "#9c27b0", 
-        "#00bcd4", "#ff9800", "#795548", "#e91e63", "#607d8b"
-      ];
-
-      let sumaAngulo = 0;
-      let colorIndex = 0;
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const radius = 55;
-
-      for (let clave in mapaDatos) {
-        let cantidad = mapaDatos[clave];
-        let porcentaje = ((cantidad / total) * 100).toFixed(1);
-        let sliceAngle = (cantidad / total) * 2 * Math.PI;
-        let color = colores[colorIndex % colores.length];
-
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, sumaAngulo, sumaAngulo + sliceAngle);
-        ctx.closePath();
-        ctx.fillStyle = color;
-        ctx.fill();
-
-        sumaAngulo += sliceAngle;
-
-        let legendItem = document.createElement("div");
-        legendItem.className = "legend-item";
-        legendItem.innerHTML = `
-          <div class="legend-left">
-            <div class="legend-color" style="background-color: ${color};"></div>
-            <span>${clave}</span>
-          </div>
-          <span><strong>${cantidad} (${porcentaje}%)</strong></span>
-        `;
-        legendContainer.appendChild(legendItem);
-
-        colorIndex++;
-      }
-    }
-
-    /* MÓDULO 2 */
+    /* --- LOGICA MODULO 2 --- */
     function guardarTarea() {
-      const descripcion = document.getElementById("mod2-tarea").value;
+      const descripcion = document.getElementById("mod2-tarea").value.trim();
       const inicio = document.getElementById("mod2-f-asignacion").value;
       const fin = document.getElementById("mod2-f-culminacion").value;
       const ejecucion = document.getElementById("mod2-ejecucion").value;
@@ -1245,172 +375,38 @@
       if(!descripcion) return tg.showAlert("⚠️ Ingrese la tarea.");
       
       tareas.unshift({ descripcion, inicio, fin, ejecucion, observacion });
-      localStorage.setItem('ato_tareas', JSON.stringify(tareas)); 
-      
+      localStorage.setItem('ato_tareas', JSON.stringify(tareas));
       actualizarTablaTareas();
-      tg.showAlert("✅ Tarea Agendada");
+      
+      document.getElementById("mod2-tarea").value = "";
+      document.getElementById("mod2-observacion").value = "";
+      tg.showAlert("✅ Tarea Guardada");
+    }
+
+    function eliminarTareaPorIndice(index) {
+      pilaTareasEliminadas.push(tareas[index]);
+      document.getElementById("contador-tareas-rehacer").innerText = pilaTareasEliminadas.length;
+      
+      tareas.splice(index, 1);
+      localStorage.setItem('ato_tareas', JSON.stringify(tareas));
+      actualizarTablaTareas();
+    }
+
+    function rehacerUltimaTareaBorrada() {
+      if (pilaTareasEliminadas.length === 0) return tg.showAlert("⚠️ No hay tareas para rehacer.");
+      tareas.unshift(pilaTareasEliminadas.pop());
+      document.getElementById("contador-tareas-rehacer").innerText = pilaTareasEliminadas.length;
+      localStorage.setItem('ato_tareas', JSON.stringify(tareas));
+      actualizarTablaTareas();
+      tg.showAlert("🔄 Tarea restaurada con éxito.");
     }
 
     function actualizarTablaTareas() {
       const tbody = document.getElementById("tabla-tareas-body");
-      tbody.innerHTML = "";
-      tareas.forEach(t => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${t.descripcion}</td><td>${t.inicio}</td><td>${t.fin}</td><td>${t.ejecucion}</td><td>${t.observacion}</td>`;
-        tbody.appendChild(tr);
+      tbody.innerHTML = tareas.length === 0 ? `<tr><td colspan="6" style="text-align:center; color:var(--text-muted)">Sin tareas.</td></tr>` : '';
+      tareas.forEach((t, index) => {
+        tbody.innerHTML += `<tr><td>${t.descripcion}</td><td>${t.inicio}</td><td>${t.fin}</td><td>${t.ejecucion}</td><td>${t.observacion || '-'}</td><td><button class="btn-delete-item" onclick="eliminarTareaPorIndice(${index})">🗑️ Borrar</button></td></tr>`;
       });
-    }
-
-    /* MÓDULO 3 */
-    function guardarTratamientoSanitario() {
-      const lote = document.getElementById("mod3-lote").value;
-      const cantidad = document.getElementById("mod3-cantidad").value;
-      const tipo = document.getElementById("mod3-tipo").value;
-      const aplicacion = document.getElementById("mod3-f-aplicacion").value;
-      const proximo = document.getElementById("mod3-f-proximo").value;
-      
-      if(!cantidad) return tg.showAlert("⚠️ Ingrese la cantidad.");
-
-      tratamientosSanitarios.unshift({ lote, cantidad, tipo, aplicacion, proximo });
-      localStorage.setItem('ato_sanitario', JSON.stringify(tratamientosSanitarios)); 
-      
-      actualizarTablaSanitaria();
-      tg.showAlert("✅ Tratamiento Registrado");
-    }
-
-    function actualizarTablaSanitaria() {
-      const tbody = document.getElementById("tabla-sanitaria-body");
-      tbody.innerHTML = "";
-      tratamientosSanitarios.forEach(t => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${t.lote}</td><td>${t.cantidad}</td><td>${t.tipo}</td><td>${t.aplicacion}</td><td>${t.proximo}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    /* MÓDULO 4 */
-    function guardarEvento() {
-      const cat = document.getElementById("mod4-cat").value;
-      const grupo = document.getElementById("mod4-grupo").value;
-      const evento = document.getElementById("mod4-evento").value;
-      const cant = parseInt(document.getElementById("mod4-cant").value) || 0;
-
-      if(cant <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
-
-      eventos.push({ cat, grupo, evento, cant });
-      localStorage.setItem('ato_eventos', JSON.stringify(eventos)); 
-      
-      actualizarResumenEventos();
-      tg.showAlert("✅ Evento Registrado Exitosamente");
-    }
-
-    function actualizarResumenEventos() {
-      let nacidos = 0, muertos = 0, salidas = 0;
-      eventos.forEach(e => {
-        if(e.evento === "Nacidos") nacidos += e.cant;
-        if(e.evento === "Muertos" || e.evento === "Abortos" || e.evento === "Natibortos") muertos += e.cant;
-        if(e.evento === "Consumo" || e.evento === "Traslado") salidas += e.cant;
-      });
-      document.getElementById("resumen-nacidos").innerText = nacidos;
-      document.getElementById("resumen-muertos").innerText = muertos;
-      document.getElementById("resumen-salidas").innerText = salidas;
-    }
-
-    /* MÓDULO 5 */
-    function guardarMaquinaria() {
-      const equipo = document.getElementById("mod5-equipo").value;
-      const resp = document.getElementById("mod5-resp").value;
-      const hrsTotales = document.getElementById("mod5-hrs-totales").value;
-      const averia = document.getElementById("mod5-averia").value;
-
-      if(!equipo) return tg.showAlert("⚠️ Ingrese el equipo.");
-
-      maquinarias.unshift({ equipo, resp, hrsTotales, averia });
-      localStorage.setItem('ato_maquinaria', JSON.stringify(maquinarias)); 
-      
-      actualizarTablaMaquinaria();
-      tg.showAlert("✅ Registro de Maquinaria Guardado");
-    }
-
-    function actualizarTablaMaquinaria() {
-      const tbody = document.getElementById("tabla-maquinaria-body");
-      tbody.innerHTML = "";
-      maquinarias.forEach(m => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${m.equipo}</td><td>${m.resp}</td><td>${m.hrsTotales} hrs</td><td>Óptimo</td><td>${m.averia}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    /* MÓDULO 6 */
-    function obtenerClimaGPS() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          document.getElementById("clima-ubicacion").innerText = `📍 Ubicación GPS: ${lat.toFixed(2)}, ${lng.toFixed(2)}`;
-          document.getElementById("clima-temp").innerText = "32 °C";
-          document.getElementById("clima-condicion").innerText = "Soleado y despejado";
-        }, () => {
-          document.getElementById("clima-ubicacion").innerText = "📍 Barinas, Venezuela (Predeterminado)";
-          document.getElementById("clima-temp").innerText = "31 °C";
-          document.getElementById("clima-condicion").innerText = "Parcialmente Nublado";
-        });
-      } else {
-        document.getElementById("clima-ubicacion").innerText = "📍 Clima Local Hato";
-      }
-    }
-
-    /* MÓDULO 7 */
-    function guardarDeposito() {
-      const articulo = document.getElementById("mod7-articulo").value;
-      if(!articulo) return tg.showAlert("⚠️ Ingrese el artículo.");
-      depositos.push(articulo);
-      localStorage.setItem('ato_depositos', JSON.stringify(depositos)); 
-      
-      document.getElementById("resumen-deposito-mes").innerText = `${depositos.length} Artículos / Lotes`;
-      tg.showAlert("✅ Insumo registrado en Depósito");
-    }
-
-    /* MÓDULO 8 */
-    function guardarCerca() {
-      const tipo = document.getElementById("mod8-tipo").value;
-      const cant = document.getElementById("mod8-cant").value;
-      if(!cant) return tg.showAlert("⚠️ Ingrese la cantidad o metros.");
-      tg.showAlert(`✅ Reparación (${tipo}) registrada.`);
-    }
-
-    /* MÓDULO 9 */
-    function guardarCombustible() {
-      const tipo = document.getElementById("mod9-tipo").value;
-      const operacion = document.getElementById("mod9-operacion").value;
-      const litros = parseFloat(document.getElementById("mod9-litros").value) || 0;
-
-      if(litros <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida de litros.");
-
-      if(tipo === "Gasoil") {
-        if(operacion.includes("Ingreso")) combustibleGasoil += litros;
-        else combustibleGasoil -= litros;
-        localStorage.setItem('ato_gasoil', combustibleGasoil); 
-        document.getElementById("saldo-gasoil").innerText = `${combustibleGasoil} Lts`;
-      } else {
-        if(operacion.includes("Ingreso")) combustibleGasolina += litros;
-        else combustibleGasolina -= litros;
-        localStorage.setItem('ato_gasolina', combustibleGasolina); 
-        document.getElementById("saldo-gasolina").innerText = `${combustibleGasolina} Lts`;
-      }
-      tg.showAlert("✅ Movimiento de combustible registrado.");
-    }
-
-    /* MÓDULO 10 */
-    function guardarComida() {
-      const personas = parseInt(document.getElementById("mod10-personas").value) || 0;
-      if(personas <= 0) return tg.showAlert("⚠️ Ingrese el número de personas.");
-      comidasServidasHoy += personas;
-      localStorage.setItem('ato_comidas', comidasServidasHoy); 
-      
-      document.getElementById("resumen-comida-hoy").innerText = `${comidasServidasHoy} Raciones`;
-      tg.showAlert("✅ Ración de comida registrada.");
     }
   </script>
 </body>
