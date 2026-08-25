@@ -415,7 +415,7 @@
     </div>
     <div class="form-row">
       <div class="form-group"><label>Categoría:</label>
-        <select class="form-control" id="mod1-categoria" onchange="actualizarGruposEtarios()">
+        <select class="form-control" id="mod1-categoria">
           <option value="Bovinos">Bovinos</option><option value="Bufalinos">Bufalinos</option>
         </select>
       </div>
@@ -450,7 +450,7 @@
     <div class="table-container"><table class="data-table"><thead><tr><th>Tarea</th><th>Inicio</th><th>Fin</th><th>Ejec.</th><th>Obs.</th></tr></thead><tbody id="tabla-tareas-body"></tbody></table></div>
   </div>
 
-  <!-- MODULO 3: MANEJO SANITARIO PRODUCTIVO (ACTUALIZADO) -->
+  <!-- MODULO 3: MANEJO SANITARIO PRODUCTIVO -->
   <div id="mod-3" class="module-view">
     <div class="module-header">
       <h3>3. Manejo Sanitario Productivo</h3>
@@ -503,7 +503,6 @@
       </table>
     </div>
 
-    <!-- ÁREA DE RESUMEN DEL MÓDULO 3 -->
     <div class="summary-card">
       <h4>📊 Resumen de Actividades Sanitarias y Responsables</h4>
       <div class="summary-grid" id="resumen-sanitaria-container">
@@ -515,39 +514,103 @@
     </div>
   </div>
 
-  <!-- MODULO 4: EVENTOS POR CATEGORÍA -->
+  <!-- MODULO 4: EVENTOS POR CATEGORÍA (ACTUALIZADO) -->
   <div id="mod-4" class="module-view">
     <div class="module-header">
       <h3>4. Eventos por Categoría</h3>
       <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
+    
     <div class="form-row">
-      <div class="form-group"><label>Categoría:</label><select class="form-control" id="mod4-cat"><option>Bovina</option><option>Bufalina</option></select></div>
-      <div class="form-group"><label>Grupo Etario:</label>
+      <div class="form-group">
+        <label>Categoría:</label>
+        <select class="form-control" id="mod4-cat"><option>Bovina</option><option>Bufalina</option></select>
+      </div>
+      <div class="form-group">
+        <label>Grupo Etario:</label>
         <select class="form-control" id="mod4-grupo">
           <option>Vaca</option><option>Novilla</option><option>Mauta</option><option>Maute</option><option>Toro</option><option>Becerro</option><option>Becerra</option><option>Búfala</option><option>Buvilla</option><option>Bauta</option><option>Baute</option><option>Butoro</option><option>Bucerro</option><option>Bucerra</option>
         </select>
       </div>
     </div>
+
+    <div class="form-group">
+      <label>Evento:</label>
+      <select class="form-control" id="mod4-evento" onchange="verificarEventoOtro(this)">
+        <option value="Muertos">Muertos</option>
+        <option value="Abortos">Abortos</option>
+        <option value="Natibortos">Natibortos</option>
+        <option value="Nacidos">Nacidos</option>
+        <option value="Consumo">Consumo</option>
+        <option value="Traslado">Traslado</option>
+        <option value="Otro">Otro evento (Escribir abajo)</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="contenedor-otro-evento" style="display:none;">
+      <label>Escribir Otro Evento:</label>
+      <input type="text" id="mod4-otro-evento" class="form-control" placeholder="Especificar evento personalizado">
+    </div>
+
     <div class="form-row">
-      <div class="form-group"><label>Evento:</label>
-        <select class="form-control" id="mod4-evento">
-          <option>Muertos</option><option>Abortos</option><option>Natibortos</option><option>Nacidos</option><option>Consumo</option><option>Traslado</option>
-        </select>
+      <div class="form-group">
+        <label>Responsable:</label>
+        <input type="text" id="mod4-responsable" class="form-control" placeholder="Ej: Juan Gómez">
       </div>
-      <div class="form-group"><label>Fecha:</label><input type="date" id="mod4-fecha" class="form-control"></div>
+      <div class="form-group">
+        <label>Fecha:</label>
+        <input type="date" id="mod4-fecha" class="form-control">
+      </div>
     </div>
+
     <div class="form-row">
-      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod4-cant" class="form-control" min="1"></div>
-      <div class="form-group"><label>Foto del Evento:</label><input type="file" id="mod4-foto" class="form-control" accept="image/*"></div>
+      <div class="form-group">
+        <label>Cantidad:</label>
+        <input type="number" id="mod4-cant" class="form-control" min="1" placeholder="Ej: 1">
+      </div>
+      <div class="form-group">
+        <label>Foto del Evento:</label>
+        <input type="file" id="mod4-foto" class="form-control" accept="image/*">
+      </div>
     </div>
+
     <div class="form-group">
       <label>Ubicación Google Maps:</label>
       <button class="btn-geo" onclick="obtenerCoordenadas('mod4-geo', 'mapa-mod4')">📍 Capturar Geolocalización GPS</button>
       <input type="text" id="mod4-geo" class="form-control" readonly placeholder="Coordenadas GPS" style="margin-top:4px;">
       <iframe id="mapa-mod4" class="map-preview" style="display:none;" frameborder="0"></iframe>
     </div>
-    <button class="btn-action" onclick="guardarEvento()">Registrar Evento</button>
+
+    <button class="btn-action" onclick="guardarEvento()">Guardar Evento</button>
+    <button class="btn-redo" onclick="rehacerEvento()">🔄 Rehacer Evento (<span id="contador-rehacer-eventos">0</span>)</button>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>Grupo</th>
+            <th>Evento</th>
+            <th>Responsable</th>
+            <th>Cant.</th>
+            <th>Fecha</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-eventos-body"></tbody>
+      </table>
+    </div>
+
+    <!-- ÁREA DE RESUMEN DEL MÓDULO 4 -->
+    <div class="summary-card">
+      <h4>📊 Resumen de Eventos Registrados y Responsables</h4>
+      <div class="summary-grid" id="resumen-eventos-container">
+        <div class="summary-item">
+          <span class="title">Estado</span>
+          <span class="value">No hay eventos registrados.</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- MODULO 5: MAQUINARIA Y EQUIPO -->
@@ -685,7 +748,7 @@
       document.getElementById('main-menu').style.display = 'block';
     }
 
-    // Lógica específica del Módulo 3 (Manejo Sanitario Productivo) actualizada
+    // Lógica específica del Módulo 3 (Manejo Sanitario Productivo)
     let listaSanitaria = [];
     let papeleraSanitaria = [];
 
@@ -736,7 +799,6 @@
 
       listaSanitaria.push(nuevaActividad);
 
-      // Limpiar campos
       document.getElementById('mod3-cantidad').value = '';
       document.getElementById('mod3-responsable').value = '';
       document.getElementById('mod3-tipo').value = 'Vacunas';
@@ -824,6 +886,149 @@
         div.innerHTML = `
           <span class="title">👤 Responsable: ${resp} <span style="font-weight:normal; font-size:11px;">(${acts.length} actividades)</span></span>
           <div style="margin-top: 4px;">${htmlActs}</div>
+        `;
+        contenedorResumen.appendChild(div);
+      }
+    }
+
+    // Lógica específica del Módulo 4 (Eventos por Categoría)
+    let listaEventos = [];
+    let papeleraEventos = [];
+
+    function verificarEventoOtro(selectElem) {
+      const contenedorOtro = document.getElementById('contenedor-otro-evento');
+      if (selectElem.value === 'Otro') {
+        contenedorOtro.style.display = 'block';
+      } else {
+        contenedorOtro.style.display = 'none';
+        document.getElementById('mod4-otro-evento').value = '';
+      }
+    }
+
+    function guardarEvento() {
+      const categoria = document.getElementById('mod4-cat').value;
+      const grupo = document.getElementById('mod4-grupo').value;
+      const responsable = document.getElementById('mod4-responsable').value.trim();
+      
+      let eventoSelect = document.getElementById('mod4-evento').value;
+      let eventoNombre = eventoSelect;
+      if (eventoSelect === 'Otro') {
+        eventoNombre = document.getElementById('mod4-otro-evento').value.trim();
+        if (!eventoNombre) {
+          alert('Por favor, especifica el nombre del otro evento.');
+          return;
+        }
+      }
+
+      const fecha = document.getElementById('mod4-fecha').value;
+      const cantidad = document.getElementById('mod4-cant').value;
+      const geo = document.getElementById('mod4-geo').value;
+
+      if (!responsable) {
+        alert('Por favor, ingresa el nombre del responsable del evento.');
+        return;
+      }
+
+      const nuevoEvento = {
+        id: Date.now(),
+        categoria,
+        grupo,
+        evento: eventoNombre,
+        responsable,
+        fecha,
+        cantidad,
+        geo
+      };
+
+      listaEventos.push(nuevoEvento);
+
+      document.getElementById('mod4-cant').value = '';
+      document.getElementById('mod4-responsable').value = '';
+      document.getElementById('mod4-evento').value = 'Muertos';
+      document.getElementById('contenedor-otro-evento').style.display = 'none';
+      document.getElementById('mod4-otro-evento').value = '';
+      document.getElementById('mod4-fecha').value = '';
+      document.getElementById('mod4-geo').value = '';
+      document.getElementById('mapa-mod4').style.display = 'none';
+
+      actualizarTablaEventos();
+      actualizarResumenEventos();
+    }
+
+    function borrarEvento(index) {
+      const eventoBorrado = listaEventos.splice(index, 1)[0];
+      papeleraEventos.push(eventoBorrado);
+
+      actualizarTablaEventos();
+      actualizarResumenEventos();
+    }
+
+    function rehacerEvento() {
+      if (papeleraEventos.length === 0) {
+        alert('No hay eventos borrados para rehacer.');
+        return;
+      }
+
+      const eventoRecuperado = papeleraEventos.pop();
+      listaEventos.push(eventoRecuperado);
+
+      actualizarTablaEventos();
+      actualizarResumenEventos();
+    }
+
+    function actualizarTablaEventos() {
+      const tbody = document.getElementById('tabla-eventos-body');
+      tbody.innerHTML = '';
+
+      listaEventos.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.categoria}</td>
+          <td>${item.grupo}</td>
+          <td>${item.evento}</td>
+          <td><strong>${item.responsable}</strong></td>
+          <td>${item.cantidad || '-'}</td>
+          <td>${item.fecha || '-'}</td>
+          <td><button class="btn-delete-item" onclick="borrarEvento(${index})">❌ Borrar</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const contador = document.getElementById('contador-rehacer-eventos');
+      if (contador) {
+        contador.textContent = papeleraEventos.length;
+      }
+    }
+
+    function actualizarResumenEventos() {
+      const contenedorResumen = document.getElementById('resumen-eventos-container');
+      contenedorResumen.innerHTML = '';
+
+      if (listaEventos.length === 0) {
+        contenedorResumen.innerHTML = `
+          <div class="summary-item">
+            <span class="title">Estado</span>
+            <span class="value">No hay eventos registrados.</span>
+          </div>`;
+        return;
+      }
+
+      const agrupadoPorResponsable = {};
+      listaEventos.forEach(item => {
+        if (!agrupadoPorResponsable[item.responsable]) {
+          agrupadoPorResponsable[item.responsable] = [];
+        }
+        agrupadoPorResponsable[item.responsable].push(item);
+      });
+
+      for (const [resp, evs] of Object.entries(agrupadoPorResponsable)) {
+        let htmlEvs = evs.map(e => `<div style="font-size: 11px; margin-top: 2px;">• Cat: ${e.categoria} (${e.grupo}) | Evento: ${e.evento} (Cant: ${e.cantidad || '-'})</div>`).join('');
+        
+        const div = document.createElement('div');
+        div.className = 'summary-item';
+        div.innerHTML = `
+          <span class="title">👤 Responsable: ${resp} <span style="font-weight:normal; font-size:11px;">(${evs.length} eventos)</span></span>
+          <div style="margin-top: 4px;">${htmlEvs}</div>
         `;
         contenedorResumen.appendChild(div);
       }
