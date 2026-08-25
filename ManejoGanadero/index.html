@@ -526,7 +526,7 @@
     </div>
     <div class="form-group"><label>Cantidad:</label><input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 25"></div>
     <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento</button>
-    <button class="btn-redo" onclick="rehacerUltimoRegistroBorrado()">🔄 Rehacer Último Registro Borrado</button>
+    <button class="btn-redo" onclick="rehacerUltimoRegistroBorrado()">🔄 Rehacer Registros Borrados (<span id="contador-pila-rehacer">0</span>)</button>
 
     <div class="table-container">
       <table class="data-table">
@@ -808,7 +808,7 @@
     const capacidadBasePotrero = 50; 
 
     let movimientosRotacion = JSON.parse(localStorage.getItem('ato_rotacion')) || [];
-    let ultimoRegistroEliminado = null; // Buffer para la función de Rehacer
+    let pilaRegistrosEliminados = []; // Pila multicapa para múltiples rehacer
 
     let tareas = JSON.parse(localStorage.getItem('ato_tareas')) || [];
     let tratamientosSanitarios = JSON.parse(localStorage.getItem('ato_sanitario')) || [];
@@ -910,32 +910,39 @@
       tg.showAlert(`🚨 Movimiento registrado en ${potrero}`);
     }
 
+    function actualizarContadorRehacer() {
+      const badge = document.getElementById("contador-pila-rehacer");
+      if(badge) badge.innerText = pilaRegistrosEliminados.length;
+    }
+
     function rehacerUltimoRegistroBorrado() {
-      if (!ultimoRegistroEliminado) {
-        return tg.showAlert("⚠️ No hay ningún registro borrado recientemente para rehacer.");
+      if (pilaRegistrosEliminados.length === 0) {
+        return tg.showAlert("⚠️ No hay registros borrados para rehacer.");
       }
       
-      movimientosRotacion.unshift(ultimoRegistroEliminado);
+      // Extraer el último elemento eliminado de la pila (LIFO)
+      const registroRestaurado = pilaRegistrosEliminados.pop();
+      actualizarContadorRehacer();
+
+      movimientosRotacion.unshift(registroRestaurado);
       localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion));
-      
-      const potreroRehabilitado = ultimoRegistroEliminado.potrero;
-      ultimoRegistroEliminado = null; // Limpiar buffer tras rehacer
       
       actualizarTablaRotacion();
       actualizarResumenHato();
 
       const selectResumen = document.getElementById("select-resumen-potrero");
-      if (selectResumen && selectResumen.value === potreroRehabilitado) {
+      if (selectResumen && selectResumen.value === registroRestaurado.potrero) {
         generarGraficoDesdeSelector();
       }
 
-      tg.showAlert(`🔄 Se ha restaurado y rehecho el registro del potrero: ${potreroRehabilitado}`);
+      tg.showAlert(`🔄 Se ha rehecho y restaurado el registro del potrero: ${registroRestaurado.potrero}`);
     }
 
     function eliminarRegistroPorIndice(index) {
       if (index >= 0 && index < movimientosRotacion.length) {
-        // Guardar respaldo para poder rehacerlo después
-        ultimoRegistroEliminado = movimientosRotacion[index];
+        // Almacenar en la pila para permitir múltiples restauraciones (rehacer)
+        pilaRegistrosEliminados.push(movimientosRotacion[index]);
+        actualizarContadorRehacer();
         
         const eliminado = movimientosRotacion.splice(index, 1)[0];
         localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion));
@@ -948,7 +955,7 @@
           generarGraficoDesdeSelector();
         }
 
-        tg.showAlert(`🗑️ Se eliminó el registro. Puedes recuperarlo con el botón "Rehacer".`);
+        tg.showAlert(`🗑️ Registro borrado. Quedan ${pilaRegistrosEliminados.length} registros listos para rehacer.`);
       }
     }
 
@@ -1112,7 +1119,7 @@
       let colorIndex = 0;
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const radius = 55; // Radio ajustado para mejor visualización
+      const radius = 55;
 
       for (let clave in mapaDatos) {
         let cantidad = mapaDatos[clave];
