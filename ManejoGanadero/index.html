@@ -273,6 +273,13 @@
     }
     .summary-item .title { font-size: 13px; font-weight: bold; color: var(--blue-primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
     
+    .badges-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
     .carga-animal-badge {
       display: inline-block;
       background: #e8f5e9;
@@ -282,7 +289,28 @@
       border-radius: 6px;
       font-weight: bold;
       font-size: 11px;
-      margin-bottom: 6px;
+    }
+
+    .dias-badge {
+      display: inline-block;
+      background: #e3f2fd;
+      color: #0d47a1;
+      border: 1px solid #bbdefb;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 11px;
+    }
+
+    .descanso-badge {
+      display: inline-block;
+      background: #fff8e1;
+      color: #f57c00;
+      border: 1px solid #ffe082;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 11px;
     }
 
     .potrero-details-container {
@@ -901,6 +929,25 @@
       const cantidad = parseInt(document.getElementById("mod1-cantidad").value) || 0;
       
       if (cantidad <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
+
+      // VALIDACIÓN ESTRICTA DE FECHAS (No años distintos, ni meses adelantados, ni días futuros)
+      const hoyStr = new Date().toISOString().split('T')[0];
+      const anioActual = new Date().getFullYear();
+
+      const [anioIng, mesIng, diaIng] = fIngreso.split('-').map(Number);
+      const [anioSal, mesSal, diaSal] = fSalida.split('-').map(Number);
+
+      if (anioIng !== anioActual || anioSal !== anioActual) {
+        return tg.showAlert(`⚠️ Error de fecha: Las fechas deben corresponder al año actual (${anioActual}).`);
+      }
+
+      if (fIngreso > hoyStr || fSalida > hoyStr) {
+        return tg.showAlert("⚠️ Error de fecha: No se permiten fechas adelantadas o futuras (meses/días posteriores al actual).");
+      }
+
+      if (fSalida < fIngreso) {
+        return tg.showAlert("⚠️ Error: La fecha de salida no puede ser anterior a la fecha de ingreso.");
+      }
       
       movimientosRotacion.unshift({ potrero, fIngreso, fSalida, cat, grupo, cantidad });
       localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion)); 
@@ -920,7 +967,6 @@
         return tg.showAlert("⚠️ No hay registros borrados para rehacer.");
       }
       
-      // Extraer el último elemento eliminado de la pila (LIFO)
       const registroRestaurado = pilaRegistrosEliminados.pop();
       actualizarContadorRehacer();
 
@@ -940,7 +986,6 @@
 
     function eliminarRegistroPorIndice(index) {
       if (index >= 0 && index < movimientosRotacion.length) {
-        // Almacenar en la pila para permitir múltiples restauraciones (rehacer)
         pilaRegistrosEliminados.push(movimientosRotacion[index]);
         actualizarContadorRehacer();
         
@@ -982,10 +1027,24 @@
       contenedor.innerHTML = "";
 
       let potrerosMap = {};
+      const hoyDate = new Date();
+      hoyDate.setHours(0,0,0,0);
 
+      // Inicializar estructura para todos los potreros globales conocidos
+      listaPotrerosGlobales.forEach(potrero => {
+        potrerosMap[potrero] = { 
+          categorias: {}, 
+          grupos: {}, 
+          totalPotrero: 0, 
+          diasUsoMax: 0,
+          ultimaSalida: null
+        };
+      });
+
+      // Procesar movimientos registrados
       movimientosRotacion.forEach(m => {
         if (!potrerosMap[m.potrero]) {
-          potrerosMap[m.potrero] = { categorias: {}, grupos: {}, totalPotrero: 0 };
+          potrerosMap[m.potrero] = { categorias: {}, grupos: {}, totalPotrero: 0, diasUsoMax: 0, ultimaSalida: null };
         }
         
         if (!potrerosMap[m.potrero].categorias[m.cat]) {
@@ -999,19 +1058,39 @@
         potrerosMap[m.potrero].grupos[m.grupo] += m.cantidad;
 
         potrerosMap[m.potrero].totalPotrero += m.cantidad;
+
+        // Calcular días de uso (Diferencia entre F. Salida y F. Ingreso + 1)
+        if (m.fIngreso && m.fSalida) {
+          const dIng = new Date(m.fIngreso + 'T00:00:00');
+          const dSal = new Date(m.fSalida + 'T00:00:00');
+          const diffTime = dSal - dIng;
+          const diffDays = Math.max(0, Math.round(diffTime / (1000 * 60 * 60 * 24))) + 1;
+          if (diffDays > potrerosMap[m.potrero].diasUsoMax) {
+            potrerosMap[m.potrero].diasUsoMax = diffDays;
+          }
+
+          // Rastrear la última salida registrada para el cálculo de descanso
+          if (!potrerosMap[m.potrero].ultimaSalida || dSal > potrerosMap[m.potrero].ultimaSalida) {
+            potrerosMap[m.potrero].ultimaSalida = dSal;
+          }
+        }
       });
 
       ultimoMapaPotrerosGlobal = potrerosMap;
 
-      if (Object.keys(potrerosMap).length === 0) {
-        contenedor.innerHTML = `<div class="summary-item"><span class="title">Sin registros</span><span class="value">No hay animales distribuidos actualmente en los potreros.</span></div>`;
-        return;
-      }
-
       for (let potrero in potrerosMap) {
+        let datosPotrero = potrerosMap[potrero];
         let datosId = potreroSanitizadoId(potrero);
-        let totalPotrero = potrerosMap[potrero].totalPotrero;
+        let totalPotrero = datosPotrero.totalPotrero;
         let porcentajeCarga = Math.min(Math.round((totalPotrero / capacidadBasePotrero) * 100), 200);
+
+        // Cálculo de días de descanso (días transcurridos desde la última salida hasta hoy, si no hay animales activos)
+        let descansoTexto = "Sin historial de salida";
+        if (datosPotrero.ultimaSalida) {
+          const diffDescansoTime = hoyDate - datosPotrero.ultimaSalida;
+          const diffDescansoDays = Math.max(0, Math.round(diffDescansoTime / (1000 * 60 * 60 * 24)));
+          descansoTexto = `${diffDescansoDays} días de descanso`;
+        }
 
         let itemDiv = document.createElement("div");
         itemDiv.className = "summary-item";
@@ -1021,7 +1100,11 @@
             <span>🌾 Potrero: ${potrero}</span>
             <span style="font-size:11px; font-weight:normal; color:var(--blue-primary);">🔍 Toca para ver gráficos 📊</span>
           </div>
-          <div class="carga-animal-badge">🐂 Carga Animal: ${porcentajeCarga}% (${totalPotrero} animales / Cap. Ref: ${capacidadBasePotrero})</div>
+          <div class="badges-container">
+            <span class="carga-animal-badge">🐂 Carga: ${porcentajeCarga}% (${totalPotrero} animales)</span>
+            <span class="dias-badge">⏱️ Días de Uso: ${datosPotrero.diasUsoMax} días</span>
+            <span class="descanso-badge">🌱 Descanso: ${descansoTexto}</span>
+          </div>
           
           <div class="potrero-details-container" id="details-${datosId}">
             <div class="charts-wrapper">
@@ -1040,10 +1123,10 @@
         `;
         contenedor.appendChild(itemDiv);
 
-        setTimeout((dId, datosPotrero) => {
-          renderizarGraficoTorta(`chart-cat-${dId}`, `legend-cat-${dId}`, datosPotrero.categorias, datosPotrero.totalPotrero);
-          renderizarGraficoTorta(`chart-grp-${dId}`, `legend-grp-${dId}`, datosPotrero.grupos, datosPotrero.totalPotrero);
-        }, 50, datosId, potrerosMap[potrero]);
+        setTimeout((dId, datosP) => {
+          renderizarGraficoTorta(`chart-cat-${dId}`, `legend-cat-${dId}`, datosP.categorias, datosP.totalPotrero);
+          renderizarGraficoTorta(`chart-grp-${dId}`, `legend-grp-${dId}`, datosP.grupos, datosP.totalPotrero);
+        }, 50, datosId, datosPotrero);
       }
     }
 
