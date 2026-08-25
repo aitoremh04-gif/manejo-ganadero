@@ -641,15 +641,16 @@
     const gruposBovinos = ["Vaca", "Novilla", "Becerro", "Toro", "Mautas", "Mautes"];
     const gruposBufalinos = ["Búfalas", "Buvillas", "Bucerros", "Bucerras", "Butoro", "Bautas", "Bautes"];
 
-    let movimientosRotacion = [];
-    let tareas = [];
-    let tratamientosSanitarios = [];
-    let eventos = [];
-    let maquinarias = [];
-    let depositos = [];
-    let combustibleGasoil = 0;
-    let combustibleGasolina = 0;
-    let comidasServidasHoy = 0;
+    // Variables globales cargadas desde localStorage o inicializadas vacías
+    let movimientosRotacion = JSON.parse(localStorage.getItem('ato_rotacion')) || [];
+    let tareas = JSON.parse(localStorage.getItem('ato_tareas')) || [];
+    let tratamientosSanitarios = JSON.parse(localStorage.getItem('ato_sanitario')) || [];
+    let eventos = JSON.parse(localStorage.getItem('ato_eventos')) || [];
+    let maquinarias = JSON.parse(localStorage.getItem('ato_maquinaria')) || [];
+    let depositos = JSON.parse(localStorage.getItem('ato_depositos')) || [];
+    let combustibleGasoil = parseFloat(localStorage.getItem('ato_gasoil')) || 0;
+    let combustibleGasolina = parseFloat(localStorage.getItem('ato_gasolina')) || 0;
+    let comidasServidasHoy = parseInt(localStorage.getItem('ato_comidas')) || 0;
 
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date().toISOString().split('T')[0];
@@ -658,6 +659,18 @@
       });
       actualizarGruposEtarios();
       obtenerClimaGPS();
+
+      // Renderizar datos guardados previamente en las vistas/tablas al cargar la página
+      actualizarTablaRotacion();
+      actualizarResumenHato();
+      actualizarTablaTareas();
+      actualizarTablaSanitaria();
+      actualizarResumenEventos();
+      actualizarTablaMaquinaria();
+      document.getElementById("resumen-deposito-mes").innerText = `${depositos.length} Artículos / Lotes`;
+      document.getElementById("saldo-gasoil").innerText = `${combustibleGasoil} Lts`;
+      document.getElementById("saldo-gasolina").innerText = `${combustibleGasolina} Lts`;
+      document.getElementById("resumen-comida-hoy").innerText = `${comidasServidasHoy} Raciones`;
     });
 
     function mostrarModulo(id) {
@@ -708,6 +721,8 @@
       if (cantidad <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
       
       movimientosRotacion.unshift({ potrero, fIngreso, fSalida, cat, grupo, cantidad });
+      localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion)); // Guardar local
+      
       actualizarTablaRotacion();
       actualizarResumenHato();
       tg.showAlert(`🚨 Alerta de Rotación registrada en ${potrero}`);
@@ -742,6 +757,8 @@
       if(!descripcion) return tg.showAlert("⚠️ Ingrese la tarea.");
       
       tareas.unshift({ descripcion, inicio, fin, ejecucion, observacion });
+      localStorage.setItem('ato_tareas', JSON.stringify(tareas)); // Guardar local
+      
       actualizarTablaTareas();
       tg.showAlert("✅ Tarea Agendada");
     }
@@ -767,6 +784,8 @@
       if(!cantidad) return tg.showAlert("⚠️ Ingrese la cantidad.");
 
       tratamientosSanitarios.unshift({ lote, cantidad, tipo, aplicacion, proximo });
+      localStorage.setItem('ato_sanitario', JSON.stringify(tratamientosSanitarios)); // Guardar local
+      
       actualizarTablaSanitaria();
       tg.showAlert("✅ Tratamiento Registrado");
     }
@@ -791,6 +810,8 @@
       if(cant <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
 
       eventos.push({ cat, grupo, evento, cant });
+      localStorage.setItem('ato_eventos', JSON.stringify(eventos)); // Guardar local
+      
       actualizarResumenEventos();
       tg.showAlert("✅ Evento Registrado Exitosamente");
     }
@@ -817,6 +838,8 @@
       if(!equipo) return tg.showAlert("⚠️ Ingrese el equipo.");
 
       maquinarias.unshift({ equipo, resp, hrsTotales, averia });
+      localStorage.setItem('ato_maquinaria', JSON.stringify(maquinarias)); // Guardar local
+      
       actualizarTablaMaquinaria();
       tg.showAlert("✅ Registro de Maquinaria Guardado");
     }
@@ -855,6 +878,8 @@
       const articulo = document.getElementById("mod7-articulo").value;
       if(!articulo) return tg.showAlert("⚠️ Ingrese el artículo.");
       depositos.push(articulo);
+      localStorage.setItem('ato_depositos', JSON.stringify(depositos)); // Guardar local
+      
       document.getElementById("resumen-deposito-mes").innerText = `${depositos.length} Artículos / Lotes`;
       tg.showAlert("✅ Insumo registrado en Depósito");
     }
@@ -878,10 +903,12 @@
       if(tipo === "Gasoil") {
         if(operacion.includes("Ingreso")) combustibleGasoil += litros;
         else combustibleGasoil -= litros;
+        localStorage.setItem('ato_gasoil', combustibleGasoil); // Guardar local
         document.getElementById("saldo-gasoil").innerText = `${combustibleGasoil} Lts`;
       } else {
         if(operacion.includes("Ingreso")) combustibleGasolina += litros;
         else combustibleGasolina -= litros;
+        localStorage.setItem('ato_gasolina', combustibleGasolina); // Guardar local
         document.getElementById("saldo-gasolina").innerText = `${combustibleGasolina} Lts`;
       }
       tg.showAlert("✅ Movimiento de combustible registrado.");
@@ -892,6 +919,8 @@
       const personas = parseInt(document.getElementById("mod10-personas").value) || 0;
       if(personas <= 0) return tg.showAlert("⚠️ Ingrese el número de personas.");
       comidasServidasHoy += personas;
+      localStorage.setItem('ato_comidas', comidasServidasHoy); // Guardar local
+      
       document.getElementById("resumen-comida-hoy").innerText = `${comidasServidasHoy} Raciones`;
       tg.showAlert("✅ Ración de comida registrada.");
     }
