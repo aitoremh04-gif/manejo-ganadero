@@ -816,7 +816,8 @@
       document.getElementById("resumen-comida-hoy").innerText = `${comidasServidasHoy} Raciones`;
       tg.showAlert("🍽️ Registro de raciones guardado.");
     }
-  </script>// Guardar datos en el teléfono
+  </script> 
+  // Guardar datos en el teléfono
 function guardarEnLocal(clave, datos) {
   localStorage.setItem(clave, JSON.stringify(datos));
 }
@@ -825,6 +826,7 @@ function guardarEnLocal(clave, datos) {
 function cargarDatosLocales(clave) {
   const datos = localStorage.getItem(clave);
   return datos ? JSON.parse(datos) : [];
+  </script>
 }
 </body>
 </html>
