@@ -264,12 +264,6 @@
       border-radius: 8px; 
       border: 1.5px solid #e2e8f0; 
       margin-bottom: 8px; 
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .summary-item:hover {
-      border-color: var(--blue-primary);
-      background-color: #fafbfc;
     }
     .summary-item .title { font-size: 13px; font-weight: bold; color: var(--blue-primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
     
@@ -429,20 +423,13 @@
     </div>
     <div class="form-group"><label>Cantidad:</label><input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 25"></div>
     <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento</button>
-    <button class="btn-redo" onclick="rehacerUltimoRegistroBorrado()">🔄 Rehacer Registros Borrados (<span id="contador-pila-rehacer">0</span>)</button>
-
     <div class="table-container">
       <table class="data-table">
         <thead>
-          <tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Cat.</th><th>Grupo</th><th>Cant.</th><th>Acción</th></tr>
+          <tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Cat.</th><th>Grupo</th><th>Cant.</th></tr>
         </thead>
         <tbody id="tabla-rotacion-body"></tbody>
       </table>
-    </div>
-    
-    <div class="summary-card">
-      <h4>📊 Resumen e Indicadores por Potrero</h4>
-      <div class="summary-grid" id="resumen-agrupado-container"></div>
     </div>
   </div>
 
@@ -453,39 +440,17 @@
       <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
     <div class="form-group"><label>Tarea:</label><input type="text" id="mod2-tarea" class="form-control" placeholder="Ej: Limpieza de canales"></div>
-    <div class="form-group"><label>Responsable:</label><input type="text" id="mod2-responsable" class="form-control" placeholder="Ej: Juan Pérez"></div>
     <div class="form-row">
       <div class="form-group"><label>Fecha Asignación:</label><input type="date" id="mod2-f-asignacion" class="form-control"></div>
       <div class="form-group"><label>Fecha Culminación:</label><input type="date" id="mod2-f-culminacion" class="form-control"></div>
     </div>
     <div class="form-group"><label>Ejecución:</label><select class="form-control" id="mod2-ejecucion"><option value="No">No</option><option value="Sí">Sí</option></select></div>
     <div class="form-group"><label>Observación:</label><input type="text" id="mod2-observacion" class="form-control"></div>
-    
     <button class="btn-action" onclick="guardarTarea()">Guardar Tarea</button>
-    <button class="btn-redo" onclick="rehacerTarea()">🔄 Rehacer Tarea (<span id="contador-rehacer-tareas">0</span>)</button>
-
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr><th>Tarea</th><th>Responsable</th><th>Inicio</th><th>Fin</th><th>Ejec.</th><th>Obs.</th><th>Acción</th></tr>
-        </thead>
-        <tbody id="tabla-tareas-body"></tbody>
-      </table>
-    </div>
-
-    <!-- SECCIÓN DE RESUMEN DEL MÓDULO 2 -->
-    <div class="summary-card">
-      <h4>📊 Resumen de Tareas y Responsables</h4>
-      <div class="summary-grid" id="resumen-tareas-container">
-        <div class="summary-item">
-          <span class="title">Estado</span>
-          <span class="value">No hay tareas activas registradas.</span>
-        </div>
-      </div>
-    </div>
+    <div class="table-container"><table class="data-table"><thead><tr><th>Tarea</th><th>Inicio</th><th>Fin</th><th>Ejec.</th><th>Obs.</th></tr></thead><tbody id="tabla-tareas-body"></tbody></table></div>
   </div>
 
-  <!-- MODULO 3: MANEJO SANITARIO PRODUCTIVO -->
+  <!-- MODULO 3: MANEJO SANITARIO PRODUCTIVO (ACTUALIZADO) -->
   <div id="mod-3" class="module-view">
     <div class="module-header">
       <h3>3. Manejo Sanitario Productivo</h3>
@@ -496,19 +461,58 @@
         <option>Vacas PÑ</option><option>Vacas Paridas</option><option>Vacas Vacías</option><option>Vacas en Monta</option><option>Becerros Recién Nacidos</option><option>Becerros 1 Mes</option><option>Becerros 2 Meses</option><option>Becerros 3 Meses</option><option>Becerros 4 Meses</option><option>Becerros 5 Meses</option><option>Novillas</option><option>Destetes</option><option>Toros</option><option>Búfalas PÑ</option><option>Búfalas Paridas</option><option>Búfalas Vacías</option><option>Búfalas en Monta</option><option>Búfalas en Ordeño</option><option>Bucerros en Ordeño</option><option>Buvillas</option><option>Bautas</option><option>Bautes</option><option>Butoro</option>
       </select>
     </div>
+    
     <div class="form-row">
       <div class="form-group"><label>Cantidad:</label><input type="number" id="mod3-cantidad" class="form-control"></div>
-      <div class="form-group"><label>Tipo Tratamiento:</label>
-        <select class="form-control" id="mod3-tipo"><option>Vacunas</option><option>Desparasitación</option><option>Minerales</option><option>Vitaminas</option><option>Antibióticos</option></select>
-      </div>
+      <div class="form-group"><label>Responsable:</label><input type="text" id="mod3-responsable" class="form-control" placeholder="Ej: Pedro Pérez"></div>
     </div>
+
+    <div class="form-group">
+      <label>Actividad a ejecutar:</label>
+      <select class="form-control" id="mod3-tipo" onchange="verificarActividadOtra(this)">
+        <option value="Vacunas">Vacunas</option>
+        <option value="Desparasitación">Desparasitación</option>
+        <option value="Minerales">Minerales</option>
+        <option value="Vitaminas">Vitaminas</option>
+        <option value="Antibióticos">Antibióticos</option>
+        <option value="Pesajes">Pesajes</option>
+        <option value="Otra">Otra actividad (Escribir abajo)</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="contenedor-otra-actividad" style="display:none;">
+      <label>Escribir Otra Actividad:</label>
+      <input type="text" id="mod3-otra-tipo" class="form-control" placeholder="Especificar actividad">
+    </div>
+
     <div class="form-row">
       <div class="form-group"><label>Fecha Aplicación:</label><input type="date" id="mod3-f-aplicacion" class="form-control"></div>
       <div class="form-group"><label>Próximo Tratamiento:</label><input type="date" id="mod3-f-proximo" class="form-control"></div>
     </div>
     <div class="form-group"><label>Observación:</label><input type="text" id="mod3-observacion" class="form-control"></div>
-    <button class="btn-action" onclick="guardarTratamientoSanitario()">Guardar Tratamiento</button>
-    <div class="table-container"><table class="data-table"><thead><tr><th>Lote</th><th>Cant</th><th>Tipo</th><th>Aplic.</th><th>Próx.</th></tr></thead><tbody id="tabla-sanitaria-body"></tbody></table></div>
+    
+    <button class="btn-action" onclick="guardarTratamientoSanitario()">Guardar Actividad</button>
+    <button class="btn-redo" onclick="rehacerActividadSanitaria()">🔄 Rehacer Actividad (<span id="contador-rehacer-sanitaria">0</span>)</button>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr><th>Lote</th><th>Actividad</th><th>Responsable</th><th>Cant</th><th>Aplic.</th><th>Próx.</th><th>Acción</th></tr>
+        </thead>
+        <tbody id="tabla-sanitaria-body"></tbody>
+      </table>
+    </div>
+
+    <!-- ÁREA DE RESUMEN DEL MÓDULO 3 -->
+    <div class="summary-card">
+      <h4>📊 Resumen de Actividades Sanitarias y Responsables</h4>
+      <div class="summary-grid" id="resumen-sanitaria-container">
+        <div class="summary-item">
+          <span class="title">Estado</span>
+          <span class="value">No hay actividades sanitarias registradas.</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- MODULO 4: EVENTOS POR CATEGORÍA -->
@@ -544,15 +548,6 @@
       <iframe id="mapa-mod4" class="map-preview" style="display:none;" frameborder="0"></iframe>
     </div>
     <button class="btn-action" onclick="guardarEvento()">Registrar Evento</button>
-
-    <div class="summary-card">
-      <h4>📊 Resumen General de Eventos</h4>
-      <div class="summary-grid">
-        <div class="summary-item"><span class="title">Nacimientos Totales</span><span class="value" id="resumen-nacidos">0</span></div>
-        <div class="summary-item"><span class="title">Mortalidad / Decesos</span><span class="value" id="resumen-muertos">0</span></div>
-        <div class="summary-item" style="grid-column: span 2;"><span class="title">Traslados / Consumos</span><span class="value" id="resumen-salidas">0</span></div>
-      </div>
-    </div>
   </div>
 
   <!-- MODULO 5: MAQUINARIA Y EQUIPO -->
@@ -572,7 +567,6 @@
     </div>
     <div class="form-group"><label>Observación de Avería:</label><input type="text" id="mod5-averia" class="form-control" placeholder="Ej: Fuga leve en manguera hidráulica"></div>
     <button class="btn-action" onclick="guardarMaquinaria()">Guardar Registro de Equipo</button>
-
     <div class="table-container"><table class="data-table"><thead><tr><th>Equipo</th><th>Responsable</th><th>Hrs Acum.</th><th>Estado Aceite</th><th>Avería</th></tr></thead><tbody id="tabla-maquinaria-body"></tbody></table></div>
   </div>
 
@@ -618,12 +612,6 @@
       <div class="form-group"><label>Responsable:</label><input type="text" id="mod7-resp" class="form-control"></div>
     </div>
     <button class="btn-action" onclick="guardarDeposito()">Registrar Insumo</button>
-    <div class="summary-card">
-      <h4>📦 Resumen de Artículos Despachados por Mes</h4>
-      <div class="summary-grid">
-        <div class="summary-item" style="grid-column: span 2;"><span class="title">Total Despachos (Mes)</span><span class="value" id="resumen-deposito-mes">0 Artículos / Lotes</span></div>
-      </div>
-    </div>
   </div>
 
   <!-- MODULO 8: REPARACIÓN DE LÍNEAS -->
@@ -665,13 +653,6 @@
       <div class="form-group"><label>Fecha:</label><input type="date" id="mod9-fecha" class="form-control"></div>
     </div>
     <button class="btn-action" onclick="guardarCombustible()">Registrar Movimiento Combustible</button>
-    <div class="summary-card">
-      <h4>⛽ Resumen de Inventario Combustible</h4>
-      <div class="summary-grid">
-        <div class="summary-item"><span class="title">Gasoil Disponible</span><span class="value" id="saldo-gasoil">0 Lts</span></div>
-        <div class="summary-item"><span class="title">Gasolina Disponible</span><span class="value" id="saldo-gasolina">0 Lts</span></div>
-      </div>
-    </div>
   </div>
 
   <!-- MODULO 10: LOGÍSTICA DE COMIDA -->
@@ -689,9 +670,6 @@
       <div class="form-group"><label>Ubicación / Cuadrilla:</label><input type="text" id="mod10-cuadrilla" class="form-control" placeholder="Ej: Sabana Manguito"></div>
     </div>
     <button class="btn-action" onclick="guardarComida()">Registrar Ración Comida</button>
-    <div class="summary-card">
-      <h4>🍽️ Resumen Diario de Alimentación</h4>
-    </div>
   </div>
 
   <script>
@@ -707,126 +685,151 @@
       document.getElementById('main-menu').style.display = 'block';
     }
 
-    // Lógica específica del Módulo 2 (Planificación y Tareas) con soporte multi-rehacer y responsable
-    let listaTareas = [];
-    let papeleraTareas = [];
+    // Lógica específica del Módulo 3 (Manejo Sanitario Productivo) actualizada
+    let listaSanitaria = [];
+    let papeleraSanitaria = [];
 
-    function guardarTarea() {
-      const tarea = document.getElementById('mod2-tarea').value.trim();
-      const responsable = document.getElementById('mod2-responsable').value.trim();
-      const fAsignacion = document.getElementById('mod2-f-asignacion').value;
-      const fCulminacion = document.getElementById('mod2-f-culminacion').value;
-      const ejecucion = document.getElementById('mod2-ejecucion').value;
-      const observacion = document.getElementById('mod2-observacion').value.trim();
+    function verificarActividadOtra(selectElem) {
+      const contenedorOtra = document.getElementById('contenedor-otra-actividad');
+      if (selectElem.value === 'Otra') {
+        contenedorOtra.style.display = 'block';
+      } else {
+        contenedorOtra.style.display = 'none';
+        document.getElementById('mod3-otra-tipo').value = '';
+      }
+    }
 
-      if (!tarea || !responsable) {
-        alert('Por favor, completa al menos el campo de la Tarea y el Responsable.');
+    function guardarTratamientoSanitario() {
+      const lote = document.getElementById('mod3-lote').value;
+      const cantidad = document.getElementById('mod3-cantidad').value;
+      const responsable = document.getElementById('mod3-responsable').value.trim();
+      
+      let tipoSelect = document.getElementById('mod3-tipo').value;
+      let tipoActividad = tipoSelect;
+      if (tipoSelect === 'Otra') {
+        tipoActividad = document.getElementById('mod3-otra-tipo').value.trim();
+        if (!tipoActividad) {
+          alert('Por favor, especifica la otra actividad.');
+          return;
+        }
+      }
+
+      const fAplicacion = document.getElementById('mod3-f-aplicacion').value;
+      const fProximo = document.getElementById('mod3-f-proximo').value;
+      const observacion = document.getElementById('mod3-observacion').value.trim();
+
+      if (!responsable) {
+        alert('Por favor, ingresa el nombre del responsable de la actividad.');
         return;
       }
 
-      const nuevaTarea = {
+      const nuevaActividad = {
         id: Date.now(),
-        tarea,
+        lote,
+        cantidad,
         responsable,
-        fAsignacion,
-        fCulminacion,
-        ejecucion,
+        tipoActividad,
+        fAplicacion,
+        fProximo,
         observacion
       };
 
-      listaTareas.push(nuevaTarea);
-      
-      // Limpiar campos del formulario
-      document.getElementById('mod2-tarea').value = '';
-      document.getElementById('mod2-responsable').value = '';
-      document.getElementById('mod2-f-asignacion').value = '';
-      document.getElementById('mod2-f-culminacion').value = '';
-      document.getElementById('mod2-observacion').value = '';
+      listaSanitaria.push(nuevaActividad);
 
-      actualizarTablaTareas();
-      actualizarResumenTareas();
+      // Limpiar campos
+      document.getElementById('mod3-cantidad').value = '';
+      document.getElementById('mod3-responsable').value = '';
+      document.getElementById('mod3-tipo').value = 'Vacunas';
+      document.getElementById('contenedor-otra-actividad').style.display = 'none';
+      document.getElementById('mod3-otra-tipo').value = '';
+      document.getElementById('mod3-f-aplicacion').value = '';
+      document.getElementById('mod3-f-proximo').value = '';
+      document.getElementById('mod3-observacion').value = '';
+
+      actualizarTablaSanitaria();
+      actualizarResumenSanitaria();
     }
 
-    function borrarTarea(index) {
-      const tareaBorrada = listaTareas.splice(index, 1)[0];
-      papeleraTareas.push(tareaBorrada);
+    function borrarActividadSanitaria(index) {
+      const actividadBorrada = listaSanitaria.splice(index, 1)[0];
+      papeleraSanitaria.push(actividadBorrada);
 
-      actualizarTablaTareas();
-      actualizarResumenTareas();
+      actualizarTablaSanitaria();
+      actualizarResumenSanitaria();
     }
 
-    function rehacerTarea() {
-      if (papeleraTareas.length === 0) {
-        alert('No hay tareas borradas para rehacer.');
+    function rehacerActividadSanitaria() {
+      if (papeleraSanitaria.length === 0) {
+        alert('No hay actividades borradas para rehacer.');
         return;
       }
 
-      const tareaRecuperada = papeleraTareas.pop();
-      listaTareas.push(tareaRecuperada);
+      const actividadRecuperada = papeleraSanitaria.pop();
+      listaSanitaria.push(actividadRecuperada);
 
-      actualizarTablaTareas();
-      actualizarResumenTareas();
+      actualizarTablaSanitaria();
+      actualizarResumenSanitaria();
     }
 
-    function actualizarTablaTareas() {
-      const tbody = document.getElementById('tabla-tareas-body');
+    function actualizarTablaSanitaria() {
+      const tbody = document.getElementById('tabla-sanitaria-body');
       tbody.innerHTML = '';
 
-      listaTareas.forEach((item, index) => {
+      listaSanitaria.forEach((item, index) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${item.tarea}</td>
+          <td>${item.lote}</td>
+          <td>${item.tipoActividad}</td>
           <td><strong>${item.responsable}</strong></td>
-          <td>${item.fAsignacion || '-'}</td>
-          <td>${item.fCulminacion || '-'}</td>
-          <td>${item.ejecucion}</td>
-          <td>${item.observacion || '-'}</td>
-          <td><button class="btn-delete-item" onclick="borrarTarea(${index})">❌ Borrar</button></td>
+          <td>${item.cantidad || '-'}</td>
+          <td>${item.fAplicacion || '-'}</td>
+          <td>${item.fProximo || '-'}</td>
+          <td><button class="btn-delete-item" onclick="borrarActividadSanitaria(${index})">❌ Borrar</button></td>
         `;
         tbody.appendChild(tr);
       });
 
-      const contador = document.getElementById('contador-rehacer-tareas');
+      const contador = document.getElementById('contador-rehacer-sanitaria');
       if (contador) {
-        contador.textContent = papeleraTareas.length;
+        contador.textContent = papeleraSanitaria.length;
       }
     }
 
-    function actualizarResumenTareas() {
-      const contenedorResumen = document.getElementById('resumen-tareas-container');
+    function actualizarResumenSanitaria() {
+      const contenedorResumen = document.getElementById('resumen-sanitaria-container');
       contenedorResumen.innerHTML = '';
 
-      if (listaTareas.length === 0) {
+      if (listaSanitaria.length === 0) {
         contenedorResumen.innerHTML = `
           <div class="summary-item">
             <span class="title">Estado</span>
-            <span class="value">No hay tareas activas registradas.</span>
+            <span class="value">No hay actividades sanitarias registradas.</span>
           </div>`;
         return;
       }
 
       const agrupadoPorResponsable = {};
-      listaTareas.forEach(t => {
-        if (!agrupadoPorResponsable[t.responsable]) {
-          agrupadoPorResponsable[t.responsable] = [];
+      listaSanitaria.forEach(item => {
+        if (!agrupadoPorResponsable[item.responsable]) {
+          agrupadoPorResponsable[item.responsable] = [];
         }
-        agrupadoPorResponsable[t.responsable].push(t);
+        agrupadoPorResponsable[item.responsable].push(item);
       });
 
-      for (const [resp, tareas] of Object.entries(agrupadoPorResponsable)) {
-        let htmlTareas = tareas.map(t => `<div style="font-size: 11px; margin-top: 2px;">• ${t.tarea} (Ejecutada: ${t.ejecucion})</div>`).join('');
+      for (const [resp, acts] of Object.entries(agrupadoPorResponsable)) {
+        let htmlActs = acts.map(a => `<div style="font-size: 11px; margin-top: 2px;">• Lote: ${a.lote} | Actividad: ${a.tipoActividad} (Cant: ${a.cantidad || '-'})</div>`).join('');
         
         const div = document.createElement('div');
         div.className = 'summary-item';
         div.innerHTML = `
-          <span class="title">👤 Responsable: ${resp} <span style="font-weight:normal; font-size:11px;">(${tareas.length} tareas)</span></span>
-          <div style="margin-top: 4px;">${htmlTareas}</div>
+          <span class="title">👤 Responsable: ${resp} <span style="font-weight:normal; font-size:11px;">(${acts.length} actividades)</span></span>
+          <div style="margin-top: 4px;">${htmlActs}</div>
         `;
         contenedorResumen.appendChild(div);
       }
     }
 
-    // Funciones globales de soporte (GPS/Clima/Mockups de otros módulos si se requieren)
+    // Funciones globales de soporte (GPS/Clima)
     function obtenerCoordenadas(inputId, mapaId) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
