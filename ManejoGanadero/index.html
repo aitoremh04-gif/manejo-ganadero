@@ -194,6 +194,18 @@
       margin-top: 6px;
     }
 
+    .btn-undo-small {
+      background-color: #d32f2f;
+      color: #ffffff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
     .btn-geo {
       background-color: #2e7d32;
       color: white;
@@ -503,11 +515,11 @@
     </div>
     <div class="form-group"><label>Cantidad:</label><input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 25"></div>
     <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento</button>
-    <button class="btn-undo" onclick="deshacerUltimoMovimientoRotacion()">↩️ Deshacer Último Registro</button>
+    <button class="btn-undo" onclick="deshacerUltimoMovimientoRotacion()">↩️ Deshacer Último Registro Global</button>
 
     <div class="table-container"><table class="data-table"><thead><tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Cat.</th><th>Grupo</th><th>Cant.</th></tr></thead><tbody id="tabla-rotacion-body"></tbody></table></div>
     
-    <!-- SECCIÓN DE RESUMEN E INDICADORES CON BOTÓN DE GENERACIÓN GENERAL DE GRÁFICOS -->
+    <!-- SECCIÓN DE RESUMEN E INDICADORES CON BOTÓN DE GENERACIÓN GENERAL DE GRÁFICOS Y DESHACER POR SELECCIÓN -->
     <div class="summary-card">
       <h4>📊 Resumen e Indicadores por Potrero</h4>
       
@@ -524,7 +536,7 @@
         <div id="general-chart-display-container" style="display: none; margin-top: 12px; border-top: 1px dashed #cbd5e1; padding-top: 10px;"></div>
       </div>
 
-      <p style="font-size: 11px; color: var(--text-muted); margin-top: -2px; margin-bottom: 10px;">O haz clic directamente en cualquier tarjeta de potrero abajo para desplegar sus gráficos.</p>
+      <p style="font-size: 11px; color: var(--text-muted); margin-top: -2px; margin-bottom: 10px;">O haz clic directamente en cualquier tarjeta de potrero abajo para desplegar sus gráficos y opciones.</p>
       <div class="summary-grid" id="resumen-agrupado-container">
         <!-- Contenido generado dinámicamente -->
       </div>
@@ -891,6 +903,28 @@
       tg.showAlert(`↩️ Se deshizo el último registro del potrero: ${eliminado.potrero}`);
     }
 
+    // NUEVA FUNCIÓN: Deshacer el último movimiento asociado específicamente a un potrero seleccionado
+    function deshacerMovimientoPorPotrero(nombrePotrero) {
+      const index = movimientosRotacion.findIndex(m => m.potrero === nombrePotrero);
+      if (index === -1) {
+        return tg.showAlert(`⚠️ No hay registros activos para el potrero: ${nombrePotrero}`);
+      }
+
+      const eliminado = movimientosRotacion.splice(index, 1)[0];
+      localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion));
+
+      actualizarTablaRotacion();
+      actualizarResumenHato();
+
+      // Si el selector superior está mostrando este potrero, actualizamos su vista previa general
+      const selectResumen = document.getElementById("select-resumen-potrero");
+      if (selectResumen && selectResumen.value === nombrePotrero) {
+        generarGraficoDesdeSelector();
+      }
+
+      tg.showAlert(`🗑️ Se eliminó el último registro del potrero: ${nombrePotrero}`);
+    }
+
     function actualizarTablaRotacion() {
       const tbody = document.getElementById("tabla-rotacion-body");
       tbody.innerHTML = "";
@@ -939,10 +973,9 @@
 
         let itemDiv = document.createElement("div");
         itemDiv.className = "summary-item";
-        itemDiv.onclick = () => alternarDetallesPotrero(datosId);
         
         itemDiv.innerHTML = `
-          <div class="title">
+          <div class="title" onclick="alternarDetallesPotrero('${datosId}')">
             <span>🌾 Potrero: ${potrero}</span>
             <span style="font-size:11px; font-weight:normal; color:var(--blue-primary);">🔍 Toca para ver gráficos 📊</span>
           </div>
@@ -961,6 +994,8 @@
                 <div class="chart-legend" id="legend-grp-${datosId}"></div>
               </div>
             </div>
+            <!-- Botón de Deshacer por Selección de Potrero -->
+            <button class="btn-undo-small" onclick="deshacerMovimientoPorPotrero('${potrero}')">🗑️ Deshacer Último Registro de este Potrero</button>
           </div>
         `;
         contenedor.appendChild(itemDiv);
@@ -1006,6 +1041,7 @@
             <div class="chart-legend" id="legend-grp-gen"></div>
           </div>
         </div>
+        <button class="btn-undo-small" onclick="deshacerMovimientoPorPotrero('${potreroSeleccionado}')">🗑️ Deshacer Último Registro de ${potreroSeleccionado}</button>
       `;
 
       setTimeout(() => {
