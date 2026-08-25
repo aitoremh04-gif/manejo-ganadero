@@ -246,43 +246,54 @@
 
     .summary-card h4 { margin: 0 0 10px 0; font-size: 13px; color: var(--blue-primary); }
     .summary-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
-    .summary-item { background: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid #edf2f7; }
-    .summary-item .title { font-size: 11px; font-weight: bold; color: var(--blue-primary); display: block; margin-bottom: 4px; }
-    .summary-item .value { font-size: 13px; color: var(--text-main); }
+    .summary-item { background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #edf2f7; margin-bottom: 8px; }
+    .summary-item .title { font-size: 12px; font-weight: bold; color: var(--blue-primary); display: block; margin-bottom: 4px; }
+    .summary-item .value { font-size: 12px; color: var(--text-main); }
     .group-tag { display: inline-block; background: #eef6fc; color: var(--blue-primary); padding: 2px 6px; border-radius: 6px; font-size: 11px; margin: 2px; font-weight: 500; }
     
-    /* Estilos para el Gráfico de Torta y Leyenda */
+    /* Estilos para el Gráfico de Torta Individual y Leyenda */
     .chart-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
-      margin-top: 10px;
+      gap: 8px;
+      margin-top: 8px;
     }
-    canvas#pie-chart {
-      max-width: 180px;
-      max-height: 180px;
+    canvas.potrero-chart {
+      width: 140px !important;
+      height: 140px !important;
     }
     .chart-legend {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 4px;
       justify-content: center;
-      font-size: 11px;
+      font-size: 10px;
     }
     .legend-item {
       display: flex;
       align-items: center;
       gap: 4px;
-      background: #ffffff;
-      padding: 3px 6px;
-      border-radius: 6px;
+      background: #f8fafc;
+      padding: 2px 5px;
+      border-radius: 4px;
       border: 1px solid #e2e8f0;
     }
     .legend-color {
-      width: 10px;
-      height: 10px;
-      border-radius: 3px;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+    .carga-animal-badge {
+      display: inline-block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 11px;
+      margin-bottom: 6px;
     }
 
     .weather-box {
@@ -446,19 +457,9 @@
     <div class="table-container"><table class="data-table"><thead><tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Cat.</th><th>Grupo</th><th>Cant.</th></tr></thead><tbody id="tabla-rotacion-body"></tbody></table></div>
     
     <div class="summary-card">
-      <h4>📊 Resumen Agrupado y Desglosado del Hato</h4>
-      
-      <!-- Gráfico de Torta Porcentual Dinámico -->
-      <div class="summary-item" style="text-align: center; margin-bottom: 10px;">
-        <span class="title">📈 Distribución Porcentual por Grupo Etario</span>
-        <div class="chart-container">
-          <canvas id="pie-chart" width="180" height="180"></canvas>
-          <div class="chart-legend" id="chart-legend-container"></div>
-        </div>
-      </div>
-
+      <h4>📊 Resumen e Indicadores por Potrero</h4>
       <div class="summary-grid" id="resumen-agrupado-container">
-        <!-- Contenido generado dinámicamente con desglose de grupos etarios y categorías -->
+        <!-- Contenido generado dinámicamente con gráficos de torta independientes por potrero -->
       </div>
     </div>
   </div>
@@ -700,6 +701,9 @@
     const gruposBovinos = ["Vaca", "Novilla", "Becerro", "Toro", "Mautas", "Mautes"];
     const gruposBufalinos = ["Búfalas", "Buvillas", "Bucerros", "Bucerras", "Butoro", "Bautas", "Bautes"];
 
+    // Capacidad estimada referencial estándar por potrero (Ej: 50 animales = 100% de carga óptima de referencia)
+    const capacidadBasePotrero = 50; 
+
     // Variables globales cargadas desde localStorage o inicializadas vacías
     let movimientosRotacion = JSON.parse(localStorage.getItem('ato_rotacion')) || [];
     let tareas = JSON.parse(localStorage.getItem('ato_tareas')) || [];
@@ -719,7 +723,7 @@
       actualizarGruposEtarios();
       obtenerClimaGPS();
 
-      // Renderizar datos guardados previamente en las vistas/tablas al cargar la página
+      // Renderizar datos guardados previamente
       actualizarTablaRotacion();
       actualizarResumenHato();
       actualizarTablaTareas();
@@ -780,7 +784,7 @@
       if (cantidad <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
       
       movimientosRotacion.unshift({ potrero, fIngreso, fSalida, cat, grupo, cantidad });
-      localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion)); // Guardar local
+      localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion)); 
       
       actualizarTablaRotacion();
       actualizarResumenHato();
@@ -815,87 +819,66 @@
       contenedor.innerHTML = "";
 
       if (movimientosRotacion.length === 0) {
-        contenedor.innerHTML = `<div class="summary-item"><span class="title">Sin registros</span><span class="value">No hay animales distribuidos actualmente.</span></div>`;
-        limpiarGraficoTorta();
+        contenedor.innerHTML = `<div class="summary-item"><span class="title">Sin registros</span><span class="value">No hay animales distribuidos actualmente en los potreros.</span></div>`;
         return;
       }
 
       let potrerosMap = {};
-      let totalBovinosGeneral = 0;
-      let totalBufalinosGeneral = 0;
-      let gruposTotalesMap = {};
 
       movimientosRotacion.forEach(m => {
-        // Agrupación general por grupo etario para el gráfico
-        if (!gruposTotalesMap[m.grupo]) gruposTotalesMap[m.grupo] = 0;
-        gruposTotalesMap[m.grupo] += m.cantidad;
-
-        // Agrupación por potrero
         if (!potrerosMap[m.potrero]) {
-          potrerosMap[m.potrero] = { Bovinos: {}, Bufalinos: {}, totalPotrero: 0 };
+          potrerosMap[m.potrero] = { grupos: {}, totalPotrero: 0 };
         }
-        if (!potrerosMap[m.potrero][m.cat][m.grupo]) {
-          potrerosMap[m.potrero][m.cat][m.grupo] = 0;
+        if (!potrerosMap[m.potrero].grupos[m.grupo]) {
+          potrerosMap[m.potrero].grupos[m.grupo] = 0;
         }
-        potrerosMap[m.potrero][m.cat][m.grupo] += m.cantidad;
+        potrerosMap[m.potrero].grupos[m.grupo] += m.cantidad;
         potrerosMap[m.potrero].totalPotrero += m.cantidad;
-
-        if (m.cat === "Bovinos") totalBovinosGeneral += m.cantidad;
-        if (m.cat === "Bufalinos") totalBufalinosGeneral += m.cantidad;
       });
 
-      // Renderizar Gráfico de Torta con los porcentajes por grupos etarios
-      renderizarGraficoTorta(gruposTotalesMap, totalBovinosGeneral + totalBufalinosGeneral);
-
-      // Renderizar tarjetas de resumen agrupadas por potrero
+      // Renderizar una tarjeta con su respectivo gráfico individual y carga animal por potrero
       for (let potrero in potrerosMap) {
-        let datos = potrerosMap[potrero];
-        let htmlDesglose = "";
-
-        ["Bovinos", "Bufalinos"].forEach(cat => {
-          let gruposCat = datos[cat];
-          let keys = Object.keys(gruposCat);
-          if (keys.length > 0) {
-            htmlDesglose += `<div style="margin-top: 4px;"><strong>${cat}:</strong> `;
-            keys.forEach(g => {
-              htmlDesglose += `<span class="group-tag">${g}: ${gruposCat[g]}</span>`;
-            });
-            htmlDesglose += `</div>`;
-          }
-        });
+        let datos = potreroSanitizadoId(potrero);
+        let totalPotrero = potrerosMap[potrero].totalPotrero;
+        
+        // Cálculo del porcentaje de carga animal (asumiendo 50 animales como 100% de capacidad base óptima ajustable)
+        let porcentajeCarga = Math.min(Math.round((totalPotrero / capacidadBasePotrero) * 100), 200);
 
         let itemDiv = document.createElement("div");
         itemDiv.className = "summary-item";
         itemDiv.innerHTML = `
-          <span class="title">🌾 Potrero: ${potrero} (Total: ${datos.totalPotrero} animales)</span>
-          <div class="value">${htmlDesglose}</div>
+          <span class="title">🌾 Potrero: ${potrero}</span>
+          <div class="carga-animal-badge">🐂 Carga Animal: ${porcentajeCarga}% (${totalPotrero} animales / Cap. Ref: ${capacidadBasePotrero})</div>
+          <div class="chart-container">
+            <canvas id="chart-${datos}" class="potrero-chart" width="140" height="140"></canvas>
+            <div class="chart-legend" id="legend-${datos}"></div>
+          </div>
         `;
         contenedor.appendChild(itemDiv);
-      }
 
-      // Tarjeta final con el total general del hato
-      let totalGeneralDiv = document.createElement("div");
-      totalGeneralDiv.className = "summary-item";
-      totalGeneralDiv.style.background = "#eef6fc";
-      totalGeneralDiv.innerHTML = `
-        <span class="title" style="color: #0d47a1;">📈 TOTAL GENERAL DEL HATO</span>
-        <div class="value">
-          <strong>Bovinos:</strong> ${totalBovinosGeneral} | <strong>Bufalinos:</strong> ${totalBufalinosGeneral} | <strong>Total Animales:</strong> ${totalBovinosGeneral + totalBufalinosGeneral}
-        </div>
-      `;
-      contenedor.appendChild(totalGeneralDiv);
+        // Dibujar el gráfico individual de torta para este potrero
+        setTimeout(() => {
+          renderizarGraficoTortaIndividual(`chart-${datos}`, `legend-${datos}`, potrerosMap[potrero].grupos, totalPotrero);
+        }, 50);
+      }
     }
 
-    // Función para dibujar el Gráfico de Torta en Canvas con porcentajes
-    function renderizarGraficoTorta(dataMap, totalGeneral) {
-      const canvas = document.getElementById("pie-chart");
+    // Función auxiliar para limpiar nombres de potreros para IDs de elementos DOM válidos
+    function potreroSanitizadoId(nombre) {
+      return nombre.replace(/[^a-zA-Z0-9]/g, "_");
+    }
+
+    // Función para dibujar el Gráfico de Torta Individual por Potrero
+    function renderizarGraficoTortaIndividual(canvasId, legendId, gruposMap, totalPotrero) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
       const ctx = canvas.getContext("2d");
-      const legendContainer = document.getElementById("chart-legend-container");
+      const legendContainer = document.getElementById(legendId);
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       legendContainer.innerHTML = "";
 
-      if (totalGeneral === 0) return;
+      if (totalPotrero === 0) return;
 
       const colores = [
         "#1d72b8", "#2e7d32", "#ed6c02", "#9c27b0", 
@@ -906,12 +889,12 @@
       let colorIndex = 0;
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const radius = 75;
+      const radius = 55;
 
-      for (let grupo in dataMap) {
-        let cantidad = dataMap[grupo];
-        let porcentaje = ((cantidad / totalGeneral) * 100).toFixed(1);
-        let sliceAngle = (cantidad / totalGeneral) * 2 * Math.PI;
+      for (let grupo in gruposMap) {
+        let cantidad = gruposMap[grupo];
+        let porcentaje = ((cantidad / totalPotrero) * 100).toFixed(1);
+        let sliceAngle = (cantidad / totalPotrero) * 2 * Math.PI;
         let color = colores[colorIndex % colores.length];
 
         // Dibujar porción de la torta
@@ -924,7 +907,7 @@
 
         sumaAngulo += sliceAngle;
 
-        // Crear elemento de leyenda con porcentaje
+        // Crear elemento de leyenda con porcentaje individual
         let legendItem = document.createElement("div");
         legendItem.className = "legend-item";
         legendItem.innerHTML = `
@@ -935,13 +918,6 @@
 
         colorIndex++;
       }
-    }
-
-    function limpiarGraficoTorta() {
-      const canvas = document.getElementById("pie-chart");
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      document.getElementById("chart-legend-container").innerHTML = "";
     }
 
     /* MÓDULO 2 */
