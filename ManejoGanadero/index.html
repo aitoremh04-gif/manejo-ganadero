@@ -181,6 +181,19 @@
       margin-top: 8px;
     }
 
+    .btn-undo {
+      width: 100%;
+      background-color: #d32f2f;
+      color: #ffffff;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
     .btn-geo {
       background-color: #2e7d32;
       color: white;
@@ -232,10 +245,11 @@
     }
 
     .summary-card h4 { margin: 0 0 10px 0; font-size: 13px; color: var(--blue-primary); }
-    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .summary-item { background: #ffffff; padding: 8px; border-radius: 8px; border: 1px solid #edf2f7; }
-    .summary-item .title { font-size: 10px; color: var(--text-muted); display: block; }
-    .summary-item .value { font-size: 14px; font-weight: bold; color: var(--text-main); }
+    .summary-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .summary-item { background: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid #edf2f7; }
+    .summary-item .title { font-size: 11px; font-weight: bold; color: var(--blue-primary); display: block; margin-bottom: 4px; }
+    .summary-item .value { font-size: 13px; color: var(--text-main); }
+    .group-tag { display: inline-block; background: #eef6fc; color: var(--blue-primary); padding: 2px 6px; border-radius: 6px; font-size: 11px; margin: 2px; font-weight: 500; }
     
     .weather-box {
       background: linear-gradient(135deg, #e3f2fd, #bbdefb);
@@ -393,13 +407,14 @@
     </div>
     <div class="form-group"><label>Cantidad:</label><input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 25"></div>
     <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento</button>
+    <button class="btn-undo" onclick="deshacerUltimoMovimientoRotacion()">↩️ Deshacer Último Registro</button>
+
     <div class="table-container"><table class="data-table"><thead><tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Cat.</th><th>Grupo</th><th>Cant.</th></tr></thead><tbody id="tabla-rotacion-body"></tbody></table></div>
+    
     <div class="summary-card">
-      <h4>📊 Resumen del Hato por Potrero</h4>
-      <div class="summary-grid">
-        <div class="summary-item"><span class="title">Bovinos</span><span class="value" id="resumen-bovinos">0</span></div>
-        <div class="summary-item"><span class="title">Bufalinos</span><span class="value" id="resumen-bufalinos">0</span></div>
-        <div class="summary-item" style="grid-column: span 2;"><span class="title">TOTAL GENERAL</span><span class="value" id="resumen-total-hato">0 Animales</span></div>
+      <h4>📊 Resumen Agrupado y Desglosado del Hato</h4>
+      <div class="summary-grid" id="resumen-agrupado-container">
+        <!-- Contenido generado dinámicamente con desglose de grupos etarios y categorías -->
       </div>
     </div>
   </div>
@@ -709,7 +724,7 @@
       } else { tg.showAlert("⚠️ Geolocalización no soportada en este dispositivo."); }
     }
 
-    /* MÓDULO 1 */
+    /* MÓDULO 1: ROTACIÓN E INVENTARIO OPTIMIZADO */
     function registrarMovimientoRotacion() {
       const potrero = document.getElementById("mod1-potrero").value;
       const fIngreso = document.getElementById("mod1-f-ingreso").value;
@@ -725,7 +740,20 @@
       
       actualizarTablaRotacion();
       actualizarResumenHato();
-      tg.showAlert(`🚨 Alerta de Rotación registrada en ${potrero}`);
+      tg.showAlert(`🚨 Movimiento registrado en ${potrero}`);
+    }
+
+    function deshacerUltimoMovimientoRotacion() {
+      if (movimientosRotacion.length === 0) {
+        return tg.showAlert("⚠️ No hay registros previos para deshacer.");
+      }
+      
+      const eliminado = movimientosRotacion.shift(); // Elimina el primero (más reciente debido a unshift)
+      localStorage.setItem('ato_rotacion', JSON.stringify(movimientosRotacion)); // Actualiza localStorage
+      
+      actualizarTablaRotacion();
+      actualizarResumenHato();
+      tg.showAlert(`↩️ Se deshizo el último registro del potrero: ${eliminado.potrero}`);
     }
 
     function actualizarTablaRotacion() {
@@ -739,11 +767,70 @@
     }
 
     function actualizarResumenHato() {
-      let b = 0, bu = 0;
-      movimientosRotacion.forEach(m => { if(m.cat === "Bovinos") b+=m.cantidad; else bu+=m.cantidad; });
-      document.getElementById("resumen-bovinos").innerText = b;
-      document.getElementById("resumen-bufalinos").innerText = bu;
-      document.getElementById("resumen-total-hato").innerText = `${b + bu} Animales`;
+      const contenedor = document.getElementById("resumen-agrupado-container");
+      contenedor.innerHTML = "";
+
+      if (movimientosRotacion.length === 0) {
+        contenedor.innerHTML = `<div class="summary-item"><span class="title">Sin registros</span><span class="value">No hay animales distribuidos actualmente.</span></div>`;
+        return;
+      }
+
+      // Agrupar dinámicamente por Potrero -> Categoría -> Grupo Etario
+      let potrerosMap = {};
+      let totalBovinosGeneral = 0;
+      let totalBufalinosGeneral = 0;
+
+      movimientosRotacion.forEach(m => {
+        if (!potrerosMap[m.potrero]) {
+          potrerosMap[m.potrero] = { Bovinos: {}, Bufalinos: {}, totalPotrero: 0 };
+        }
+        if (!potrerosMap[m.potrero][m.cat][m.grupo]) {
+          potrerosMap[m.potrero][m.cat][m.grupo] = 0;
+        }
+        potrerosMap[m.potrero][m.cat][m.grupo] += m.cantidad;
+        potrerosMap[m.potrero].totalPotrero += m.cantidad;
+
+        if (m.cat === "Bovinos") totalBovinosGeneral += m.cantidad;
+        if (m.cat === "Bufalinos") totalBufalinosGeneral += m.cantidad;
+      });
+
+      // Renderizar tarjetas de resumen agrupadas por potrero
+      for (let potrero in potrerosMap) {
+        let datos = potrerosMap[potrero];
+        let htmlDesglose = "";
+
+        ["Bovinos", "Bufalinos"].forEach(cat => {
+          let gruposCat = datos[cat];
+          let keys = Object.keys(gruposCat);
+          if (keys.length > 0) {
+            htmlDesglose += `<div style="margin-top: 4px;"><strong>${cat}:</strong> `;
+            keys.forEach(g => {
+              htmlDesglose += `<span class="group-tag">${g}: ${gruposCat[g]}</span>`;
+            });
+            htmlDesglose += `</div>`;
+          }
+        });
+
+        let itemDiv = document.createElement("div");
+        itemDiv.className = "summary-item";
+        itemDiv.innerHTML = `
+          <span class="title">🌾 Potrero: ${potrero} (Total: ${datos.totalPotrero} animales)</span>
+          <div class="value">${htmlDesglose}</div>
+        `;
+        contenedor.appendChild(itemDiv);
+      }
+
+      // Tarjeta final con el total general del hato
+      let totalGeneralDiv = document.createElement("div");
+      totalGeneralDiv.className = "summary-item";
+      totalGeneralDiv.style.background = "#eef6fc";
+      totalGeneralDiv.innerHTML = `
+        <span class="title" style="color: #0d47a1;">📈 TOTAL GENERAL DEL HATO</span>
+        <div class="value">
+          <strong>Bovinos:</strong> ${totalBovinosGeneral} | <strong>Bufalinos:</strong> ${totalBufalinosGeneral} | <strong>Total Animales:</strong> ${totalBovinosGeneral + totalBufalinosGeneral}
+        </div>
+      `;
+      contenedor.appendChild(totalGeneralDiv);
     }
 
     /* MÓDULO 2 */
