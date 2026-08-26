@@ -601,6 +601,7 @@
             <th>Responsable</th>
             <th>Cant.</th>
             <th>Fecha</th>
+            <th>Foto</th>
             <th>Acción</th>
           </tr>
         </thead>
@@ -754,6 +755,15 @@
       document.querySelectorAll('.module-view').forEach(mod => mod.style.display = 'none');
       document.getElementById('main-menu').style.display = 'block';
     }
+
+    // Handlers para otros módulos
+    function registrarMovimientoRotacion() { alert('Movimiento de rotación registrado.'); }
+    function guardarTarea() { alert('Tarea registrada.'); }
+    function guardarMaquinaria() { alert('Registro de maquinaria guardado.'); }
+    function guardarDeposito() { alert('Insumo registrado en depósito.'); }
+    function guardarCerca() { alert('Registro de reparación guardado.'); }
+    function guardarCombustible() { alert('Movimiento de combustible registrado.'); }
+    function guardarComida() { alert('Ración de comida registrada.'); }
 
     // Lógica específica del Módulo 3 (Manejo Sanitario Productivo)
     let listaSanitaria = [];
@@ -937,35 +947,50 @@
         return;
       }
 
-      const nuevoEvento = {
-        id: Date.now(),
-        categoria,
-        grupo,
-        chip: chip || 'S/N',
-        evento: eventoNombre,
-        responsable,
-        fecha,
-        cantidad,
-        geo: geo || 'Sin Coordenadas GPS'
+      const fotoInput = document.getElementById('mod4-foto');
+
+      const procesarGuardado = (finalFotoUrl) => {
+        const nuevoEvento = {
+          id: Date.now(),
+          categoria,
+          grupo,
+          chip: chip || 'S/N',
+          evento: eventoNombre,
+          responsable,
+          fecha,
+          cantidad,
+          geo: geo || 'Sin Coordenadas GPS',
+          fotoUrl: finalFotoUrl
+        };
+
+        listaEventos.push(nuevoEvento);
+
+        alert(`🚨 ¡ALERTA DE EVENTO REGISTRADO!\n\nSe ha subido correctamente el evento "${eventoNombre}" (Animal/Chip: ${nuevoEvento.chip}) notificado por ${responsable}.`);
+
+        document.getElementById('mod4-chip').value = '';
+        document.getElementById('mod4-cant').value = '';
+        document.getElementById('mod4-responsable').value = '';
+        document.getElementById('mod4-evento').value = 'Muertos';
+        document.getElementById('contenedor-otro-evento').style.display = 'none';
+        document.getElementById('mod4-otro-evento').value = '';
+        document.getElementById('mod4-fecha').value = '';
+        document.getElementById('mod4-geo').value = '';
+        document.getElementById('mapa-mod4').style.display = 'none';
+        fotoInput.value = '';
+
+        actualizarTablaEventos();
+        actualizarResumenEventos();
       };
 
-      listaEventos.push(nuevoEvento);
-
-      // Alerta al subir evento
-      alert(`🚨 ¡ALERTA DE EVENTO REGISTRADO!\n\nSe ha subido correctamente el evento "${eventoNombre}" (Animal/Chip: ${nuevoEvento.chip}) notificado por ${responsable}.`);
-
-      document.getElementById('mod4-chip').value = '';
-      document.getElementById('mod4-cant').value = '';
-      document.getElementById('mod4-responsable').value = '';
-      document.getElementById('mod4-evento').value = 'Muertos';
-      document.getElementById('contenedor-otro-evento').style.display = 'none';
-      document.getElementById('mod4-otro-evento').value = '';
-      document.getElementById('mod4-fecha').value = '';
-      document.getElementById('mod4-geo').value = '';
-      document.getElementById('mapa-mod4').style.display = 'none';
-
-      actualizarTablaEventos();
-      actualizarResumenEventos();
+      if (fotoInput.files && fotoInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          procesarGuardado(e.target.result);
+        };
+        reader.readAsDataURL(fotoInput.files[0]);
+      } else {
+        procesarGuardado(null);
+      }
     }
 
     function borrarEvento(index) {
@@ -1003,6 +1028,7 @@
           <td><strong>${item.responsable}</strong></td>
           <td>${item.cantidad || '-'}</td>
           <td>${item.fecha || '-'}</td>
+          <td>${item.fotoUrl ? `<a href="${item.fotoUrl}" target="_blank" style="text-decoration:none;">📎</a>` : '-'}</td>
           <td><button class="btn-delete-item" onclick="borrarEvento(${index})">❌ Borrar</button></td>
         `;
         tbody.appendChild(tr);
@@ -1038,8 +1064,17 @@
       for (const [resp, evs] of Object.entries(agrupadoPorResponsable)) {
         let htmlEvs = evs.map(e => `
           <div style="font-size: 11px; margin-top: 4px; border-top: 1px dashed #e2e8f0; padding-top: 4px;">
-            • Cat: ${e.categoria} (${e.grupo}) | 🏷️ <strong>Chip/N°: ${e.chip}</strong> | Evento: <strong>${e.evento}</strong> (Cant: ${e.cantidad || '-'})<br>
-            <span style="color: #2e7d32; font-size: 10px;">📍 GPS: ${e.geo}</span>
+            <div style="display: flex; gap: 6px; align-items: flex-start; justify-content: space-between;">
+              <div>
+                • Cat: ${e.categoria} (${e.grupo}) | 🏷️ <strong>Chip/N°: ${e.chip}</strong> | Evento: <strong>${e.evento}</strong> (Cant: ${e.cantidad || '-'})<br>
+                <span style="color: #2e7d32; font-size: 10px;">📍 GPS: ${e.geo}</span>
+              </div>
+              ${e.fotoUrl ? `
+                <a href="${e.fotoUrl}" target="_blank" style="text-decoration: none; font-size: 16px;" title="Abrir foto adjunta">
+                  📎
+                </a>
+              ` : ''}
+            </div>
           </div>
         `).join('');
         
