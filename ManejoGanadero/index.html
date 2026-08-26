@@ -1,136 +1,118 @@
-// ==========================================================
-// GESTOR DE ALMACENAMIENTO NUBE (TELEGRAM CLOUDSTORAGE)
-// ==========================================================
-const StorageManager = {
-  // Verifica si la API de Telegram CloudStorage está disponible
-  isTelegramAvailable: function() {
-    return typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.CloudStorage;
-  },
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manejo Ganadero</title>
+  <!-- SDK oficial de Telegram WebApp -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
 
-  // Guarda datos en la nube de Telegram y en localStorage como respaldo local
-  guardar: function(clave, datos) {
-    return new Promise((resolve) => {
-      const stringData = typeof datos === 'string' ? datos : JSON.stringify(datos);
+  <!-- Aquí va la interfaz HTML del sistema (formularios, tablas, botones) -->
 
-      // Respaldo inmediato en el dispositivo actual
-      try {
-        localStorage.setItem(clave, stringData);
-      } catch (e) {
-        console.warn("Error al guardar en localStorage local:", e);
-      }
+  <script>
+    // ==========================================================
+    // GESTOR DE ALMACENAMIENTO NUBE (TELEGRAM CLOUDSTORAGE)
+    // ==========================================================
+    const StorageManager = {
+      isTelegramAvailable: function() {
+        return typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.CloudStorage;
+      },
 
-      // Persistencia en la nube del usuario en Telegram
-      if (this.isTelegramAvailable()) {
-        Telegram.WebApp.CloudStorage.setItem(clave, stringData, (error, enviado) => {
-          if (error) {
-            console.error("Error al sincronizar con Telegram CloudStorage:", error);
-            resolve(false);
+      guardar: function(clave, datos) {
+        return new Promise((resolve) => {
+          const stringData = typeof datos === 'string' ? datos : JSON.stringify(datos);
+          
+          try {
+            localStorage.setItem(clave, stringData);
+          } catch (e) {
+            console.warn("Error al guardar localmente:", e);
+          }
+
+          if (this.isTelegramAvailable()) {
+            Telegram.WebApp.CloudStorage.setItem(clave, stringData, (error, enviado) => {
+              if (error) {
+                console.error("Error en Telegram CloudStorage:", error);
+                resolve(false);
+              } else {
+                resolve(true);
+              }
+            });
           } else {
-            console.log("Datos sincronizados con éxito en Telegram Cloud.");
             resolve(true);
           }
         });
-      } else {
-        resolve(true);
-      }
-    });
-  },
+      },
 
-  // Obtiene los datos actualizados desde la nube
-  cargar: function(clave) {
-    return new Promise((resolve) => {
-      if (this.isTelegramAvailable()) {
-        Telegram.WebApp.CloudStorage.getItem(clave, (error, valor) => {
-          if (!error && valor) {
-            try {
-              resolve(JSON.parse(valor));
-              return;
-            } catch (e) {
-              resolve(valor);
-              return;
-            }
-          }
-          // Fallback a almacenamiento local si falla la nube o no hay datos
-          const localData = localStorage.getItem(clave);
-          if (localData) {
-            try { resolve(JSON.parse(localData)); } catch (e) { resolve(localData); }
+      cargar: function(clave) {
+        return new Promise((resolve) => {
+          if (this.isTelegramAvailable()) {
+            Telegram.WebApp.CloudStorage.getItem(clave, (error, valor) => {
+              if (!error && valor) {
+                try { resolve(JSON.parse(valor)); return; } catch (e) { resolve(valor); return; }
+              }
+              const localData = localStorage.getItem(clave);
+              resolve(localData ? JSON.parse(localData) : null);
+            });
           } else {
-            resolve(null);
+            const localData = localStorage.getItem(clave);
+            resolve(localData ? JSON.parse(localData) : null);
           }
         });
-      } else {
-        const localData = localStorage.getItem(clave);
-        if (localData) {
-          try { resolve(JSON.parse(localData)); } catch (e) { resolve(localData); }
-        } else {
-          resolve(null);
-        }
       }
+    };
+
+    // ==========================================================
+    // FLUJO PRINCIPAL DE DATOS Y SINCRONIZACIÓN
+    // ==========================================================
+    const CLAVE_HATO = 'datos_hato_laguna_brava';
+    let estadoHato = { animales: [], registros: [] };
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+      }
+      await cargarYSincronizar();
     });
-  }
-};
 
-// ==========================================================
-// FLUJO PRINCIPAL DE DATOS Y SINCRONIZACIÓN
-// ==========================================================
-const CLAVE_HATO = 'datos_hato_laguna_brava';
-let estadoHato = {
-  animales: [],
-  registros: []
-};
+    async function cargarYSincronizar() {
+      const datosRemotos = await StorageManager.cargar(CLAVE_HATO);
+      if (datosRemotos) {
+        estadoHato = datosRemotos;
+      }
+      actualizarVistaUI();
+    }
 
-// Inicialización de la WebApp al cargar la página
-document.addEventListener('DOMContentLoaded', async () => {
-  if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
-  }
+    async function guardarDatosSistema(nuevoRegistro) {
+      if (!Array.isArray(estadoHato.animales)) {
+        estadoHato.animales = [];
+      }
+      estadoHato.animales.push(nuevoRegistro);
 
-  await cargarYSincronizar();
-});
+      const guardadoExitoso = await StorageManager.guardar(CLAVE_HATO, estadoHato);
+      if (guardadoExitoso) {
+        actualizarVistaUI();
+        notificarUsuario("Registro guardado y sincronizado.");
+      } else {
+        notificarUsuario("Guardado localmente. Verifique su conexión.");
+      }
+    }
 
-// Carga asíncrona al abrir en PC o Móvil
-async function cargarYSincronizar() {
-  const datosRemotos = await StorageManager.cargar(CLAVE_HATO);
-  if (datosRemotos) {
-    estadoHato = datosRemotos;
-  }
-  actualizarVistaUI();
-}
+    function actualizarVistaUI() {
+      if (typeof renderizarTabla === 'function') {
+        renderizarTabla(estadoHato.animales);
+      }
+    }
 
-// Función centralizada para guardar nuevos registros
-async function guardarDatosSistema(nuevoRegistro) {
-  if (Array.isArray(estadoHato.animales)) {
-    estadoHato.animales.push(nuevoRegistro);
-  } else {
-    estadoHato.animales = [nuevoRegistro];
-  }
-
-  const guardadoExitoso = await StorageManager.guardar(CLAVE_HATO, estadoHato);
-
-  if (guardadoExitoso) {
-    actualizarVistaUI();
-    notificarUsuario("Registro guardado y sincronizado en todos tus dispositivos.");
-  } else {
-    notificarUsuario("Guardado localmente. Verifique su conexión para sincronizar.");
-  }
-}
-
-// Refresca la interfaz sin alterar tus funciones o tablas existentes
-function actualizarVistaUI() {
-  if (typeof renderizarTabla === 'function') {
-    renderizarTabla(estadoHato.animales);
-  }
-  if (typeof actualizarContadores === 'function') {
-    actualizarContadores(estadoHato);
-  }
-}
-
-// Notificación nativa de Telegram o alerta estándar
-function notificarUsuario(mensaje) {
-  if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.showAlert) {
-    Telegram.WebApp.showAlert(mensaje);
-  } else {
-    alert(mensaje);
-  }
-}
+    function notificarUsuario(mensaje) {
+      if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.showAlert) {
+        Telegram.WebApp.showAlert(mensaje);
+      } else {
+        alert(mensaje);
+      }
+    }
+  </script>
+</body>
+</html>
