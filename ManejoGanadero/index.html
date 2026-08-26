@@ -2,417 +2,1079 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manejo Ganadero - Hato Laguna Brava</title>
-  <!-- SDK Oficial de Telegram WebApp -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Gestión Ganadera Hato Integral</title>
+  
+  <!-- SDK Oficial de Telegram -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     :root {
-      --primary-color: #2e7d32;
-      --secondary-color: #1b5e20;
-      --bg-color: #f4f6f8;
-      --card-bg: #ffffff;
-      --text-color: #333333;
-      --border-color: #e0e0e0;
-      --danger-color: #c62828;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --blue-primary: #1d72b8;
+      --blue-hover: #155a92;
+      --bg-card: #ffffff;
+      --text-main: #1c252e;
+      --text-muted: #637381;
+      --bg-body: #f4f6f8;
+      --alert-color: #d32f2f;
+      --alert-bg: #fde8e8;
+      --success-color: #2e7d32;
+      --success-bg: #e8f5e9;
+      --warning-color: #ed6c02;
+      --warning-bg: #fff4e5;
     }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      padding: 15px;
-      max-width: 900px;
-      margin: 0 auto;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background-color: var(--tg-theme-bg-color, var(--bg-body));
+      color: var(--tg-theme-text-color, var(--text-main));
     }
 
-    header {
+    .header-card {
+      background: linear-gradient(135deg, #1d72b8, #0d47a1);
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(29, 114, 184, 0.2);
       text-align: center;
-      margin-bottom: 20px;
-      padding: 12px;
-      background: var(--primary-color);
-      color: white;
-      border-radius: 8px;
     }
 
-    header h1 {
-      font-size: 1.3rem;
-    }
+    .header-card h2 { margin: 0 0 4px 0; font-size: 20px; }
+    .header-card p { margin: 0; opacity: 0.9; font-size: 13px; }
 
-    header p {
-      font-size: 0.85rem;
-      opacity: 0.9;
-    }
-
-    .stats-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-      gap: 10px;
+    .notifications-card {
+      background-color: var(--alert-bg);
+      border: 1px solid #f8b4b4;
+      border-radius: 12px;
+      padding: 12px 16px;
       margin-bottom: 20px;
     }
 
-    .stat-card {
-      background: var(--card-bg);
-      padding: 12px;
-      border-radius: 8px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      border: 1px solid var(--border-color);
+    .notifications-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--alert-color);
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 6px;
     }
 
-    .stat-card h3 {
-      font-size: 0.75rem;
-      color: #666;
-      margin-bottom: 4px;
+    .notification-list {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 12px;
+      color: #5f2121;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
       text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 0 0 12px 4px;
+      letter-spacing: 0.5px;
     }
 
-    .stat-card span {
-      font-size: 1.3rem;
-      font-weight: bold;
-      color: var(--primary-color);
-    }
-
-    .card {
-      background: var(--card-bg);
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      border: 1px solid var(--border-color);
-    }
-
-    .card h2 {
-      font-size: 1rem;
-      margin-bottom: 12px;
-      color: var(--secondary-color);
-      border-bottom: 2px solid #eef2f5;
-      padding-bottom: 6px;
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .form-group input, .form-group select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 0.95rem;
-    }
-
-    .form-row {
+    .grid-menu {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 10px;
+      margin-bottom: 20px;
     }
 
-    button.btn-submit {
-      width: 100%;
-      background: var(--primary-color);
-      color: white;
+    .btn-card {
+      background-color: var(--bg-card);
+      border: 1.5px solid #dce0e4;
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    }
+
+    .btn-card:active {
+      background-color: #ebf4fc;
+      border-color: var(--blue-primary);
+      transform: scale(0.98);
+    }
+
+    .btn-icon {
+      background-color: var(--blue-primary);
+      color: #ffffff;
+      font-size: 18px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn-content h4 { margin: 0 0 2px 0; font-size: 14px; color: var(--blue-primary); }
+    .btn-content p { margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.2; }
+
+    .module-view {
+      display: none;
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .module-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eef0f2;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .module-header h3 { margin: 0; color: var(--blue-primary); font-size: 16px; }
+
+    .btn-back {
+      background: #eef6fc;
+      color: var(--blue-primary);
       border: none;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 0.95rem;
-      font-weight: bold;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12px;
       cursor: pointer;
     }
 
-    button.btn-submit:active {
-      background: var(--secondary-color);
-    }
-
-    .table-container {
-      overflow-x: auto;
-    }
-
-    table {
+    .form-group { margin-bottom: 12px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text-main); }
+    
+    .form-control {
       width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
+      padding: 10px;
+      border: 1px solid #cfd8dc;
+      border-radius: 8px;
+      font-size: 13px;
+      box-sizing: border-box;
+      background: #fafafa;
     }
 
-    th, td {
-      padding: 10px 8px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-color);
+    .btn-action {
+      width: 100%;
+      background-color: var(--blue-primary);
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
     }
 
-    th {
-      background-color: #f8f9fa;
-      color: #555;
+    .btn-redo {
+      width: 100%;
+      background-color: #2e7d32;
+      color: #ffffff;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 6px;
     }
 
-    .btn-danger {
-      background: var(--danger-color);
+    .btn-delete-item {
+      background-color: #d32f2f;
       color: white;
       border: none;
       padding: 4px 8px;
       border-radius: 4px;
+      font-size: 10px;
+      font-weight: bold;
       cursor: pointer;
-      font-size: 0.75rem;
     }
 
-    .empty-state {
+    .btn-geo {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 4px;
+      width: 100%;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 16px;
+      border: 1px solid #eef0f2;
+      border-radius: 8px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background-color: #f0f4f8;
+      color: var(--text-main);
+      padding: 8px 6px;
+      border-bottom: 1px solid #cfd8dc;
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #eef0f2;
+      white-space: nowrap;
+    }
+
+    .summary-card {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 16px;
+    }
+
+    .summary-card h4 { margin: 0 0 10px 0; font-size: 13px; color: var(--blue-primary); }
+    .summary-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    
+    .summary-item { 
+      background: #ffffff; 
+      padding: 12px; 
+      border-radius: 8px; 
+      border: 1.5px solid #e2e8f0; 
+      margin-bottom: 8px; 
+    }
+    .summary-item .title { font-size: 13px; font-weight: bold; color: var(--blue-primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    
+    .weather-box {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      border-radius: 12px;
+      padding: 14px;
       text-align: center;
-      padding: 20px;
-      color: #777;
-      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+    .weather-temp { font-size: 28px; font-weight: bold; color: #0d47a1; }
+    .recommendations-box {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 12px;
+      color: #5d4037;
+    }
+    
+    .map-preview {
+      width: 100%;
+      height: 150px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 6px;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Manejo Ganadero</h1>
-    <p>Hato Laguna Brava - Sincronizado</p>
-  </header>
+  <!-- Encabezado -->
+  <div class="header-card">
+    <h2 id="saludo">¡Hola, Ganadero! 🤠</h2>
+    <p>Sistema de Control y Operaciones del Hato</p>
+  </div>
 
-  <!-- Panel de Totales -->
-  <div class="stats-container">
-    <div class="stat-card">
-      <h3>Total</h3>
-      <span id="stat-total">0</span>
+  <!-- Panel de Notificaciones y Alertas Globales -->
+  <div class="notifications-card" id="notifications-panel">
+    <div class="notifications-header">
+      <span>🔔 Notificaciones y Alertas del Sistema</span>
     </div>
-    <div class="stat-card">
-      <h3>Hembras</h3>
-      <span id="stat-hembras">0</span>
-    </div>
-    <div class="stat-card">
-      <h3>Machos</h3>
-      <span id="stat-machos">0</span>
+    <ul class="notification-list" id="notifications-list">
+      <li><strong>Sistema:</strong> Monitoreo operacional y alertas activas.</li>
+    </ul>
+  </div>
+
+  <!-- MENU PRINCIPAL (10 MODULOS) -->
+  <div id="main-menu">
+    <div class="section-title">Módulos de Gestión</div>
+    <div class="grid-menu">
+      <button class="btn-card" onclick="mostrarModulo('mod-1')">
+        <div class="btn-icon">🌾</div>
+        <div class="btn-content">
+          <h4>1. Inventario por Potreros y Rotación</h4>
+          <p>Potreros, especies, categorías y lotes.</p>
+        </div>
+      </button>
+
+      <button class="btn-card" onclick="mostrarModulo('mod-2')">
+        <div class="btn-icon">📅</div>
+        <div class="btn-content">
+          <h4>2. Planificación y Tareas</h4>
+          <p>Asignación, ejecuciones y avance mensual.</p>
+        </div>
+      </button>
+
+      <button class="btn-card" onclick="mostrarModulo('mod-3')">
+        <div class="btn-icon">💉</div>
+        <div class="btn-content">
+          <h4>3. Manejo Sanitario Productivo</h4>
+          <p>Tratamientos por lote y alertas sanitarias.</p>
+        </div>
+      </button>
+
+      <button class="btn-card" onclick="mostrarModulo('mod-4')">
+        <div class="btn-icon">📋</div>
+        <div class="btn-content">
+          <h4>4. Eventos por Categoría</h4>
+          <p>Nacimientos, bajas, foto y mapa Google Maps.</p>
+        </div>
+      </button>
+
+      <button class="btn-card" onclick="mostrarModulo('mod-5')">
+        <div class="btn-icon">🚜</div>
+        <div class="btn-content">
+          <h4>5. Maquinaria y Equipo</h4>
+          <p>Horómetro, mantenimiento y alerta a 250h.</p>
+        </div>
+      </button>
+
+      <button class="btn-card" onclick="mostrarModulo('mod-6')">
+        <div class="btn-icon">🌤️</div>
+        <div class="btn-content">
+          <h4>6. Control Meteorológico</h4>
+          <p>Clima local por GPS y recomendaciones ganaderas.</p>
+        </div>
+      </button>
+
+      <button class="btn-card" onclick="mostrarModulo('mod-7')">
+        <div class="btn-icon">📦</div>
+        <div class="btn-content">
+          <h4>7. Depósito</h4>
+          <p>Recepciones, despachos y resumen mensual.</p>
+        </div>
+      </button>
+
+      <button class="btn-card" onclick="mostrarModulo('mod-8')">
+        <div class="btn-icon">🛠️</div>
+        <div class="btn-content">
+          <h4>8. Reparación de Líneas</h4>
+          <p>Cuerdas, falsos, estantillas, foto y geolocalización.</p>
+        </div>
+      </button>
+
+      <button class="btn-card" onclick="mostrarModulo('mod-9')">
+        <div class="btn-icon">⛽</div>
+        <div class="btn-content">
+          <h4>9. Control de Combustible</h4>
+          <p>Ingreso y consumo de Gasoil y Gasolina.</p>
+        </div>
+      </button>
+
+      <button class="btn-card" onclick="mostrarModulo('mod-10')">
+        <div class="btn-icon">🍽️</div>
+        <div class="btn-content">
+          <h4>10. Logística de Comida</h4>
+          <p>Raciones, comensales, desayunos, almuerzos y cenas.</p>
+        </div>
+      </button>
     </div>
   </div>
 
-  <!-- Formulario de Registro -->
-  <div class="card">
-    <h2>Registrar Animal / Evento</h2>
-    <form id="formulario-ganado">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="arete">Nº Arete / ID</label>
-          <input type="text" id="arete" required placeholder="Ej. B-102">
-        </div>
-        <div class="form-group">
-          <label for="sexo">Sexo</label>
-          <select id="sexo" required>
-            <option value="Hembra">Hembra</option>
-            <option value="Macho">Macho</option>
-          </select>
-        </div>
+  <!-- MODULO 1: INVENTARIO, POTRERO Y ROTACIÓN -->
+  <div id="mod-1" class="module-view">
+    <div class="module-header">
+      <h3>1. Inventario por Potrero y Rotación</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group">
+      <label>Potrero:</label>
+      <select class="form-control" id="mod1-potrero">
+        <option>Macanillal</option><option>Mata del Muerto</option><option>Galpón</option><option>Potrero del Medio</option><option>Manguito</option><option>Mata de Piña</option><option>Las Rayas</option><option>Paulero</option><option>Jobo Gacho</option><option>Módulo A</option><option>Módulo B</option><option>Módulo C</option><option>Módulo D</option><option>Módulo E</option><option>Módulo F</option><option>Saladillal</option><option>Carretera</option><option>Casa</option><option>Cuatro Esquinas</option><option>María del Carmen</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="mod1-f-ingreso" class="form-control"></div>
+      <div class="form-group"><label>Fecha Salida:</label><input type="date" id="mod1-f-salida" class="form-control"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Categoría:</label>
+        <select class="form-control" id="mod1-categoria">
+          <option value="Bovinos">Bovinos</option><option value="Bufalinos">Bufalinos</option>
+        </select>
       </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="peso">Peso (Kg)</label>
-          <input type="number" id="peso" step="0.1" placeholder="Ej. 380">
-        </div>
-        <div class="form-group">
-          <label for="categoria">Categoría</label>
-          <select id="categoria">
-            <option value="Vaca">Vaca</option>
-            <option value="Novilla">Novilla</option>
-            <option value="Maute">Maute / Mauta</option>
-            <option value="Toro">Toro</option>
-            <option value="Becerro">Becerro / Becerra</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="observaciones">Observaciones / Tratamiento</label>
-        <input type="text" id="observaciones" placeholder="Ej. Palpación, Vacuna Septicemia">
-      </div>
-
-      <button type="submit" class="btn-submit">Guardar y Sincronizar</button>
-    </form>
-  </div>
-
-  <!-- Listado de Registros -->
-  <div class="card">
-    <h2>Registros en el Hato</h2>
+      <div class="form-group"><label>Grupo Etario:</label><select class="form-control" id="mod1-grupo-etario"></select></div>
+    </div>
+    <div class="form-group"><label>Cantidad:</label><input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 25"></div>
+    <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento</button>
     <div class="table-container">
-      <table>
+      <table class="data-table">
+        <thead>
+          <tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Cat.</th><th>Grupo</th><th>Cant.</th></tr>
+        </thead>
+        <tbody id="tabla-rotacion-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODULO 2: PLANIFICACIÓN Y TAREAS -->
+  <div id="mod-2" class="module-view">
+    <div class="module-header">
+      <h3>2. Planificación y Tareas</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group"><label>Tarea:</label><input type="text" id="mod2-tarea" class="form-control" placeholder="Ej: Limpieza de canales"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha Asignación:</label><input type="date" id="mod2-f-asignacion" class="form-control"></div>
+      <div class="form-group"><label>Fecha Culminación:</label><input type="date" id="mod2-f-culminacion" class="form-control"></div>
+    </div>
+    <div class="form-group"><label>Ejecución:</label><select class="form-control" id="mod2-ejecucion"><option value="No">No</option><option value="Sí">Sí</option></select></div>
+    <div class="form-group"><label>Observación:</label><input type="text" id="mod2-observacion" class="form-control"></div>
+    <button class="btn-action" onclick="guardarTarea()">Guardar Tarea</button>
+    <div class="table-container"><table class="data-table"><thead><tr><th>Tarea</th><th>Inicio</th><th>Fin</th><th>Ejec.</th><th>Obs.</th></tr></thead><tbody id="tabla-tareas-body"></tbody></table></div>
+  </div>
+
+  <!-- MODULO 3: MANEJO SANITARIO PRODUCTIVO -->
+  <div id="mod-3" class="module-view">
+    <div class="module-header">
+      <h3>3. Manejo Sanitario Productivo</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group"><label>Lote Trabajado:</label>
+      <select class="form-control" id="mod3-lote">
+        <option>Vacas PÑ</option><option>Vacas Paridas</option><option>Vacas Vacías</option><option>Vacas en Monta</option><option>Becerros Recién Nacidos</option><option>Becerros 1 Mes</option><option>Becerros 2 Meses</option><option>Becerros 3 Meses</option><option>Becerros 4 Meses</option><option>Becerros 5 Meses</option><option>Novillas</option><option>Destetes</option><option>Toros</option><option>Búfalas PÑ</option><option>Búfalas Paridas</option><option>Búfalas Vacías</option><option>Búfalas en Monta</option><option>Búfalas en Ordeño</option><option>Bucerros en Ordeño</option><option>Buvillas</option><option>Bautas</option><option>Bautes</option><option>Butoro</option>
+      </select>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod3-cantidad" class="form-control"></div>
+      <div class="form-group"><label>Responsable:</label><input type="text" id="mod3-responsable" class="form-control" placeholder="Ej: Pedro Pérez"></div>
+    </div>
+
+    <div class="form-group">
+      <label>Actividad a ejecutar:</label>
+      <select class="form-control" id="mod3-tipo" onchange="verificarActividadOtra(this)">
+        <option value="Vacunas">Vacunas</option>
+        <option value="Desparasitación">Desparasitación</option>
+        <option value="Minerales">Minerales</option>
+        <option value="Vitaminas">Vitaminas</option>
+        <option value="Antibióticos">Antibióticos</option>
+        <option value="Pesajes">Pesajes</option>
+        <option value="Otra">Otra actividad (Escribir abajo)</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="contenedor-otra-actividad" style="display:none;">
+      <label>Escribir Otra Actividad:</label>
+      <input type="text" id="mod3-otra-tipo" class="form-control" placeholder="Especificar actividad">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group"><label>Fecha Aplicación:</label><input type="date" id="mod3-f-aplicacion" class="form-control"></div>
+      <div class="form-group"><label>Próximo Tratamiento:</label><input type="date" id="mod3-f-proximo" class="form-control"></div>
+    </div>
+    <div class="form-group"><label>Observación:</label><input type="text" id="mod3-observacion" class="form-control"></div>
+    
+    <button class="btn-action" onclick="guardarTratamientoSanitario()">Guardar Actividad</button>
+    <button class="btn-redo" onclick="rehacerActividadSanitaria()">🔄 Rehacer Actividad (<span id="contador-rehacer-sanitaria">0</span>)</button>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr><th>Lote</th><th>Actividad</th><th>Responsable</th><th>Cant</th><th>Aplic.</th><th>Próx.</th><th>Acción</th></tr>
+        </thead>
+        <tbody id="tabla-sanitaria-body"></tbody>
+      </table>
+    </div>
+
+    <div class="summary-card">
+      <h4>📊 Resumen de Actividades Sanitarias y Responsables</h4>
+      <div class="summary-grid" id="resumen-sanitaria-container">
+        <div class="summary-item">
+          <span class="title">Estado</span>
+          <span class="value">No hay actividades sanitarias registradas.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULO 4: EVENTOS POR CATEGORÍA -->
+  <div id="mod-4" class="module-view">
+    <div class="module-header">
+      <h3>4. Eventos por Categoría</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Categoría:</label>
+        <select class="form-control" id="mod4-cat"><option>Bovina</option><option>Bufalina</option></select>
+      </div>
+      <div class="form-group">
+        <label>Grupo Etario:</label>
+        <select class="form-control" id="mod4-grupo">
+          <option>Vaca</option><option>Novilla</option><option>Mauta</option><option>Maute</option><option>Toro</option><option>Becerro</option><option>Becerra</option><option>Búfala</option><option>Buvilla</option><option>Bauta</option><option>Baute</option><option>Butoro</option><option>Bucerro</option><option>Bucerra</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- CASILLA ANEXADA: NÚMERO O CHIP DEL ANIMAL -->
+    <div class="form-group">
+      <label>Número / Chip del Animal:</label>
+      <input type="text" id="mod4-chip" class="form-control" placeholder="Ej: CHIP-4089 / N° 124">
+    </div>
+
+    <div class="form-group">
+      <label>Evento:</label>
+      <select class="form-control" id="mod4-evento" onchange="verificarEventoOtro(this)">
+        <option value="Muertos">Muertos</option>
+        <option value="Abortos">Abortos</option>
+        <option value="Natibortos">Natibortos</option>
+        <option value="Nacidos">Nacidos</option>
+        <option value="Consumo">Consumo</option>
+        <option value="Traslado">Traslado</option>
+        <option value="Otro">Otro evento (Escribir abajo)</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="contenedor-otro-evento" style="display:none;">
+      <label>Escribir Otro Evento:</label>
+      <input type="text" id="mod4-otro-evento" class="form-control" placeholder="Especificar evento personalizado">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Responsable que Notificó:</label>
+        <input type="text" id="mod4-responsable" class="form-control" placeholder="Ej: Juan Gómez">
+      </div>
+      <div class="form-group">
+        <label>Fecha:</label>
+        <input type="date" id="mod4-fecha" class="form-control">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Cantidad:</label>
+        <input type="number" id="mod4-cant" class="form-control" min="1" placeholder="Ej: 1">
+      </div>
+      <div class="form-group">
+        <label>Foto del Evento:</label>
+        <input type="file" id="mod4-foto" class="form-control" accept="image/*">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Ubicación Google Maps:</label>
+      <button class="btn-geo" onclick="obtenerCoordenadas('mod4-geo', 'mapa-mod4')">📍 Capturar Geolocalización GPS</button>
+      <input type="text" id="mod4-geo" class="form-control" readonly placeholder="Coordenadas GPS" style="margin-top:4px;">
+      <iframe id="mapa-mod4" class="map-preview" style="display:none;" frameborder="0"></iframe>
+    </div>
+
+    <button class="btn-action" onclick="guardarEvento()">Guardar Evento</button>
+    <button class="btn-redo" onclick="rehacerEvento()">🔄 Rehacer Evento (<span id="contador-rehacer-eventos">0</span>)</button>
+
+    <div class="table-container">
+      <table class="data-table">
         <thead>
           <tr>
-            <th>Arete</th>
-            <th>Sexo</th>
             <th>Categoría</th>
-            <th>Peso</th>
-            <th>Notas</th>
+            <th>Grupo</th>
+            <th>N° / Chip</th>
+            <th>Evento</th>
+            <th>Responsable</th>
+            <th>Cant.</th>
+            <th>Fecha</th>
             <th>Acción</th>
           </tr>
         </thead>
-        <tbody id="tabla-cuerpo"></tbody>
+        <tbody id="tabla-eventos-body"></tbody>
       </table>
-      <div id="mensaje-vacio" class="empty-state">No hay animales registrados aún.</div>
+    </div>
+
+    <!-- ÁREA DE RESUMEN CON CHIP / NÚMERO Y COORDENADAS GEOGRÁFICAS -->
+    <div class="summary-card">
+      <h4>📊 Resumen de Eventos Registrados, Chips, Responsables y Coordenadas</h4>
+      <div class="summary-grid" id="resumen-eventos-container">
+        <div class="summary-item">
+          <span class="title">Estado</span>
+          <span class="value">No hay eventos registrados.</span>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- MODULO 5: MAQUINARIA Y EQUIPO -->
+  <div id="mod-5" class="module-view">
+    <div class="module-header">
+      <h3>5. Maquinaria y Equipo</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group"><label>Maquinaria / Equipo:</label><input type="text" id="mod5-equipo" class="form-control" placeholder="Ej: Tractor John Deere 6110"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha Cambio Aceite:</label><input type="date" id="mod5-f-aceite" class="form-control"></div>
+      <div class="form-group"><label>Responsable:</label><input type="text" id="mod5-resp" class="form-control"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Horas Trabajo Diarias:</label><input type="number" id="mod5-hrs-diarias" class="form-control" placeholder="Ej: 8"></div>
+      <div class="form-group"><label>Horas Acumuladas:</label><input type="number" id="mod5-hrs-totales" class="form-control" placeholder="Ej: 240"></div>
+    </div>
+    <div class="form-group"><label>Observación de Avería:</label><input type="text" id="mod5-averia" class="form-control" placeholder="Ej: Fuga leve en manguera hidráulica"></div>
+    <button class="btn-action" onclick="guardarMaquinaria()">Guardar Registro de Equipo</button>
+    <div class="table-container"><table class="data-table"><thead><tr><th>Equipo</th><th>Responsable</th><th>Hrs Acum.</th><th>Estado Aceite</th><th>Avería</th></tr></thead><tbody id="tabla-maquinaria-body"></tbody></table></div>
+  </div>
+
+  <!-- MODULO 6: CONTROL METEOROLÓGICO -->
+  <div id="mod-6" class="module-view">
+    <div class="module-header">
+      <h3>6. Control Meteorológico</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="weather-box">
+      <div style="font-size: 14px; color: #1565c0; font-weight: bold;" id="clima-ubicacion">📍 Detectando Ubicación...</div>
+      <div class="weather-temp" id="clima-temp">-- °C</div>
+      <div id="clima-condicion" style="font-size: 13px; color: #424242;">Cargando datos meteorológicos...</div>
+    </div>
+    <button class="btn-geo" onclick="obtenerClimaGPS()">🔄 Actualizar Clima por GPS</button>
+    <br><br>
+    <div class="recommendations-box">
+      <strong>💡 Recomendaciones Ganaderas del Día:</strong>
+      <ul id="lista-recomendaciones" style="margin: 6px 0 0 0; padding-left: 18px;">
+        <li>Asegure sombra y suplementación mineral en días calurosos.</li>
+        <li>Revise el drenaje de los potreros bajos si hay alta probabilidad de lluvia.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MODULO 7: DEPÓSITO -->
+  <div id="mod-7" class="module-view">
+    <div class="module-header">
+      <h3>7. Depósito e Inventario</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group"><label>Artículo / Insumo:</label><input type="text" id="mod7-articulo" class="form-control" placeholder="Ej: Alambre de púas, Grapas"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Tipo Recepción:</label><input type="text" id="mod7-recepcion" class="form-control" placeholder="Proveedor / Factura"></div>
+      <div class="form-group"><label>Tipo Despacho:</label><input type="text" id="mod7-despacho" class="form-control" placeholder="Destino / Potrero"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha Entrega:</label><input type="date" id="mod7-f-entrega" class="form-control"></div>
+      <div class="form-group"><label>Fecha Despacho:</label><input type="date" id="mod7-f-despacho" class="form-control"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod7-cant" class="form-control"></div>
+      <div class="form-group"><label>Responsable:</label><input type="text" id="mod7-resp" class="form-control"></div>
+    </div>
+    <button class="btn-action" onclick="guardarDeposito()">Registrar Insumo</button>
+  </div>
+
+  <!-- MODULO 8: REPARACIÓN DE LÍNEAS -->
+  <div id="mod-8" class="module-view">
+    <div class="module-header">
+      <h3>8. Reparación de Líneas</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-group"><label>Tipo de Reparación:</label>
+      <select class="form-control" id="mod8-tipo">
+        <option>Cuerdas Remendadas</option><option>Fabricación de Falso</option><option>Entierre de Estantillas</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Cantidad / Metros:</label><input type="number" id="mod8-cant" class="form-control"></div>
+      <div class="form-group"><label>Foto Evidencia:</label><input type="file" id="mod8-foto" class="form-control" accept="image/*"></div>
+    </div>
+    <div class="form-group">
+      <label>Geolocalización en Google Maps:</label>
+      <button class="btn-geo" onclick="obtenerCoordenadas('mod8-geo', 'mapa-mod8')">📍 Ubicar Falla / Cerca en Mapa</button>
+      <input type="text" id="mod8-geo" class="form-control" readonly placeholder="Coordenadas GPS" style="margin-top:4px;">
+      <iframe id="mapa-mod8" class="map-preview" style="display:none;" frameborder="0"></iframe>
+    </div>
+    <button class="btn-action" onclick="guardarCerca()">Registrar Reparación</button>
+  </div>
+
+  <!-- MODULO 9: CONTROL DE COMBUSTIBLE -->
+  <div id="mod-9" class="module-view">
+    <div class="module-header">
+      <h3>9. Control de Combustible</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Tipo Combustible:</label><select class="form-control" id="mod9-tipo"><option>Gasoil</option><option>Gasolina</option></select></div>
+      <div class="form-group"><label>Operación:</label><select class="form-control" id="mod9-operacion"><option>Ingreso (+)</option><option>Consumo (-)</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Litros:</label><input type="number" id="mod9-litros" class="form-control"></div>
+      <div class="form-group"><label>Fecha:</label><input type="date" id="mod9-fecha" class="form-control"></div>
+    </div>
+    <button class="btn-action" onclick="guardarCombustible()">Registrar Movimiento Combustible</button>
+  </div>
+
+  <!-- MODULO 10: LOGÍSTICA DE COMIDA -->
+  <div id="mod-10" class="module-view">
+    <div class="module-header">
+      <h3>10. Logística de Comida</h3>
+      <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha:</label><input type="date" id="mod10-fecha" class="form-control"></div>
+      <div class="form-group"><label>Tipo Comida:</label><select class="form-control" id="mod10-tipo"><option>Desayuno</option><option>Almuerzo</option><option>Cena</option><option>Logística Especial</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>N° Personas:</label><input type="number" id="mod10-personas" class="form-control"></div>
+      <div class="form-group"><label>Ubicación / Cuadrilla:</label><input type="text" id="mod10-cuadrilla" class="form-control" placeholder="Ej: Sabana Manguito"></div>
+    </div>
+    <button class="btn-action" onclick="guardarComida()">Registrar Ración Comida</button>
+  </div>
+
   <script>
-    // ==========================================================
-    // PERSISTENCIA EN NUBE (TELEGRAM CLOUDSTORAGE + LOCALSTORAGE)
-    // ==========================================================
-    const StorageManager = {
-      isTelegramAvailable: function() {
-        return typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.CloudStorage;
-      },
+    // Lógica general de navegación de módulos
+    function mostrarModulo(idModulo) {
+      document.getElementById('main-menu').style.display = 'none';
+      document.querySelectorAll('.module-view').forEach(mod => mod.style.display = 'none');
+      document.getElementById(idModulo).style.display = 'block';
+    }
 
-      guardar: function(clave, datos) {
-        return new Promise((resolve) => {
-          const stringData = typeof datos === 'string' ? datos : JSON.stringify(datos);
-          
-          try {
-            localStorage.setItem(clave, stringData);
-          } catch (e) {
-            console.warn("Error en localStorage:", e);
-          }
+    function volverMenu() {
+      document.querySelectorAll('.module-view').forEach(mod => mod.style.display = 'none');
+      document.getElementById('main-menu').style.display = 'block';
+    }
 
-          if (this.isTelegramAvailable()) {
-            Telegram.WebApp.CloudStorage.setItem(clave, stringData, (error, enviado) => {
-              if (error) {
-                console.error("Error en CloudStorage:", error);
-                resolve(false);
-              } else {
-                resolve(true);
-              }
-            });
-          } else {
-            resolve(true);
-          }
-        });
-      },
+    // Lógica específica del Módulo 3 (Manejo Sanitario Productivo)
+    let listaSanitaria = [];
+    let papeleraSanitaria = [];
 
-      cargar: function(clave) {
-        return new Promise((resolve) => {
-          if (this.isTelegramAvailable()) {
-            Telegram.WebApp.CloudStorage.getItem(clave, (error, valor) => {
-              if (!error && valor) {
-                try { resolve(JSON.parse(valor)); return; } catch (e) { resolve(valor); return; }
-              }
-              const localData = localStorage.getItem(clave);
-              resolve(localData ? JSON.parse(localData) : null);
-            });
-          } else {
-            const localData = localStorage.getItem(clave);
-            resolve(localData ? JSON.parse(localData) : null);
-          }
-        });
+    function verificarActividadOtra(selectElem) {
+      const contenedorOtra = document.getElementById('contenedor-otra-actividad');
+      if (selectElem.value === 'Otra') {
+        contenedorOtra.style.display = 'block';
+      } else {
+        contenedorOtra.style.display = 'none';
+        document.getElementById('mod3-otra-tipo').value = '';
       }
-    };
+    }
 
-    // ==========================================================
-    // CONTROLADOR PRINCIPAL
-    // ==========================================================
-    const CLAVE_HATO = 'datos_hato_laguna_brava';
-    let estadoHato = { animales: [] };
-
-    document.addEventListener('DOMContentLoaded', async () => {
-      if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
-      }
+    function guardarTratamientoSanitario() {
+      const lote = document.getElementById('mod3-lote').value;
+      const cantidad = document.getElementById('mod3-cantidad').value;
+      const responsable = document.getElementById('mod3-responsable').value.trim();
       
-      document.getElementById('formulario-ganado').addEventListener('submit', registrarAnimal);
-      await cargarYSincronizar();
-    });
-
-    async function cargarYSincronizar() {
-      const datosRemotos = await StorageManager.cargar(CLAVE_HATO);
-      if (datosRemotos && Array.isArray(datosRemotos.animales)) {
-        estadoHato = datosRemotos;
+      let tipoSelect = document.getElementById('mod3-tipo').value;
+      let tipoActividad = tipoSelect;
+      if (tipoSelect === 'Otra') {
+        tipoActividad = document.getElementById('mod3-otra-tipo').value.trim();
+        if (!tipoActividad) {
+          alert('Por favor, especifica la otra actividad.');
+          return;
+        }
       }
-      renderizarInterfaz();
-    }
 
-    async function registrarAnimal(e) {
-      e.preventDefault();
+      const fAplicacion = document.getElementById('mod3-f-aplicacion').value;
+      const fProximo = document.getElementById('mod3-f-proximo').value;
+      const observacion = document.getElementById('mod3-observacion').value.trim();
 
-      const nuevoAnimal = {
-        id: Date.now(),
-        arete: document.getElementById('arete').value.trim(),
-        sexo: document.getElementById('sexo').value,
-        peso: document.getElementById('peso').value ? parseFloat(document.getElementById('peso').value) : '-',
-        categoria: document.getElementById('categoria').value,
-        observaciones: document.getElementById('observaciones').value.trim() || '-'
-      };
-
-      estadoHato.animales.unshift(nuevoAnimal);
-      const guardado = await StorageManager.guardar(CLAVE_HATO, estadoHato);
-      
-      document.getElementById('formulario-ganado').reset();
-      renderizarInterfaz();
-      notificarUsuario(guardado ? "Registro guardado y sincronizado." : "Guardado en almacenamiento local.");
-    }
-
-    async function eliminarAnimal(id) {
-      if (confirm("¿Desea eliminar este registro del sistema?")) {
-        estadoHato.animales = estadoHato.animales.filter(a => a.id !== id);
-        await StorageManager.guardar(CLAVE_HATO, estadoHato);
-        renderizarInterfaz();
-        notificarUsuario("Registro eliminado.");
-      }
-    }
-
-    function renderizarInterfaz() {
-      const tbody = document.getElementById('tabla-cuerpo');
-      const mensajeVacio = document.getElementById('mensaje-vacio');
-      tbody.innerHTML = '';
-
-      const animales = estadoHato.animales || [];
-
-      document.getElementById('stat-total').textContent = animales.length;
-      document.getElementById('stat-hembras').textContent = animales.filter(a => a.sexo === 'Hembra').length;
-      document.getElementById('stat-machos').textContent = animales.filter(a => a.sexo === 'Macho').length;
-
-      if (animales.length === 0) {
-        mensajeVacio.style.display = 'block';
+      if (!responsable) {
+        alert('Por favor, ingresa el nombre del responsable de la actividad.');
         return;
       }
 
-      mensajeVacio.style.display = 'none';
+      const nuevaActividad = {
+        id: Date.now(),
+        lote,
+        cantidad,
+        responsable,
+        tipoActividad,
+        fAplicacion,
+        fProximo,
+        observacion
+      };
 
-      animales.forEach(animal => {
+      listaSanitaria.push(nuevaActividad);
+
+      document.getElementById('mod3-cantidad').value = '';
+      document.getElementById('mod3-responsable').value = '';
+      document.getElementById('mod3-tipo').value = 'Vacunas';
+      document.getElementById('contenedor-otra-actividad').style.display = 'none';
+      document.getElementById('mod3-otra-tipo').value = '';
+      document.getElementById('mod3-f-aplicacion').value = '';
+      document.getElementById('mod3-f-proximo').value = '';
+      document.getElementById('mod3-observacion').value = '';
+
+      actualizarTablaSanitaria();
+      actualizarResumenSanitaria();
+    }
+
+    function borrarActividadSanitaria(index) {
+      const actividadBorrada = listaSanitaria.splice(index, 1)[0];
+      papeleraSanitaria.push(actividadBorrada);
+
+      actualizarTablaSanitaria();
+      actualizarResumenSanitaria();
+    }
+
+    function rehacerActividadSanitaria() {
+      if (papeleraSanitaria.length === 0) {
+        alert('No hay actividades borradas para rehacer.');
+        return;
+      }
+
+      const actividadRecuperada = papeleraSanitaria.pop();
+      listaSanitaria.push(actividadRecuperada);
+
+      actualizarTablaSanitaria();
+      actualizarResumenSanitaria();
+    }
+
+    function actualizarTablaSanitaria() {
+      const tbody = document.getElementById('tabla-sanitaria-body');
+      tbody.innerHTML = '';
+
+      listaSanitaria.forEach((item, index) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><strong>${escapeHtml(animal.arete)}</strong></td>
-          <td>${escapeHtml(animal.sexo)}</td>
-          <td>${escapeHtml(animal.categoria)}</td>
-          <td>${animal.peso} kg</td>
-          <td>${escapeHtml(animal.observaciones)}</td>
-          <td>
-            <button class="btn-danger" onclick="eliminarAnimal(${animal.id})">Borrar</button>
-          </td>
+          <td>${item.lote}</td>
+          <td>${item.tipoActividad}</td>
+          <td><strong>${item.responsable}</strong></td>
+          <td>${item.cantidad || '-'}</td>
+          <td>${item.fAplicacion || '-'}</td>
+          <td>${item.fProximo || '-'}</td>
+          <td><button class="btn-delete-item" onclick="borrarActividadSanitaria(${index})">❌ Borrar</button></td>
         `;
         tbody.appendChild(tr);
       });
-    }
 
-    function escapeHtml(str) {
-      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
-
-    function notificarUsuario(mensaje) {
-      if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.showAlert) {
-        Telegram.WebApp.showAlert(mensaje);
-      } else {
-        alert(mensaje);
+      const contador = document.getElementById('contador-rehacer-sanitaria');
+      if (contador) {
+        contador.textContent = papeleraSanitaria.length;
       }
+    }
+
+    function actualizarResumenSanitaria() {
+      const contenedorResumen = document.getElementById('resumen-sanitaria-container');
+      contenedorResumen.innerHTML = '';
+
+      if (listaSanitaria.length === 0) {
+        contenedorResumen.innerHTML = `
+          <div class="summary-item">
+            <span class="title">Estado</span>
+            <span class="value">No hay actividades sanitarias registradas.</span>
+          </div>`;
+        return;
+      }
+
+      const agrupadoPorResponsable = {};
+      listaSanitaria.forEach(item => {
+        if (!agrupadoPorResponsable[item.responsable]) {
+          agrupadoPorResponsable[item.responsable] = [];
+        }
+        agrupadoPorResponsable[item.responsable].push(item);
+      });
+
+      for (const [resp, acts] of Object.entries(agrupadoPorResponsable)) {
+        let htmlActs = acts.map(a => `<div style="font-size: 11px; margin-top: 2px;">• Lote: ${a.lote} | Actividad: ${a.tipoActividad} (Cant: ${a.cantidad || '-'})</div>`).join('');
+        
+        const div = document.createElement('div');
+        div.className = 'summary-item';
+        div.innerHTML = `
+          <span class="title">👤 Responsable: ${resp} <span style="font-weight:normal; font-size:11px;">(${acts.length} actividades)</span></span>
+          <div style="margin-top: 4px;">${htmlActs}</div>
+        `;
+        contenedorResumen.appendChild(div);
+      }
+    }
+
+    // Lógica específica del Módulo 4 (Eventos por Categoría)
+    let listaEventos = [];
+    let papeleraEventos = [];
+
+    function verificarEventoOtro(selectElem) {
+      const contenedorOtro = document.getElementById('contenedor-otro-evento');
+      if (selectElem.value === 'Otro') {
+        contenedorOtro.style.display = 'block';
+      } else {
+        contenedorOtro.style.display = 'none';
+        document.getElementById('mod4-otro-evento').value = '';
+      }
+    }
+
+    function guardarEvento() {
+      const categoria = document.getElementById('mod4-cat').value;
+      const grupo = document.getElementById('mod4-grupo').value;
+      const chip = document.getElementById('mod4-chip').value.trim();
+      const responsable = document.getElementById('mod4-responsable').value.trim();
+      
+      let eventoSelect = document.getElementById('mod4-evento').value;
+      let eventoNombre = eventoSelect;
+      if (eventoSelect === 'Otro') {
+        eventoNombre = document.getElementById('mod4-otro-evento').value.trim();
+        if (!eventoNombre) {
+          alert('Por favor, especifica el nombre del otro evento.');
+          return;
+        }
+      }
+
+      const fecha = document.getElementById('mod4-fecha').value;
+      const cantidad = document.getElementById('mod4-cant').value;
+      const geo = document.getElementById('mod4-geo').value.trim();
+
+      if (!responsable) {
+        alert('Por favor, ingresa el nombre del responsable que notificó el evento.');
+        return;
+      }
+
+      const nuevoEvento = {
+        id: Date.now(),
+        categoria,
+        grupo,
+        chip: chip || 'S/N',
+        evento: eventoNombre,
+        responsable,
+        fecha,
+        cantidad,
+        geo: geo || 'Sin Coordenadas GPS'
+      };
+
+      listaEventos.push(nuevoEvento);
+
+      // Alerta al subir evento
+      alert(`🚨 ¡ALERTA DE EVENTO REGISTRADO!\n\nSe ha subido correctamente el evento "${eventoNombre}" (Animal/Chip: ${nuevoEvento.chip}) notificado por ${responsable}.`);
+
+      document.getElementById('mod4-chip').value = '';
+      document.getElementById('mod4-cant').value = '';
+      document.getElementById('mod4-responsable').value = '';
+      document.getElementById('mod4-evento').value = 'Muertos';
+      document.getElementById('contenedor-otro-evento').style.display = 'none';
+      document.getElementById('mod4-otro-evento').value = '';
+      document.getElementById('mod4-fecha').value = '';
+      document.getElementById('mod4-geo').value = '';
+      document.getElementById('mapa-mod4').style.display = 'none';
+
+      actualizarTablaEventos();
+      actualizarResumenEventos();
+    }
+
+    function borrarEvento(index) {
+      const eventoBorrado = listaEventos.splice(index, 1)[0];
+      papeleraEventos.push(eventoBorrado);
+
+      actualizarTablaEventos();
+      actualizarResumenEventos();
+    }
+
+    function rehacerEvento() {
+      if (papeleraEventos.length === 0) {
+        alert('No hay eventos borrados para rehacer.');
+        return;
+      }
+
+      const eventoRecuperado = papeleraEventos.pop();
+      listaEventos.push(eventoRecuperado);
+
+      actualizarTablaEventos();
+      actualizarResumenEventos();
+    }
+
+    function actualizarTablaEventos() {
+      const tbody = document.getElementById('tabla-eventos-body');
+      tbody.innerHTML = '';
+
+      listaEventos.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.categoria}</td>
+          <td>${item.grupo}</td>
+          <td><strong>${item.chip}</strong></td>
+          <td>${item.evento}</td>
+          <td><strong>${item.responsable}</strong></td>
+          <td>${item.cantidad || '-'}</td>
+          <td>${item.fecha || '-'}</td>
+          <td><button class="btn-delete-item" onclick="borrarEvento(${index})">❌ Borrar</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const contador = document.getElementById('contador-rehacer-eventos');
+      if (contador) {
+        contador.textContent = papeleraEventos.length;
+      }
+    }
+
+    function actualizarResumenEventos() {
+      const contenedorResumen = document.getElementById('resumen-eventos-container');
+      contenedorResumen.innerHTML = '';
+
+      if (listaEventos.length === 0) {
+        contenedorResumen.innerHTML = `
+          <div class="summary-item">
+            <span class="title">Estado</span>
+            <span class="value">No hay eventos registrados.</span>
+          </div>`;
+        return;
+      }
+
+      const agrupadoPorResponsable = {};
+      listaEventos.forEach(item => {
+        if (!agrupadoPorResponsable[item.responsable]) {
+          agrupadoPorResponsable[item.responsable] = [];
+        }
+        agrupadoPorResponsable[item.responsable].push(item);
+      });
+
+      for (const [resp, evs] of Object.entries(agrupadoPorResponsable)) {
+        let htmlEvs = evs.map(e => `
+          <div style="font-size: 11px; margin-top: 4px; border-top: 1px dashed #e2e8f0; padding-top: 4px;">
+            • Cat: ${e.categoria} (${e.grupo}) | 🏷️ <strong>Chip/N°: ${e.chip}</strong> | Evento: <strong>${e.evento}</strong> (Cant: ${e.cantidad || '-'})<br>
+            <span style="color: #2e7d32; font-size: 10px;">📍 GPS: ${e.geo}</span>
+          </div>
+        `).join('');
+        
+        const div = document.createElement('div');
+        div.className = 'summary-item';
+        div.innerHTML = `
+          <span class="title">👤 Responsable: ${resp} <span style="font-weight:normal; font-size:11px;">(${evs.length} eventos)</span></span>
+          <div style="margin-top: 4px;">${htmlEvs}</div>
+        `;
+        contenedorResumen.appendChild(div);
+      }
+    }
+
+    // Funciones globales de soporte (GPS/Clima)
+    function obtenerCoordenadas(inputId, mapaId) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          document.getElementById(inputId).value = `${lat}, ${lon}`;
+          const mapa = document.getElementById(mapaId);
+          mapa.style.display = 'block';
+          mapa.src = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
+        }, () => {
+          alert('No se pudo obtener la ubicación GPS.');
+        });
+      } else {
+        alert('Geolocalización no soportada en este navegador.');
+      }
+    }
+
+    function obtenerClimaGPS() {
+      document.getElementById('clima-ubicacion').innerText = '📍 Barinas, Venezuela';
+      document.getElementById('clima-temp').innerText = '31 °C';
+      document.getElementById('clima-condicion').innerText = 'Soleado / Parcialmente nublado';
     }
   </script>
 </body>
