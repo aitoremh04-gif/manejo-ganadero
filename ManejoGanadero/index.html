@@ -3,17 +3,270 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manejo Ganadero</title>
-  <!-- SDK oficial de Telegram WebApp -->
+  <title>Manejo Ganadero - Hato Laguna Brava</title>
+  <!-- SDK Oficial de Telegram WebApp -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --primary-color: #2e7d32;
+      --secondary-color: #1b5e20;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-color: #e0e0e0;
+      --danger-color: #c62828;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 15px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 12px;
+      background: var(--primary-color);
+      color: white;
+      border-radius: 8px;
+    }
+
+    header h1 {
+      font-size: 1.3rem;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+    }
+
+    .stat-card h3 {
+      font-size: 0.75rem;
+      color: #666;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .stat-card span {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+      color: var(--secondary-color);
+      border-bottom: 2px solid #eef2f5;
+      padding-bottom: 6px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button.btn-submit {
+      width: 100%;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.btn-submit:active {
+      background: var(--secondary-color);
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: #f8f9fa;
+      color: #555;
+    }
+
+    .btn-danger {
+      background: var(--danger-color);
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Aquí va la interfaz HTML del sistema (formularios, tablas, botones) -->
+  <header>
+    <h1>Manejo Ganadero</h1>
+    <p>Hato Laguna Brava - Sincronizado</p>
+  </header>
+
+  <!-- Panel de Totales -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <h3>Total</h3>
+      <span id="stat-total">0</span>
+    </div>
+    <div class="stat-card">
+      <h3>Hembras</h3>
+      <span id="stat-hembras">0</span>
+    </div>
+    <div class="stat-card">
+      <h3>Machos</h3>
+      <span id="stat-machos">0</span>
+    </div>
+  </div>
+
+  <!-- Formulario de Registro -->
+  <div class="card">
+    <h2>Registrar Animal / Evento</h2>
+    <form id="formulario-ganado">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="arete">Nº Arete / ID</label>
+          <input type="text" id="arete" required placeholder="Ej. B-102">
+        </div>
+        <div class="form-group">
+          <label for="sexo">Sexo</label>
+          <select id="sexo" required>
+            <option value="Hembra">Hembra</option>
+            <option value="Macho">Macho</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="peso">Peso (Kg)</label>
+          <input type="number" id="peso" step="0.1" placeholder="Ej. 380">
+        </div>
+        <div class="form-group">
+          <label for="categoria">Categoría</label>
+          <select id="categoria">
+            <option value="Vaca">Vaca</option>
+            <option value="Novilla">Novilla</option>
+            <option value="Maute">Maute / Mauta</option>
+            <option value="Toro">Toro</option>
+            <option value="Becerro">Becerro / Becerra</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="observaciones">Observaciones / Tratamiento</label>
+        <input type="text" id="observaciones" placeholder="Ej. Palpación, Vacuna Septicemia">
+      </div>
+
+      <button type="submit" class="btn-submit">Guardar y Sincronizar</button>
+    </form>
+  </div>
+
+  <!-- Listado de Registros -->
+  <div class="card">
+    <h2>Registros en el Hato</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Arete</th>
+            <th>Sexo</th>
+            <th>Categoría</th>
+            <th>Peso</th>
+            <th>Notas</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-cuerpo"></tbody>
+      </table>
+      <div id="mensaje-vacio" class="empty-state">No hay animales registrados aún.</div>
+    </div>
+  </div>
 
   <script>
     // ==========================================================
-    // GESTOR DE ALMACENAMIENTO NUBE (TELEGRAM CLOUDSTORAGE)
+    // PERSISTENCIA EN NUBE (TELEGRAM CLOUDSTORAGE + LOCALSTORAGE)
     // ==========================================================
     const StorageManager = {
       isTelegramAvailable: function() {
@@ -27,13 +280,13 @@
           try {
             localStorage.setItem(clave, stringData);
           } catch (e) {
-            console.warn("Error al guardar localmente:", e);
+            console.warn("Error en localStorage:", e);
           }
 
           if (this.isTelegramAvailable()) {
             Telegram.WebApp.CloudStorage.setItem(clave, stringData, (error, enviado) => {
               if (error) {
-                console.error("Error en Telegram CloudStorage:", error);
+                console.error("Error en CloudStorage:", error);
                 resolve(false);
               } else {
                 resolve(true);
@@ -64,46 +317,94 @@
     };
 
     // ==========================================================
-    // FLUJO PRINCIPAL DE DATOS Y SINCRONIZACIÓN
+    // CONTROLADOR PRINCIPAL
     // ==========================================================
     const CLAVE_HATO = 'datos_hato_laguna_brava';
-    let estadoHato = { animales: [], registros: [] };
+    let estadoHato = { animales: [] };
 
     document.addEventListener('DOMContentLoaded', async () => {
       if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
       }
+      
+      document.getElementById('formulario-ganado').addEventListener('submit', registrarAnimal);
       await cargarYSincronizar();
     });
 
     async function cargarYSincronizar() {
       const datosRemotos = await StorageManager.cargar(CLAVE_HATO);
-      if (datosRemotos) {
+      if (datosRemotos && Array.isArray(datosRemotos.animales)) {
         estadoHato = datosRemotos;
       }
-      actualizarVistaUI();
+      renderizarInterfaz();
     }
 
-    async function guardarDatosSistema(nuevoRegistro) {
-      if (!Array.isArray(estadoHato.animales)) {
-        estadoHato.animales = [];
-      }
-      estadoHato.animales.push(nuevoRegistro);
+    async function registrarAnimal(e) {
+      e.preventDefault();
 
-      const guardadoExitoso = await StorageManager.guardar(CLAVE_HATO, estadoHato);
-      if (guardadoExitoso) {
-        actualizarVistaUI();
-        notificarUsuario("Registro guardado y sincronizado.");
-      } else {
-        notificarUsuario("Guardado localmente. Verifique su conexión.");
+      const nuevoAnimal = {
+        id: Date.now(),
+        arete: document.getElementById('arete').value.trim(),
+        sexo: document.getElementById('sexo').value,
+        peso: document.getElementById('peso').value ? parseFloat(document.getElementById('peso').value) : '-',
+        categoria: document.getElementById('categoria').value,
+        observaciones: document.getElementById('observaciones').value.trim() || '-'
+      };
+
+      estadoHato.animales.unshift(nuevoAnimal);
+      const guardado = await StorageManager.guardar(CLAVE_HATO, estadoHato);
+      
+      document.getElementById('formulario-ganado').reset();
+      renderizarInterfaz();
+      notificarUsuario(guardado ? "Registro guardado y sincronizado." : "Guardado en almacenamiento local.");
+    }
+
+    async function eliminarAnimal(id) {
+      if (confirm("¿Desea eliminar este registro del sistema?")) {
+        estadoHato.animales = estadoHato.animales.filter(a => a.id !== id);
+        await StorageManager.guardar(CLAVE_HATO, estadoHato);
+        renderizarInterfaz();
+        notificarUsuario("Registro eliminado.");
       }
     }
 
-    function actualizarVistaUI() {
-      if (typeof renderizarTabla === 'function') {
-        renderizarTabla(estadoHato.animales);
+    function renderizarInterfaz() {
+      const tbody = document.getElementById('tabla-cuerpo');
+      const mensajeVacio = document.getElementById('mensaje-vacio');
+      tbody.innerHTML = '';
+
+      const animales = estadoHato.animales || [];
+
+      document.getElementById('stat-total').textContent = animales.length;
+      document.getElementById('stat-hembras').textContent = animales.filter(a => a.sexo === 'Hembra').length;
+      document.getElementById('stat-machos').textContent = animales.filter(a => a.sexo === 'Macho').length;
+
+      if (animales.length === 0) {
+        mensajeVacio.style.display = 'block';
+        return;
       }
+
+      mensajeVacio.style.display = 'none';
+
+      animales.forEach(animal => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${escapeHtml(animal.arete)}</strong></td>
+          <td>${escapeHtml(animal.sexo)}</td>
+          <td>${escapeHtml(animal.categoria)}</td>
+          <td>${animal.peso} kg</td>
+          <td>${escapeHtml(animal.observaciones)}</td>
+          <td>
+            <button class="btn-danger" onclick="eliminarAnimal(${animal.id})">Borrar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
     function notificarUsuario(mensaje) {
