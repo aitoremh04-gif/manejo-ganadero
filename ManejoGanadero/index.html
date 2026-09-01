@@ -1,3 +1,82 @@
+
+
+
+Ir al contenido
+Uso de Gmail con lectores de pantalla
+Conversaciones
+
+Importantes y no leídos
+ 
+1–2 de 2
+ 
+
+Destacados
+ 
+
+Todo lo demás
+ 
+1–25 de 160
+ 
+Hato Laguna Brava
+LISTADO DE BUMAUTAS PARA GUIA DE MOVILIZACION
+ 
+Archivo adjunto:
+BUMAUTAS PARA LA YEGUERA.xlsx
+20 jun
+Hato Laguna Brava
+LISTADO DE ANIMALES PARA GUIA DE MOVILIZACION 3ER VIAJE YEGUERA
+ 
+Archivo adjunto:
+DESTETE 2026.xlsx
+18 jun
+Hato Laguna Brava
+TRABAJO DE LLANO HATO LAGUNA BRAVA MAYO 2026
+ 
+Archivo adjunto:
+Inventario Barinas 2026 HLB.xlsx
+14 jun
+Hato Laguna Brava
+finca el saman
+ 
+Archivo adjunto:
+FINCA LA FORTUNA (1).xlsx
+5 jun
+Hato Laguna Brava
+RESUMEN DE EVENTOS MES DE MAYO 2026 CORREJIDO
+ 
+Archivo adjunto:
+MAYO 2026.xlsx
+25 may
+Hato Laguna Brava
+RESUMEN DE EVENTOS MES DE MAYO 2026
+ 
+Archivo adjunto:
+MAYO 2026.xlsx
+25 may
+Hato Laguna Brava
+inventario
+ 
+Archivo adjunto:
+ganaderia.xlsx
+22 may
+Hato Laguna Brava
+fortuna
+ 
+Archivo adjunto:
+FINCA LA FORTUNA (1).xlsx
+9 may
+Hato Laguna Brava
+DATOS PARA GUIA DESTETE YEGUERA
+ 
+Archivo adjunto:
+DESTETE LA YEGUERA.xlsx
+29 abr
+Estás usando el 68 % de 15 GB
+Términos · Privacidad · Política del programa
+Última actividad de la cuenta: hace 0 minutos
+Detalles
+
+Explicar
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -181,30 +260,6 @@
       margin-top: 8px;
     }
 
-    .btn-redo {
-      width: 100%;
-      background-color: #2e7d32;
-      color: #ffffff;
-      border: none;
-      padding: 10px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 6px;
-    }
-
-    .btn-delete-item {
-      background-color: #d32f2f;
-      color: white;
-      border: none;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
     .btn-geo {
       background-color: #2e7d32;
       color: white;
@@ -247,6 +302,16 @@
       white-space: nowrap;
     }
 
+    .badge-status {
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 10px;
+      display: inline-block;
+    }
+    .badge-si { background-color: var(--success-bg); color: var(--success-color); }
+    .badge-no { background-color: var(--alert-bg); color: var(--alert-color); }
+
     .summary-card {
       background-color: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -256,16 +321,10 @@
     }
 
     .summary-card h4 { margin: 0 0 10px 0; font-size: 13px; color: var(--blue-primary); }
-    .summary-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
-    
-    .summary-item { 
-      background: #ffffff; 
-      padding: 12px; 
-      border-radius: 8px; 
-      border: 1.5px solid #e2e8f0; 
-      margin-bottom: 8px; 
-    }
-    .summary-item .title { font-size: 13px; font-weight: bold; color: var(--blue-primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .summary-item { background: #ffffff; padding: 8px; border-radius: 8px; border: 1px solid #edf2f7; }
+    .summary-item .title { font-size: 10px; color: var(--text-muted); display: block; }
+    .summary-item .value { font-size: 14px; font-weight: bold; color: var(--text-main); }
     
     .weather-box {
       background: linear-gradient(135deg, #e3f2fd, #bbdefb);
@@ -415,7 +474,7 @@
     </div>
     <div class="form-row">
       <div class="form-group"><label>Categoría:</label>
-        <select class="form-control" id="mod1-categoria">
+        <select class="form-control" id="mod1-categoria" onchange="actualizarGruposEtarios()">
           <option value="Bovinos">Bovinos</option><option value="Bufalinos">Bufalinos</option>
         </select>
       </div>
@@ -423,13 +482,14 @@
     </div>
     <div class="form-group"><label>Cantidad:</label><input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 25"></div>
     <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento</button>
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Cat.</th><th>Grupo</th><th>Cant.</th></tr>
-        </thead>
-        <tbody id="tabla-rotacion-body"></tbody>
-      </table>
+    <div class="table-container"><table class="data-table"><thead><tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Cat.</th><th>Grupo</th><th>Cant.</th></tr></thead><tbody id="tabla-rotacion-body"></tbody></table></div>
+    <div class="summary-card">
+      <h4>📊 Resumen del Hato por Potrero</h4>
+      <div class="summary-grid">
+        <div class="summary-item"><span class="title">Bovinos</span><span class="value" id="resumen-bovinos">0</span></div>
+        <div class="summary-item"><span class="title">Bufalinos</span><span class="value" id="resumen-bufalinos">0</span></div>
+        <div class="summary-item" style="grid-column: span 2;"><span class="title">TOTAL GENERAL</span><span class="value" id="resumen-total-hato">0 Animales</span></div>
+      </div>
     </div>
   </div>
 
@@ -456,62 +516,24 @@
       <h3>3. Manejo Sanitario Productivo</h3>
       <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
-    <div class="form-group"><label>Lote Trabajado:</label>
+    <div class="form-group"><label>Lote Trabalhado:</label>
       <select class="form-control" id="mod3-lote">
         <option>Vacas PÑ</option><option>Vacas Paridas</option><option>Vacas Vacías</option><option>Vacas en Monta</option><option>Becerros Recién Nacidos</option><option>Becerros 1 Mes</option><option>Becerros 2 Meses</option><option>Becerros 3 Meses</option><option>Becerros 4 Meses</option><option>Becerros 5 Meses</option><option>Novillas</option><option>Destetes</option><option>Toros</option><option>Búfalas PÑ</option><option>Búfalas Paridas</option><option>Búfalas Vacías</option><option>Búfalas en Monta</option><option>Búfalas en Ordeño</option><option>Bucerros en Ordeño</option><option>Buvillas</option><option>Bautas</option><option>Bautes</option><option>Butoro</option>
       </select>
     </div>
-    
     <div class="form-row">
       <div class="form-group"><label>Cantidad:</label><input type="number" id="mod3-cantidad" class="form-control"></div>
-      <div class="form-group"><label>Responsable:</label><input type="text" id="mod3-responsable" class="form-control" placeholder="Ej: Pedro Pérez"></div>
+      <div class="form-group"><label>Tipo Tratamiento:</label>
+        <select class="form-control" id="mod3-tipo"><option>Vacunas</option><option>Desparasitación</option><option>Minerales</option><option>Vitaminas</option><option>Antibióticos</option></select>
+      </div>
     </div>
-
-    <div class="form-group">
-      <label>Actividad a ejecutar:</label>
-      <select class="form-control" id="mod3-tipo" onchange="verificarActividadOtra(this)">
-        <option value="Vacunas">Vacunas</option>
-        <option value="Desparasitación">Desparasitación</option>
-        <option value="Minerales">Minerales</option>
-        <option value="Vitaminas">Vitaminas</option>
-        <option value="Antibióticos">Antibióticos</option>
-        <option value="Pesajes">Pesajes</option>
-        <option value="Otra">Otra actividad (Escribir abajo)</option>
-      </select>
-    </div>
-
-    <div class="form-group" id="contenedor-otra-actividad" style="display:none;">
-      <label>Escribir Otra Actividad:</label>
-      <input type="text" id="mod3-otra-tipo" class="form-control" placeholder="Especificar actividad">
-    </div>
-
     <div class="form-row">
       <div class="form-group"><label>Fecha Aplicación:</label><input type="date" id="mod3-f-aplicacion" class="form-control"></div>
       <div class="form-group"><label>Próximo Tratamiento:</label><input type="date" id="mod3-f-proximo" class="form-control"></div>
     </div>
     <div class="form-group"><label>Observación:</label><input type="text" id="mod3-observacion" class="form-control"></div>
-    
-    <button class="btn-action" onclick="guardarTratamientoSanitario()">Guardar Actividad</button>
-    <button class="btn-redo" onclick="rehacerActividadSanitaria()">🔄 Rehacer Actividad (<span id="contador-rehacer-sanitaria">0</span>)</button>
-
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr><th>Lote</th><th>Actividad</th><th>Responsable</th><th>Cant</th><th>Aplic.</th><th>Próx.</th><th>Acción</th></tr>
-        </thead>
-        <tbody id="tabla-sanitaria-body"></tbody>
-      </table>
-    </div>
-
-    <div class="summary-card">
-      <h4>📊 Resumen de Actividades Sanitarias y Responsables</h4>
-      <div class="summary-grid" id="resumen-sanitaria-container">
-        <div class="summary-item">
-          <span class="title">Estado</span>
-          <span class="value">No hay actividades sanitarias registradas.</span>
-        </div>
-      </div>
-    </div>
+    <button class="btn-action" onclick="guardarTratamientoSanitario()">Guardar Tratamiento</button>
+    <div class="table-container"><table class="data-table"><thead><tr><th>Lote</th><th>Cant</th><th>Tipo</th><th>Aplic.</th><th>Próx.</th></tr></thead><tbody id="tabla-sanitaria-body"></tbody></table></div>
   </div>
 
   <!-- MODULO 4: EVENTOS POR CATEGORÍA -->
@@ -520,102 +542,40 @@
       <h3>4. Eventos por Categoría</h3>
       <button class="btn-back" onclick="volverMenu()">⬅️ Volver</button>
     </div>
-    
     <div class="form-row">
-      <div class="form-group">
-        <label>Categoría:</label>
-        <select class="form-control" id="mod4-cat"><option>Bovina</option><option>Bufalina</option></select>
-      </div>
-      <div class="form-group">
-        <label>Grupo Etario:</label>
+      <div class="form-group"><label>Categoría:</label><select class="form-control" id="mod4-cat"><option>Bovina</option><option>Bufalina</option></select></div>
+      <div class="form-group"><label>Grupo Etario:</label>
         <select class="form-control" id="mod4-grupo">
           <option>Vaca</option><option>Novilla</option><option>Mauta</option><option>Maute</option><option>Toro</option><option>Becerro</option><option>Becerra</option><option>Búfala</option><option>Buvilla</option><option>Bauta</option><option>Baute</option><option>Butoro</option><option>Bucerro</option><option>Bucerra</option>
         </select>
       </div>
     </div>
-
-    <!-- CASILLA ANEXADA: NÚMERO O CHIP DEL ANIMAL -->
-    <div class="form-group">
-      <label>Número / Chip del Animal:</label>
-      <input type="text" id="mod4-chip" class="form-control" placeholder="Ej: CHIP-4089 / N° 124">
-    </div>
-
-    <div class="form-group">
-      <label>Evento:</label>
-      <select class="form-control" id="mod4-evento" onchange="verificarEventoOtro(this)">
-        <option value="Muertos">Muertos</option>
-        <option value="Abortos">Abortos</option>
-        <option value="Natibortos">Natibortos</option>
-        <option value="Nacidos">Nacidos</option>
-        <option value="Consumo">Consumo</option>
-        <option value="Traslado">Traslado</option>
-        <option value="Otro">Otro evento (Escribir abajo)</option>
-      </select>
-    </div>
-
-    <div class="form-group" id="contenedor-otro-evento" style="display:none;">
-      <label>Escribir Otro Evento:</label>
-      <input type="text" id="mod4-otro-evento" class="form-control" placeholder="Especificar evento personalizado">
-    </div>
-
     <div class="form-row">
-      <div class="form-group">
-        <label>Responsable que Notificó:</label>
-        <input type="text" id="mod4-responsable" class="form-control" placeholder="Ej: Juan Gómez">
+      <div class="form-group"><label>Evento:</label>
+        <select class="form-control" id="mod4-evento">
+          <option>Muertos</option><option>Abortos</option><option>Natibortos</option><option>Nacidos</option><option>Consumo</option><option>Traslado</option>
+        </select>
       </div>
-      <div class="form-group">
-        <label>Fecha:</label>
-        <input type="date" id="mod4-fecha" class="form-control">
-      </div>
+      <div class="form-group"><label>Fecha:</label><input type="date" id="mod4-fecha" class="form-control"></div>
     </div>
-
     <div class="form-row">
-      <div class="form-group">
-        <label>Cantidad:</label>
-        <input type="number" id="mod4-cant" class="form-control" min="1" placeholder="Ej: 1">
-      </div>
-      <div class="form-group">
-        <label>Foto del Evento:</label>
-        <input type="file" id="mod4-foto" class="form-control" accept="image/*">
-      </div>
+      <div class="form-group"><label>Cantidad:</label><input type="number" id="mod4-cant" class="form-control" min="1"></div>
+      <div class="form-group"><label>Foto del Evento:</label><input type="file" id="mod4-foto" class="form-control" accept="image/*"></div>
     </div>
-
     <div class="form-group">
       <label>Ubicación Google Maps:</label>
       <button class="btn-geo" onclick="obtenerCoordenadas('mod4-geo', 'mapa-mod4')">📍 Capturar Geolocalización GPS</button>
       <input type="text" id="mod4-geo" class="form-control" readonly placeholder="Coordenadas GPS" style="margin-top:4px;">
       <iframe id="mapa-mod4" class="map-preview" style="display:none;" frameborder="0"></iframe>
     </div>
+    <button class="btn-action" onclick="guardarEvento()">Registrar Evento</button>
 
-    <button class="btn-action" onclick="guardarEvento()">Guardar Evento</button>
-    <button class="btn-redo" onclick="rehacerEvento()">🔄 Rehacer Evento (<span id="contador-rehacer-eventos">0</span>)</button>
-
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Categoría</th>
-            <th>Grupo</th>
-            <th>N° / Chip</th>
-            <th>Evento</th>
-            <th>Responsable</th>
-            <th>Cant.</th>
-            <th>Fecha</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-eventos-body"></tbody>
-      </table>
-    </div>
-
-    <!-- ÁREA DE RESUMEN CON CHIP / NÚMERO Y COORDENADAS GEOGRÁFICAS -->
     <div class="summary-card">
-      <h4>📊 Resumen de Eventos Registrados, Chips, Responsables y Coordenadas</h4>
-      <div class="summary-grid" id="resumen-eventos-container">
-        <div class="summary-item">
-          <span class="title">Estado</span>
-          <span class="value">No hay eventos registrados.</span>
-        </div>
+      <h4>📊 Resumen General de Eventos</h4>
+      <div class="summary-grid">
+        <div class="summary-item"><span class="title">Nacimientos Totales</span><span class="value" id="resumen-nacidos">0</span></div>
+        <div class="summary-item"><span class="title">Mortalidad / Decesos</span><span class="value" id="resumen-muertos">0</span></div>
+        <div class="summary-item" style="grid-column: span 2;"><span class="title">Traslados / Consumos</span><span class="value" id="resumen-salidas">0</span></div>
       </div>
     </div>
   </div>
@@ -637,6 +597,7 @@
     </div>
     <div class="form-group"><label>Observación de Avería:</label><input type="text" id="mod5-averia" class="form-control" placeholder="Ej: Fuga leve en manguera hidráulica"></div>
     <button class="btn-action" onclick="guardarMaquinaria()">Guardar Registro de Equipo</button>
+
     <div class="table-container"><table class="data-table"><thead><tr><th>Equipo</th><th>Responsable</th><th>Hrs Acum.</th><th>Estado Aceite</th><th>Avería</th></tr></thead><tbody id="tabla-maquinaria-body"></tbody></table></div>
   </div>
 
@@ -682,6 +643,12 @@
       <div class="form-group"><label>Responsable:</label><input type="text" id="mod7-resp" class="form-control"></div>
     </div>
     <button class="btn-action" onclick="guardarDeposito()">Registrar Insumo</button>
+    <div class="summary-card">
+      <h4>📦 Resumen de Artículos Despachados por Mes</h4>
+      <div class="summary-grid">
+        <div class="summary-item" style="grid-column: span 2;"><span class="title">Total Despachos (Mes)</span><span class="value" id="resumen-deposito-mes">0 Artículos / Lotes</span></div>
+      </div>
+    </div>
   </div>
 
   <!-- MODULO 8: REPARACIÓN DE LÍNEAS -->
@@ -723,6 +690,13 @@
       <div class="form-group"><label>Fecha:</label><input type="date" id="mod9-fecha" class="form-control"></div>
     </div>
     <button class="btn-action" onclick="guardarCombustible()">Registrar Movimiento Combustible</button>
+    <div class="summary-card">
+      <h4>⛽ Resumen de Inventario Combustible</h4>
+      <div class="summary-grid">
+        <div class="summary-item"><span class="title">Gasoil Disponible</span><span class="value" id="saldo-gasoil">0 Lts</span></div>
+        <div class="summary-item"><span class="title">Gasolina Disponible</span><span class="value" id="saldo-gasolina">0 Lts</span></div>
+      </div>
+    </div>
   </div>
 
   <!-- MODULO 10: LOGÍSTICA DE COMIDA -->
@@ -740,341 +714,186 @@
       <div class="form-group"><label>Ubicación / Cuadrilla:</label><input type="text" id="mod10-cuadrilla" class="form-control" placeholder="Ej: Sabana Manguito"></div>
     </div>
     <button class="btn-action" onclick="guardarComida()">Registrar Ración Comida</button>
+    <div class="summary-card">
+      <h4>🍽️ Resumen Diario de Alimentación</h4>
+      <div class="summary-grid">
+        <div class="summary-item" style="grid-column: span 2;"><span class="title">Platos Servidos Hoy</span><span class="value" id="resumen-comida-hoy">0 Raciones</span></div>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Lógica general de navegación de módulos
-    function mostrarModulo(idModulo) {
-      document.getElementById('main-menu').style.display = 'none';
-      document.querySelectorAll('.module-view').forEach(mod => mod.style.display = 'none');
-      document.getElementById(idModulo).style.display = 'block';
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    const gruposBovinos = ["Vaca", "Novilla", "Becerro", "Toro", "Mautas", "Mautes"];
+    const gruposBufalinos = ["Búfalas", "Buvillas", "Bucerros", "Bucerras", "Butoro", "Bautas", "Bautes"];
+
+    let movimientosRotacion = [];
+    let tareas = [];
+    let tratamientosSanitarios = [];
+    let eventos = [];
+    let maquinarias = [];
+    let depositos = [];
+    let combustibleGasoil = 0;
+    let combustibleGasolina = 0;
+    let comidasServidasHoy = 0;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const hoy = new Date().toISOString().split('T')[0];
+      ['mod1-f-ingreso','mod1-f-salida','mod2-f-asignacion','mod2-f-culminacion','mod3-f-aplicacion','mod4-fecha','mod5-f-aceite','mod7-f-entrega','mod7-f-despacho','mod9-fecha','mod10-fecha'].forEach(id => {
+        if(document.getElementById(id)) document.getElementById(id).value = hoy;
+      });
+      actualizarGruposEtarios();
+      obtenerClimaGPS();
+    });
+
+    function mostrarModulo(id) {
+      document.getElementById("main-menu").style.display = "none";
+      document.querySelectorAll('.module-view').forEach(m => m.style.display = "none");
+      document.getElementById(id).style.display = "block";
     }
 
     function volverMenu() {
-      document.querySelectorAll('.module-view').forEach(mod => mod.style.display = 'none');
-      document.getElementById('main-menu').style.display = 'block';
+      document.querySelectorAll('.module-view').forEach(m => m.style.display = "none");
+      document.getElementById("main-menu").style.display = "block";
     }
 
-    // Lógica específica del Módulo 3 (Manejo Sanitario Productivo)
-    let listaSanitaria = [];
-    let papeleraSanitaria = [];
-
-    function verificarActividadOtra(selectElem) {
-      const contenedorOtra = document.getElementById('contenedor-otra-actividad');
-      if (selectElem.value === 'Otra') {
-        contenedorOtra.style.display = 'block';
-      } else {
-        contenedorOtra.style.display = 'none';
-        document.getElementById('mod3-otra-tipo').value = '';
-      }
-    }
-
-    function guardarTratamientoSanitario() {
-      const lote = document.getElementById('mod3-lote').value;
-      const cantidad = document.getElementById('mod3-cantidad').value;
-      const responsable = document.getElementById('mod3-responsable').value.trim();
-      
-      let tipoSelect = document.getElementById('mod3-tipo').value;
-      let tipoActividad = tipoSelect;
-      if (tipoSelect === 'Otra') {
-        tipoActividad = document.getElementById('mod3-otra-tipo').value.trim();
-        if (!tipoActividad) {
-          alert('Por favor, especifica la otra actividad.');
-          return;
-        }
-      }
-
-      const fAplicacion = document.getElementById('mod3-f-aplicacion').value;
-      const fProximo = document.getElementById('mod3-f-proximo').value;
-      const observacion = document.getElementById('mod3-observacion').value.trim();
-
-      if (!responsable) {
-        alert('Por favor, ingresa el nombre del responsable de la actividad.');
-        return;
-      }
-
-      const nuevaActividad = {
-        id: Date.now(),
-        lote,
-        cantidad,
-        responsable,
-        tipoActividad,
-        fAplicacion,
-        fProximo,
-        observacion
-      };
-
-      listaSanitaria.push(nuevaActividad);
-
-      document.getElementById('mod3-cantidad').value = '';
-      document.getElementById('mod3-responsable').value = '';
-      document.getElementById('mod3-tipo').value = 'Vacunas';
-      document.getElementById('contenedor-otra-actividad').style.display = 'none';
-      document.getElementById('mod3-otra-tipo').value = '';
-      document.getElementById('mod3-f-aplicacion').value = '';
-      document.getElementById('mod3-f-proximo').value = '';
-      document.getElementById('mod3-observacion').value = '';
-
-      actualizarTablaSanitaria();
-      actualizarResumenSanitaria();
-    }
-
-    function borrarActividadSanitaria(index) {
-      const actividadBorrada = listaSanitaria.splice(index, 1)[0];
-      papeleraSanitaria.push(actividadBorrada);
-
-      actualizarTablaSanitaria();
-      actualizarResumenSanitaria();
-    }
-
-    function rehacerActividadSanitaria() {
-      if (papeleraSanitaria.length === 0) {
-        alert('No hay actividades borradas para rehacer.');
-        return;
-      }
-
-      const actividadRecuperada = papeleraSanitaria.pop();
-      listaSanitaria.push(actividadRecuperada);
-
-      actualizarTablaSanitaria();
-      actualizarResumenSanitaria();
-    }
-
-    function actualizarTablaSanitaria() {
-      const tbody = document.getElementById('tabla-sanitaria-body');
-      tbody.innerHTML = '';
-
-      listaSanitaria.forEach((item, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${item.lote}</td>
-          <td>${item.tipoActividad}</td>
-          <td><strong>${item.responsable}</strong></td>
-          <td>${item.cantidad || '-'}</td>
-          <td>${item.fAplicacion || '-'}</td>
-          <td>${item.fProximo || '-'}</td>
-          <td><button class="btn-delete-item" onclick="borrarActividadSanitaria(${index})">❌ Borrar</button></td>
-        `;
-        tbody.appendChild(tr);
+    function actualizarGruposEtarios() {
+      const cat = document.getElementById("mod1-categoria").value;
+      const selectGrupo = document.getElementById("mod1-grupo-etario");
+      selectGrupo.innerHTML = "";
+      const lista = (cat === "Bovinos") ? gruposBovinos : gruposBufalinos;
+      lista.forEach(g => {
+        const opt = document.createElement("option"); opt.value = g; opt.innerText = g;
+        selectGrupo.appendChild(opt);
       });
-
-      const contador = document.getElementById('contador-rehacer-sanitaria');
-      if (contador) {
-        contador.textContent = papeleraSanitaria.length;
-      }
     }
 
-    function actualizarResumenSanitaria() {
-      const contenedorResumen = document.getElementById('resumen-sanitaria-container');
-      contenedorResumen.innerHTML = '';
-
-      if (listaSanitaria.length === 0) {
-        contenedorResumen.innerHTML = `
-          <div class="summary-item">
-            <span class="title">Estado</span>
-            <span class="value">No hay actividades sanitarias registradas.</span>
-          </div>`;
-        return;
-      }
-
-      const agrupadoPorResponsable = {};
-      listaSanitaria.forEach(item => {
-        if (!agrupadoPorResponsable[item.responsable]) {
-          agrupadoPorResponsable[item.responsable] = [];
-        }
-        agrupadoPorResponsable[item.responsable].push(item);
-      });
-
-      for (const [resp, acts] of Object.entries(agrupadoPorResponsable)) {
-        let htmlActs = acts.map(a => `<div style="font-size: 11px; margin-top: 2px;">• Lote: ${a.lote} | Actividad: ${a.tipoActividad} (Cant: ${a.cantidad || '-'})</div>`).join('');
-        
-        const div = document.createElement('div');
-        div.className = 'summary-item';
-        div.innerHTML = `
-          <span class="title">👤 Responsable: ${resp} <span style="font-weight:normal; font-size:11px;">(${acts.length} actividades)</span></span>
-          <div style="margin-top: 4px;">${htmlActs}</div>
-        `;
-        contenedorResumen.appendChild(div);
-      }
-    }
-
-    // Lógica específica del Módulo 4 (Eventos por Categoría)
-    let listaEventos = [];
-    let papeleraEventos = [];
-
-    function verificarEventoOtro(selectElem) {
-      const contenedorOtro = document.getElementById('contenedor-otro-evento');
-      if (selectElem.value === 'Otro') {
-        contenedorOtro.style.display = 'block';
-      } else {
-        contenedorOtro.style.display = 'none';
-        document.getElementById('mod4-otro-evento').value = '';
-      }
-    }
-
-    function guardarEvento() {
-      const categoria = document.getElementById('mod4-cat').value;
-      const grupo = document.getElementById('mod4-grupo').value;
-      const chip = document.getElementById('mod4-chip').value.trim();
-      const responsable = document.getElementById('mod4-responsable').value.trim();
-      
-      let eventoSelect = document.getElementById('mod4-evento').value;
-      let eventoNombre = eventoSelect;
-      if (eventoSelect === 'Otro') {
-        eventoNombre = document.getElementById('mod4-otro-evento').value.trim();
-        if (!eventoNombre) {
-          alert('Por favor, especifica el nombre del otro evento.');
-          return;
-        }
-      }
-
-      const fecha = document.getElementById('mod4-fecha').value;
-      const cantidad = document.getElementById('mod4-cant').value;
-      const geo = document.getElementById('mod4-geo').value.trim();
-
-      if (!responsable) {
-        alert('Por favor, ingresa el nombre del responsable que notificó el evento.');
-        return;
-      }
-
-      const nuevoEvento = {
-        id: Date.now(),
-        categoria,
-        grupo,
-        chip: chip || 'S/N',
-        evento: eventoNombre,
-        responsable,
-        fecha,
-        cantidad,
-        geo: geo || 'Sin Coordenadas GPS'
-      };
-
-      listaEventos.push(nuevoEvento);
-
-      // Alerta al subir evento
-      alert(`🚨 ¡ALERTA DE EVENTO REGISTRADO!\n\nSe ha subido correctamente el evento "${eventoNombre}" (Animal/Chip: ${nuevoEvento.chip}) notificado por ${responsable}.`);
-
-      document.getElementById('mod4-chip').value = '';
-      document.getElementById('mod4-cant').value = '';
-      document.getElementById('mod4-responsable').value = '';
-      document.getElementById('mod4-evento').value = 'Muertos';
-      document.getElementById('contenedor-otro-evento').style.display = 'none';
-      document.getElementById('mod4-otro-evento').value = '';
-      document.getElementById('mod4-fecha').value = '';
-      document.getElementById('mod4-geo').value = '';
-      document.getElementById('mapa-mod4').style.display = 'none';
-
-      actualizarTablaEventos();
-      actualizarResumenEventos();
-    }
-
-    function borrarEvento(index) {
-      const eventoBorrado = listaEventos.splice(index, 1)[0];
-      papeleraEventos.push(eventoBorrado);
-
-      actualizarTablaEventos();
-      actualizarResumenEventos();
-    }
-
-    function rehacerEvento() {
-      if (papeleraEventos.length === 0) {
-        alert('No hay eventos borrados para rehacer.');
-        return;
-      }
-
-      const eventoRecuperado = papeleraEventos.pop();
-      listaEventos.push(eventoRecuperado);
-
-      actualizarTablaEventos();
-      actualizarResumenEventos();
-    }
-
-    function actualizarTablaEventos() {
-      const tbody = document.getElementById('tabla-eventos-body');
-      tbody.innerHTML = '';
-
-      listaEventos.forEach((item, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${item.categoria}</td>
-          <td>${item.grupo}</td>
-          <td><strong>${item.chip}</strong></td>
-          <td>${item.evento}</td>
-          <td><strong>${item.responsable}</strong></td>
-          <td>${item.cantidad || '-'}</td>
-          <td>${item.fecha || '-'}</td>
-          <td><button class="btn-delete-item" onclick="borrarEvento(${index})">❌ Borrar</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      const contador = document.getElementById('contador-rehacer-eventos');
-      if (contador) {
-        contador.textContent = papeleraEventos.length;
-      }
-    }
-
-    function actualizarResumenEventos() {
-      const contenedorResumen = document.getElementById('resumen-eventos-container');
-      contenedorResumen.innerHTML = '';
-
-      if (listaEventos.length === 0) {
-        contenedorResumen.innerHTML = `
-          <div class="summary-item">
-            <span class="title">Estado</span>
-            <span class="value">No hay eventos registrados.</span>
-          </div>`;
-        return;
-      }
-
-      const agrupadoPorResponsable = {};
-      listaEventos.forEach(item => {
-        if (!agrupadoPorResponsable[item.responsable]) {
-          agrupadoPorResponsable[item.responsable] = [];
-        }
-        agrupadoPorResponsable[item.responsable].push(item);
-      });
-
-      for (const [resp, evs] of Object.entries(agrupadoPorResponsable)) {
-        let htmlEvs = evs.map(e => `
-          <div style="font-size: 11px; margin-top: 4px; border-top: 1px dashed #e2e8f0; padding-top: 4px;">
-            • Cat: ${e.categoria} (${e.grupo}) | 🏷️ <strong>Chip/N°: ${e.chip}</strong> | Evento: <strong>${e.evento}</strong> (Cant: ${e.cantidad || '-'})<br>
-            <span style="color: #2e7d32; font-size: 10px;">📍 GPS: ${e.geo}</span>
-          </div>
-        `).join('');
-        
-        const div = document.createElement('div');
-        div.className = 'summary-item';
-        div.innerHTML = `
-          <span class="title">👤 Responsable: ${resp} <span style="font-weight:normal; font-size:11px;">(${evs.length} eventos)</span></span>
-          <div style="margin-top: 4px;">${htmlEvs}</div>
-        `;
-        contenedorResumen.appendChild(div);
-      }
-    }
-
-    // Funciones globales de soporte (GPS/Clima)
-    function obtenerCoordenadas(inputId, mapaId) {
+    function obtenerCoordenadas(inputId, iframeId) {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          document.getElementById(inputId).value = `${lat}, ${lon}`;
-          const mapa = document.getElementById(mapaId);
-          mapa.style.display = 'block';
-          mapa.src = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
-        }, () => {
-          alert('No se pudo obtener la ubicación GPS.');
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          document.getElementById(inputId).value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+          const iframe = document.getElementById(iframeId);
+          iframe.src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+          iframe.style.display = "block";
+          tg.showAlert("📍 Coordenadas capturadas exitosamente.");
+        }, () => tg.showAlert("⚠️ No se pudo obtener la geolocalización."));
+      } else { tg.showAlert("⚠️ Geolocalización no soportada en este dispositivo."); }
+    }
+
+    /* MÓDULO 1 */
+    function registrarMovimientoRotacion() {
+      const potrero = document.getElementById("mod1-potrero").value;
+      const cantidad = parseInt(document.getElementById("mod1-cantidad").value) || 0;
+      if (cantidad <= 0) return tg.showAlert("⚠️ Ingrese una cantidad válida.");
+      movimientosRotacion.unshift({ potrero, cantidad, cat: document.getElementById("mod1-categoria").value });
+      tg.showAlert(`🚨 Alerta de Rotación registrada en ${potrero}`);
+      actualizarResumenHato();
+    }
+
+    function actualizarResumenHato() {
+      let b = 0, bu = 0;
+      movimientosRotacion.forEach(m => { if(m.cat === "Bovinos") b+=m.cantidad; else bu+=m.cantidad; });
+      document.getElementById("resumen-bovinos").innerText = b;
+      document.getElementById("resumen-bufalinos").innerText = bu;
+      document.getElementById("resumen-total-hato").innerText = `${b + bu} Animales`;
+    }
+
+    /* MÓDULO 2 */
+    function guardarTarea() {
+      const descripcion = document.getElementById("mod2-tarea").value;
+      if(!descripcion) return tg.showAlert("⚠️ Ingrese la tarea.");
+      tareas.unshift({ descripcion });
+      tg.showAlert("✅ Tarea Agendada");
+    }
+
+    /* MÓDULO 3 */
+    function guardarTratamientoSanitario() {
+      tg.showAlert("✅ Tratamiento Registrado");
+    }
+
+    /* MÓDULO 4 */
+    function guardarEvento() {
+      const evento = document.getElementById("mod4-evento").value;
+      const cant = parseInt(document.getElementById("mod4-cant").value) || 0;
+      eventos.push({ evento, cant });
+      
+      let nac = 0, mue = 0, sal = 0;
+      eventos.forEach(e => {
+        if(e.evento === "Nacidos") nac += e.cant;
+        if(e.evento === "Muertos") mue += e.cant;
+        if(e.evento === "Consumo" || e.evento === "Traslado") sal += e.cant;
+      });
+      document.getElementById("resumen-nacidos").innerText = nac;
+      document.getElementById("resumen-muertos").innerText = mue;
+      document.getElementById("resumen-salidas").innerText = sal;
+      tg.showAlert("✅ Evento registrado con ubicación GPS.");
+    }
+
+    /* MÓDULO 5 */
+    function guardarMaquinaria() {
+      const equipo = document.getElementById("mod5-equipo").value;
+      const hrsTotales = parseInt(document.getElementById("mod5-hrs-totales").value) || 0;
+      let estado = "OK";
+      
+      if(hrsTotales >= 250) {
+        estado = "⚠️ CAMBIO REQUERIDO";
+        tg.showAlert(`🚨 ALERTA: ${equipo} cumplió ${hrsTotales} horas. Requiere cambio de aceite inmediato.`);
+      }
+      
+      const tbody = document.getElementById("tabla-maquinaria-body");
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td><strong>${equipo}</strong></td><td>${document.getElementById("mod5-resp").value}</td><td>${hrsTotales}h</td><td>${estado}</td><td>${document.getElementById("mod5-averia").value || 'Ninguna'}</td>`;
+      tbody.appendChild(tr);
+    }
+
+    /* MÓDULO 6: CLIMA */
+    function obtenerClimaGPS() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          document.getElementById("clima-ubicacion").innerText = `📍 Posición GPS: ${pos.coords.latitude.toFixed(2)}, ${pos.coords.longitude.toFixed(2)}`;
+          document.getElementById("clima-temp").innerText = "31 °C";
+          document.getElementById("clima-condicion").innerText = "☀️ Sol Radiante / Humedad 65%";
         });
-      } else {
-        alert('Geolocalización no soportada en este navegador.');
       }
     }
 
-    function obtenerClimaGPS() {
-      document.getElementById('clima-ubicacion').innerText = '📍 Barinas, Venezuela';
-      document.getElementById('clima-temp').innerText = '31 °C';
-      document.getElementById('clima-condicion').innerText = 'Soleado / Parcialmente nublado';
+    /* MÓDULO 7 */
+    function guardarDeposito() {
+      depositos.push(1);
+      document.getElementById("resumen-deposito-mes").innerText = `${depositos.length} Entregas Registradas`;
+      tg.showAlert("📦 Insumo registrado en depósito.");
+    }
+
+    /* MÓDULO 8 */
+    function guardarCerca() { tg.showAlert("🛠️ Registro de reparación guardado."); }
+
+    /* MÓDULO 9 */
+    function guardarCombustible() {
+      const tipo = document.getElementById("mod9-tipo").value;
+      const op = document.getElementById("mod9-operacion").value;
+      const litros = parseInt(document.getElementById("mod9-litros").value) || 0;
+
+      if(tipo === "Gasoil") {
+        combustibleGasoil += (op.includes("+") ? litros : -litros);
+      } else {
+        combustibleGasolina += (op.includes("+") ? litros : -litros);
+      }
+      document.getElementById("saldo-gasoil").innerText = `${combustibleGasoil} Lts`;
+      document.getElementById("saldo-gasolina").innerText = `${combustibleGasolina} Lts`;
+      tg.showAlert("⛽ Movimiento de combustible actualizado.");
+    }
+
+    /* MÓDULO 10 */
+    function guardarComida() {
+      const personas = parseInt(document.getElementById("mod10-personas").value) || 0;
+      comidasServidasHoy += personas;
+      document.getElementById("resumen-comida-hoy").innerText = `${comidasServidasHoy} Raciones`;
+      tg.showAlert("🍽️ Registro de raciones guardado.");
     }
   </script>
 </body>
