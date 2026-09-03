@@ -66,7 +66,7 @@
     .header-card p { margin: 0; opacity: 0.9; font-size: 11px; }
 
     .module-view { display: none; background: var(--bg-card); border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); }
-    .module-view.active { display: block; }
+    .module-view.active { display: block !important; }
 
     .module-header { border-bottom: 1px solid #eef0f2; padding-bottom: 6px; margin-bottom: 8px; }
     .module-header h3 { margin: 0; color: var(--blue-primary); font-size: 14px; }
@@ -105,7 +105,6 @@
     .kpi-title { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
     .kpi-value { font-size: 12px; font-weight: bold; color: var(--blue-primary); margin-top: 1px; }
 
-    /* ESTILOS DEL MÓDULO 3 */
     .status-badge {
       display: inline-block; padding: 4px 8px; border-radius: 12px; font-weight: bold; font-size: 10px; text-align: center; color: #fff;
     }
@@ -151,6 +150,7 @@
       <p>Sistema Integrado de Control Ganadero - Hato Laguna Brava</p>
     </div>
 
+    <!-- MÓDULO 1: POTREROS Y UGM -->
     <section id="mod-1" class="module-view active">
       <div class="module-header">
         <h3>1. Control de Pastoreo, Potreros y UGM</h3>
@@ -260,6 +260,7 @@
       </div>
     </section>
 
+    <!-- MÓDULO LEVANTE -->
     <section id="mod-levante" class="module-view">
       <div class="module-header">
         <h3>⚖️ Módulo de Levante y Eficiencia Ponderal</h3>
@@ -336,6 +337,7 @@
       </div>
     </section>
 
+    <!-- MÓDULO 3: HISTORIAL, ROTACIÓN Y ESTADÍSTICA -->
     <section id="mod-historial" class="module-view">
       <div class="module-header">
         <h3>📊 Historial, Rotación y Estadística de Potreros</h3>
@@ -369,6 +371,7 @@
         </div>
       </div>
 
+      <!-- KPI ESTADO ACTUAL -->
       <h4 style="margin: 4px 0; font-size: 11px; color: var(--blue-primary);">Estado Actual y Disponibilidad</h4>
       <div class="kpi-container">
         <div class="kpi-card">
@@ -387,6 +390,7 @@
         </div>
       </div>
 
+      <!-- ESTADÍSTICA ESTACIONAL -->
       <h4 style="margin: 10px 0 4px 0; font-size: 11px; color: var(--blue-primary);">Análisis Estacional (Invierno vs Verano)</h4>
       <div class="kpi-container">
         <div class="kpi-card">
@@ -403,6 +407,7 @@
         </div>
       </div>
 
+      <!-- BITÁCORA DEL POTRERO -->
       <h4 style="margin: 10px 0 4px 0; font-size: 11px; color: var(--blue-primary);">Bitácora Cronológica del Potrero</h4>
       <div class="table-container">
         <table class="data-table">
@@ -432,8 +437,8 @@
     function actualizarSemaforo(estado, texto) {
       const luz = document.getElementById("luz-semaforo");
       const txt = document.getElementById("texto-semaforo");
-      luz.className = "semaforo-luz " + estado;
-      txt.innerText = texto;
+      if (luz) luz.className = "semaforo-luz " + estado;
+      if (txt) txt.innerText = texto;
     }
 
     actualizarSemaforo("amarillo", "Cargando...");
@@ -493,7 +498,9 @@
     function navegarA(id, el) {
       document.querySelectorAll('.module-view').forEach(m => m.classList.remove('active'));
       document.querySelectorAll('.sidebar-menu li').forEach(l => l.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
+      
+      const target = document.getElementById(id);
+      if (target) target.classList.add('active');
       if (el) el.classList.add('active');
       
       if (id === 'mod-historial') {
@@ -503,6 +510,7 @@
 
     function generarCamposEtarios1() {
       const container = document.getElementById("m1-etarios-container");
+      if (!container) return;
       container.innerHTML = "";
 
       GRUPOS_DESPLEGABLES.forEach((opciones) => {
@@ -735,3 +743,115 @@
             <td>${r.sexo}/${r.especie}</td>
             <td>${r.cant}</td>
             <td>${r.gmd}</td>
+            <td>${r.ganLote}</td>
+            <td>${r.mesesMeta}</td>
+            <td>${r.proxPesaje}</td>
+            <td>${r.obs || '-'}</td>
+            <td><button class="btn-danger" onclick="borrarFila('levante', ${r.id})">Borrar</button></td>
+          `;
+          tbody.prepend(tr);
+        });
+      };
+    }
+
+    /* LÓGICA DEL MÓDULO 3: HISTORIAL Y ROTACIÓN DE POTREROS */
+    function analizarPotreroHistorial() {
+      const tbody3 = document.getElementById("tabla-mod3-body");
+      if (!tbody3) return;
+      tbody3.innerHTML = "";
+
+      const potreroSel = document.getElementById("m3-potrero-select").value;
+
+      if (!db) {
+        resetearKpisM3();
+        return;
+      }
+
+      const tx = db.transaction("potreros", "readonly");
+      tx.objectStore("potreros").getAll().onsuccess = (e) => {
+        const list = e.target.result.filter(r => r.potreroNombre === potreroSel);
+
+        if (list.length === 0) {
+          resetearKpisM3();
+          return;
+        }
+
+        // Ordenar por fecha de salida descendente
+        list.sort((a, b) => new Date(b.fSal) - new Date(a.fSal));
+
+        let totCab = 0;
+        let sumDiasUso = 0;
+        let cInv = [], cVer = [];
+        const hoy = new Date();
+
+        list.forEach(r => {
+          totCab += r.cabezas;
+          
+          const dIng = new Date(r.fIng);
+          const dSal = new Date(r.fSal);
+          const diffUso = Math.max(1, Math.round((dSal - dIng) / (1000 * 60 * 60 * 24)));
+          sumDiasUso += diffUso;
+
+          const numCarga = parseFloat(r.ugmHa) || 0;
+          if (r.epoca === "Invierno") cInv.push(numCarga);
+          else cVer.push(numCarga);
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.fIng}</td>
+            <td>${r.fSal}</td>
+            <td>${r.epoca}</td>
+            <td>${r.mov}</td>
+            <td>${r.cabezas}</td>
+            <td>${r.ugmHa}</td>
+            <td>${r.detalle || '-'}</td>
+            <td>${r.resp || '-'}</td>
+            <td>${r.obs || '-'}</td>
+          `;
+          tbody3.appendChild(tr);
+        });
+
+        // 1. Días de Descanso y Semáforo
+        const ultimaSalida = new Date(list[0].fSal);
+        const diasDescanso = Math.max(0, Math.floor((hoy - ultimaSalida) / (1000 * 60 * 60 * 24)));
+        document.getElementById("m3-dias-descanso").innerText = `${diasDescanso} Días`;
+
+        const badge = document.getElementById("m3-semaforo-status");
+        if (diasDescanso >= 42) {
+          badge.className = "status-badge badge-verde";
+          badge.innerText = "🟢 Listo para Pastorear";
+        } else if (diasDescanso >= 21) {
+          badge.className = "status-badge badge-amarillo";
+          badge.innerText = "🟡 En Recuperación";
+        } else {
+          badge.className = "status-badge badge-rojo";
+          badge.innerText = "🔴 Descanso Insuficiente";
+        }
+
+        // 2. Días de Uso Promedio
+        const promUso = (sumDiasUso / list.length).toFixed(1);
+        document.getElementById("m3-dias-uso-prom").innerText = `${promUso} Días`;
+
+        // 3. Cargas Promedio e Histórico Cabezas
+        const avgInv = cInv.length ? (cInv.reduce((a, b) => a + b, 0) / cInv.length).toFixed(2) : "0.00";
+        const avgVer = cVer.length ? (cVer.reduce((a, b) => a + b, 0) / cVer.length).toFixed(2) : "0.00";
+
+        document.getElementById("m3-carga-inv").innerText = `${avgInv} UGM/ha`;
+        document.getElementById("m3-carga-ver").innerText = `${avgVer} UGM/ha`;
+        document.getElementById("m3-total-cabezas").innerText = `${totCab} Cab.`;
+      };
+    }
+
+    function resetearKpisM3() {
+      document.getElementById("m3-dias-descanso").innerText = "Sin registros";
+      const badge = document.getElementById("m3-semaforo-status");
+      badge.className = "status-badge badge-amarillo";
+      badge.innerText = "Sin Datos";
+      document.getElementById("m3-dias-uso-prom").innerText = "0.0 Días";
+      document.getElementById("m3-carga-inv").innerText = "0.00 UGM/ha";
+      document.getElementById("m3-carga-ver").innerText = "0.00 UGM/ha";
+      document.getElementById("m3-total-cabezas").innerText = "0 Cab.";
+    }
+  </script>
+</body>
+</html>
