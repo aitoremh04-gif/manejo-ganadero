@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Sistema de Control y Operaciones - Hato Laguna Brava</title>
-  
+  <title>Sistema Hato Laguna Brava</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
@@ -18,7 +17,6 @@
       --alert-color: #d32f2f;
       --alert-bg: #fde8e8;
       --success-color: #2e7d32;
-      --success-bg: #e8f5e9;
       --warning-color: #ed6c02;
       --warning-bg: #fff4e5;
     }
@@ -27,10 +25,9 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: var(--tg-theme-bg-color, var(--bg-body));
-      color: var(--tg-theme-text-color, var(--text-main));
+      margin: 0; padding: 0;
+      background-color: var(--bg-body);
+      color: var(--text-main);
       display: flex;
       min-height: 100vh;
     }
@@ -41,7 +38,6 @@
       color: #ffffff;
       display: flex;
       flex-direction: column;
-      transition: all 0.3s ease;
       z-index: 100;
     }
 
@@ -57,10 +53,8 @@
 
     .sidebar-menu {
       list-style: none;
-      padding: 0;
-      margin: 0;
-      overflow-y: auto;
-      flex-grow: 1;
+      padding: 0; margin: 0;
+      overflow-y: auto; flex-grow: 1;
     }
 
     .sidebar-menu li {
@@ -68,182 +62,90 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       cursor: pointer;
       font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: background 0.2s;
     }
 
-    .sidebar-menu li:hover, .sidebar-menu li.active {
-      background: var(--blue-primary);
-    }
+    .sidebar-menu li:hover, .sidebar-menu li.active { background: var(--blue-primary); }
 
     .main-wrapper {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      max-width: 1200px;
+      flex: 1; padding: 16px;
+      overflow-y: auto; max-width: 1200px;
       margin: 0 auto;
     }
 
     .header-card {
       background: linear-gradient(135deg, #1d72b8, #0d47a1);
       color: #ffffff;
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: 12px; padding: 16px;
       margin-bottom: 16px;
-      box-shadow: 0 4px 12px rgba(29, 114, 184, 0.15);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
     }
 
     .header-card h2 { margin: 0 0 4px 0; font-size: 18px; }
     .header-card p { margin: 0; opacity: 0.9; font-size: 12px; }
 
-    .offline-badge {
-      background: var(--warning-bg);
-      color: var(--warning-color);
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: bold;
-      display: none;
-    }
-
-    .notifications-card {
-      background-color: var(--alert-bg);
-      border: 1px solid #f8b4b4;
-      border-radius: 10px;
-      padding: 10px 14px;
-      margin-bottom: 16px;
-    }
-
-    .notifications-header {
-      color: var(--alert-color);
-      font-weight: 700;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-
-    .notification-list {
-      margin: 0;
-      padding-left: 18px;
-      font-size: 12px;
-      color: #5f2121;
-    }
-
     .module-view {
-      display: none;
-      background: var(--bg-card);
-      border-radius: 12px;
-      padding: 16px;
+      display: none; background: var(--bg-card);
+      border-radius: 12px; padding: 16px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
     .module-view.active { display: block; }
 
     .module-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       border-bottom: 1px solid #eef0f2;
-      padding-bottom: 10px;
-      margin-bottom: 14px;
+      padding-bottom: 10px; margin-bottom: 14px;
     }
 
     .module-header h3 { margin: 0; color: var(--blue-primary); font-size: 16px; }
 
     .form-group { margin-bottom: 12px; }
     .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
-    .form-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 4px; color: var(--text-main); }
+    .form-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 4px; }
     
     .form-control {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid #cfd8dc;
-      border-radius: 6px;
-      font-size: 12px;
-      background: #fafafa;
+      width: 100%; padding: 8px 10px;
+      border: 1px solid #cfd8dc; border-radius: 6px;
+      font-size: 12px; background: #fafafa;
     }
+
+    .btn-group { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 
     .btn-action {
-      background-color: var(--blue-primary);
-      color: #ffffff;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 8px;
+      background-color: var(--blue-primary); color: #ffffff;
+      border: none; padding: 10px 14px; border-radius: 8px;
+      font-size: 12px; font-weight: bold; cursor: pointer;
     }
 
-    .btn-action:hover { background-color: var(--blue-hover); }
-
-    .btn-export {
-      background-color: var(--success-color);
-      color: #fff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+    .btn-reset { background-color: var(--warning-color); }
+    .btn-danger { background-color: var(--alert-color); color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; }
 
     .table-container {
-      width: 100%;
-      overflow-x: auto;
-      margin-top: 14px;
-      border: 1px solid #eef0f2;
-      border-radius: 6px;
+      width: 100%; overflow-x: auto;
+      margin-top: 14px; border: 1px solid #eef0f2; border-radius: 6px;
     }
 
     .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 11px;
-      text-align: left;
+      width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;
     }
 
-    .data-table th {
-      background-color: #f0f4f8;
-      color: var(--text-main);
-      padding: 8px 6px;
-      border-bottom: 1px solid #cfd8dc;
-    }
+    .data-table th { background-color: #f0f4f8; padding: 8px 6px; border-bottom: 1px solid #cfd8dc; }
+    .data-table td { padding: 8px 6px; border-bottom: 1px solid #eef0f2; }
 
-    .data-table td {
-      padding: 8px 6px;
-      border-bottom: 1px solid #eef0f2;
-    }
-
-    .kpi-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-    }
+    .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin: 12px 0; }
+    .kpi-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center; }
     .kpi-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
-    .kpi-value { font-size: 15px; font-weight: bold; color: var(--blue-primary); margin-top: 2px; }
+    .kpi-value { font-size: 14px; font-weight: bold; color: var(--blue-primary); margin-top: 2px; }
 
-    .kardex-badge {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: bold;
-      font-size: 10px;
+    .category-grid {
+      background: #f4f6f8; padding: 10px; border-radius: 8px; margin-bottom: 12px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;
     }
-    .badge-ok { background: var(--success-bg); color: var(--success-color); }
-    .badge-warn { background: var(--warning-bg); color: var(--warning-color); }
 
     @media (max-width: 768px) {
       body { flex-direction: column; }
       .sidebar { width: 100%; }
       .sidebar-menu { display: flex; overflow-x: auto; }
-      .sidebar-menu li { white-space: nowrap; padding: 10px 12px; }
+      .sidebar-menu li { white-space: nowrap; }
     }
   </style>
 </head>
@@ -252,561 +154,418 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <span>Hato Laguna Brava</span>
-      <span id="sync-icon" title="Sincronizado">🟢</span>
+      <span id="sync-icon">🟢</span>
     </div>
     <ul class="sidebar-menu">
       <li class="active" onclick="navegarA('mod-1', this)">🌾 Potreros y UGM</li>
       <li onclick="navegarA('mod-levante', this)">⚖️ Módulo Levante</li>
-      <li onclick="navegarA('mod-logistica', this)">📦 Kardex e Insumos</li>
-      <li onclick="navegarA('mod-export', this)">📊 Reportes y Exportación</li>
-      <li onclick="navegarA('mod-2', this)">📅 Planificación</li>
-      <li onclick="navegarA('mod-3', this)">💉 Sanidad</li>
-      <li onclick="navegarA('mod-4', this)">📋 Eventos y GPS</li>
-      <li onclick="navegarA('mod-6', this)">🌤️ Clima</li>
-      <li onclick="navegarA('mod-10', this)">🍽️ Comedor</li>
     </ul>
   </aside>
 
   <main class="main-wrapper">
     <div class="header-card">
       <div>
-        <h2 id="saludo">¡Hola, Juan José! 🤠</h2>
+        <h2>¡Hola, Juan José! 🤠</h2>
         <p>Sistema Integrado de Control Ganadero - Hato Laguna Brava</p>
       </div>
-      <div id="offline-tag" class="offline-badge">MODO OFFLINE</div>
     </div>
 
-    <div class="notifications-card">
-      <div class="notifications-header">🔔 Alertas Operacionales y de Inventario</div>
-      <ul class="notification-list" id="notifications-list">
-        <li>Sistema operativo. Base de datos local sincronizada.</li>
-      </ul>
-    </div>
-
-    <!-- MÓDULO 1: POTREROS -->
+    <!-- MÓDULO 1: POTREROS Y UGM -->
     <section id="mod-1" class="module-view active">
       <div class="module-header">
-        <h3>1. Inventario por Potrero, Rotación y UGM</h3>
+        <h3>1. Control de Pastoreo, Potreros y UGM</h3>
       </div>
-      <div class="form-group">
-        <label>Potrero:</label>
-        <select class="form-control" id="mod1-potrero">
-          <option>Macanillal</option><option>Mata del Muerto</option><option>Galpón</option>
-          <option>Potrero del Medio</option><option>Manguito</option><option>Mata de Piña</option>
-          <option>Las Rayas</option><option>Paulero</option><option>Jobo Gacho</option>
-          <option>Módulo A</option><option>Módulo B</option><option>Módulo C</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="mod1-f-ingreso" class="form-control" onchange="validarFechasRotacion()"></div>
-        <div class="form-group"><label>Fecha Salida Estimada:</label><input type="date" id="mod1-f-salida" class="form-control" onchange="validarFechasRotacion()"></div>
-      </div>
-      <div class="form-row">
+      
+      <form id="form-mod1">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Potrero / Hectáreas:</label>
+            <select class="form-control" id="m1-potrero" onchange="calcularUGM1()">
+              <option value="432">Macanillal (432 ha)</option>
+              <option value="569">El Galpón (569 ha)</option>
+              <option value="80">Mata del Muerto (80 ha)</option>
+              <option value="234">Manguito (234 ha)</option>
+              <option value="205">Mata de Piña (205 ha)</option>
+              <option value="102">Las Rallas (102 ha)</option>
+              <option value="703">Potrero del Medio (703 ha)</option>
+              <option value="77">Cuatro Esquinas (77 ha)</option>
+              <option value="418">Pulero (418 ha)</option>
+              <option value="422">Jobo Gacho (422 ha)</option>
+              <option value="40">Curva del Peligro (40 ha)</option>
+              <option value="36">Módulo A (36 ha)</option>
+              <option value="36">Módulo B (36 ha)</option>
+              <option value="36">Módulo C (36 ha)</option>
+              <option value="36">Módulo D (36 ha)</option>
+              <option value="143">Módulo F (143 ha)</option>
+              <option value="125">Saladillal (125 ha)</option>
+              <option value="142">Carretera (142 ha)</option>
+              <option value="32">María del Carmen (32 ha)</option>
+              <option value="26">Casa (26 ha)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Época del Año:</label>
+            <select class="form-control" id="m1-epoca"><option>Invierno</option><option>Verano</option></select>
+          </div>
+          <div class="form-group">
+            <label>Movimiento:</label>
+            <select class="form-control" id="m1-movimiento"><option>Ingreso</option><option>Egreso</option></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="m1-f-ingreso" class="form-control"></div>
+          <div class="form-group"><label>Fecha Salida Est.:</label><input type="date" id="m1-f-salida" class="form-control"></div>
+          <div class="form-group"><label>Responsable:</label><input type="text" id="m1-responsable" class="form-control" placeholder="Ej: Caporal"></div>
+        </div>
+
         <div class="form-group">
-          <label>Categoría:</label>
-          <select class="form-control" id="mod1-categoria" onchange="actualizarGruposEtarios(); calcularUGM();">
-            <option value="Bovinos">Bovinos</option>
-            <option value="Bufalinos">Bufalinos</option>
+          <label>Especie:</label>
+          <select class="form-control" id="m1-especie" onchange="renderizarCamposEtarios1()">
+            <option value="Bovino">Bovino</option>
+            <option value="Bufalino">Bufalino</option>
           </select>
         </div>
+
+        <!-- 6 CASILLAS DE GRUPOS ETARIOS -->
+        <label style="font-size:11px; font-weight:bold;">Distribución de Animales por Categoría:</label>
+        <div class="category-grid" id="m1-etarios-container"></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Total Cabezas:</label>
+            <input type="number" id="m1-total-cabezas" class="form-control" readonly value="0">
+          </div>
+          <div class="form-group">
+            <label>Total UGM Estimado:</label>
+            <input type="text" id="m1-total-ugm" class="form-control" readonly value="0.0 UGM">
+          </div>
+          <div class="form-group">
+            <label>Carga (UGM/Ha):</label>
+            <input type="text" id="m1-carga-ha" class="form-control" readonly value="0.00 UGM/ha">
+          </div>
+        </div>
+
         <div class="form-group">
-          <label>Grupo Etario:</label>
-          <select class="form-control" id="mod1-grupo-etario" onchange="calcularUGM()"></select>
+          <label>Observación:</label>
+          <input type="text" id="m1-obs" class="form-control" placeholder="Estado del pasto, agua, etc.">
+        </div>
+
+        <div class="btn-group">
+          <button type="button" class="btn-action" onclick="guardarRegistroMod1()">Guardar y Sincronizar</button>
+          <button type="button" class="btn-action btn-reset" onclick="limpiarFormMod1()">Rehacer / Limpiar</button>
+        </div>
+      </form>
+
+      <!-- RESUMEN / ESTADÍSTICAS DEL HATO -->
+      <div style="margin-top:20px;">
+        <h4 style="margin:0 0 8px 0; font-size:13px; color:var(--blue-primary);">Resumen General del Hato en Pastoreo</h4>
+        <div class="kpi-container" id="m1-estadisticas-container">
+          <div class="kpi-card"><div class="kpi-title">Total Cabezas</div><div class="kpi-value" id="stat-cabezas">0</div></div>
+          <div class="kpi-card"><div class="kpi-title">Total UGM Hato</div><div class="kpi-value" id="stat-ugm">0.0</div></div>
         </div>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Cantidad (Cabezas):</label>
-          <input type="number" id="mod1-cantidad" class="form-control" placeholder="Ej: 50" oninput="calcularUGM()">
-        </div>
-        <div class="form-group">
-          <label>Carga Animal Estimada (UGM):</label>
-          <input type="text" id="mod1-ugm" class="form-control" readonly placeholder="0.0 UGM" style="font-weight:bold; color:var(--blue-primary);">
-        </div>
-      </div>
-      <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento</button>
 
       <div class="table-container">
         <table class="data-table">
           <thead>
-            <tr><th>Potrero</th><th>F. Ingreso</th><th>F. Salida</th><th>Especie</th><th>Grupo</th><th>Cant.</th><th>UGM</th></tr>
+            <tr><th>Potrero</th><th>Ha</th><th>Época</th><th>Mov.</th><th>Especie</th><th>Cabezas</th><th>UGM/Ha</th><th>Responsable</th><th>Acción</th></tr>
           </thead>
-          <tbody id="tabla-rotacion-body"></tbody>
+          <tbody id="tabla-mod1-body"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- MÓDULO LEVANTE EXTENDIDO -->
+    <!-- MÓDULO LEVANTE -->
     <section id="mod-levante" class="module-view">
       <div class="module-header">
         <h3>⚖️ Módulo de Levante y Eficiencia Económica</h3>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label>Identificación del Lote:</label><input type="text" id="lev-lote" class="form-control" placeholder="Ej: Lote Mautas 2026-A"></div>
-        <div class="form-group">
-          <label>Sexo / Categoría:</label>
-          <select class="form-control" id="lev-sexo">
-            <option value="Hembras">Hembras (Mautas / Novillas)</option>
-            <option value="Machos">Machos (Mautes / Novillos)</option>
-            <option value="Mixto">Mixto</option>
-          </select>
+
+      <form id="form-levante">
+        <div class="form-row">
+          <div class="form-group"><label>Lote:</label><input type="text" id="lev-lote" class="form-control" placeholder="Ej: Lote Mautes 2026"></div>
+          <div class="form-group">
+            <label>Época del Año:</label>
+            <select class="form-control" id="lev-epoca"><option>Invierno</option><option>Verano</option></select>
+          </div>
+          <div class="form-group">
+            <label>Sexo:</label>
+            <select class="form-control" id="lev-sexo"><option>Macho</option><option>Hembra</option></select>
+          </div>
+          <div class="form-group">
+            <label>Especie:</label>
+            <select class="form-control" id="lev-especie"><option>Bovino</option><option>Bufalino</option></select>
+          </div>
         </div>
-        <div class="form-group"><label>N° Animales:</label><input type="number" id="lev-cant" class="form-control" placeholder="Ej: 450" oninput="calcularMetricasLevante()"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Fecha Pesaje Anterior:</label><input type="date" id="lev-f-anterior" class="form-control" onchange="calcularMetricasLevante()"></div>
-        <div class="form-group"><label>Peso Prom. Anterior (kg):</label><input type="number" id="lev-peso-anterior" class="form-control" placeholder="Ej: 180" oninput="calcularMetricasLevante()"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Fecha Pesaje Actual:</label><input type="date" id="lev-f-actual" class="form-control" onchange="calcularMetricasLevante()"></div>
-        <div class="form-group"><label>Peso Prom. Actual (kg):</label><input type="number" id="lev-peso-actual" class="form-control" placeholder="Ej: 198" oninput="calcularMetricasLevante()"></div>
-        <div class="form-group"><label>Peso Meta (kg):</label><input type="number" id="lev-peso-meta" class="form-control" value="320" oninput="calcularMetricasLevante()"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Alimento Suplemento/Día (kg/cab):</label><input type="number" id="lev-alimento-dia" class="form-control" placeholder="Ej: 1.5" step="0.1" oninput="calcularMetricasLevante()"></div>
-        <div class="form-group"><label>Costo Total Lote en Periodo ($):</label><input type="number" id="lev-costo-periodo" class="form-control" placeholder="Ej: 1200" oninput="calcularMetricasLevante()"></div>
-      </div>
 
-      <!-- METRICAS EXTENDIDAS -->
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:8px; margin: 12px 0;">
-        <div class="kpi-card"><div class="kpi-title">GMD (kg/an/día)</div><div class="kpi-value" id="kpi-gmd">0.000</div></div>
-        <div class="kpi-card"><div class="kpi-title">Conv. Alimenticia</div><div class="kpi-value" id="kpi-ca">0.00</div></div>
-        <div class="kpi-card"><div class="kpi-title">Costo / Kg Ganado</div><div class="kpi-value" id="kpi-costo-kg">$0.00</div></div>
-        <div class="kpi-card"><div class="kpi-title">Proyección Meta</div><div class="kpi-value" id="kpi-fecha-meta" style="font-size:11px;">--/--/----</div></div>
-      </div>
+        <div class="form-row">
+          <div class="form-group"><label>Grupo Etario:</label><input type="text" id="lev-grupo" class="form-control" placeholder="Ej: Mautes / Bautes"></div>
+          <div class="form-group"><label>N° Animales Lote:</label><input type="number" id="lev-cant" class="form-control" placeholder="Ej: 50" oninput="calcularMetricasLevante()"></div>
+        </div>
 
-      <button class="btn-action" onclick="guardarRegistroLevante()">Guardar Pesaje y Métricas</button>
+        <div class="form-row">
+          <div class="form-group"><label>Fecha Pesaje Ant.:</label><input type="date" id="lev-f-ant" class="form-control" onchange="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Prom. Ant. (kg):</label><input type="number" id="lev-peso-ant" class="form-control" placeholder="180" oninput="calcularMetricasLevante()"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Fecha Pesaje Act.:</label><input type="date" id="lev-f-act" class="form-control" onchange="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Prom. Act. (kg):</label><input type="number" id="lev-peso-act" class="form-control" placeholder="205" oninput="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Meta (kg):</label><input type="number" id="lev-peso-meta" class="form-control" value="320" oninput="calcularMetricasLevante()"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Próximo Pesaje:</label><input type="date" id="lev-f-prox" class="form-control"></div>
+          <div class="form-group"><label>Costo Periodo ($):</label><input type="number" id="lev-costo-periodo" class="form-control" placeholder="Ej: 500" oninput="calcularMetricasLevante()"></div>
+        </div>
+
+        <!-- KPI DEDICADOS -->
+        <div class="kpi-container">
+          <div class="kpi-card"><div class="kpi-title">GMD (kg/an/día)</div><div class="kpi-value" id="kpi-gmd">0.000</div></div>
+          <div class="kpi-card"><div class="kpi-title">Ganancia Total Lote</div><div class="kpi-value" id="kpi-ganancia-total">0 kg</div></div>
+          <div class="kpi-card"><div class="kpi-title">Costo / kg Ganado</div><div class="kpi-value" id="kpi-costo-kg">$0.00</div></div>
+          <div class="kpi-card"><div class="kpi-title">Proyección Meta</div><div class="kpi-value" id="kpi-meses-meta">0.0 Meses</div></div>
+        </div>
+
+        <div class="form-group"><label>Observaciones:</label><input type="text" id="lev-obs" class="form-control" placeholder="Notas del pesaje"></div>
+
+        <div class="btn-group">
+          <button type="button" class="btn-action" onclick="guardarRegistroLevante()">Guardar y Sincronizar</button>
+          <button type="button" class="btn-action btn-reset" onclick="limpiarFormLevante()">Rehacer / Limpiar</button>
+        </div>
+      </form>
 
       <div class="table-container">
         <table class="data-table">
           <thead>
-            <tr><th>Lote</th><th>Cant</th><th>GMD (kg/d)</th><th>C.A.</th><th>Costo/Kg</th><th>Ganancia Periodo</th><th>Proy. Meta</th></tr>
+            <tr><th>Lote</th><th>Sexo/Esp</th><th>Cant</th><th>GMD (kg/d)</th><th>Ganancia Lote</th><th>Costo/Kg</th><th>Meta (Meses)</th><th>Próx Pesaje</th><th>Acción</th></tr>
           </thead>
           <tbody id="tabla-levante-body"></tbody>
         </table>
       </div>
     </section>
-
-    <!-- MÓDULO KARDEX E INSUMOS -->
-    <section id="mod-logistica" class="module-view">
-      <div class="module-header"><h3>📦 Control de Inventario Kardex y Reabastecimiento</h3></div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Artículo / Insumo:</label>
-          <select class="form-control" id="kardex-articulo" onchange="cargarDetalleArticulo()">
-            <option value="Gasoil">Gasoil (Lts)</option>
-            <option value="Gasolina">Gasolina (Lts)</option>
-            <option value="Vacuna Aftosa">Vacuna Aftosa (Dosis)</option>
-            <option value="Ivermectina 3.15%">Ivermectina 3.15% (mL)</option>
-            <option value="Sal Mineralizada">Sal Mineralizada (Kg)</option>
-            <option value="Alimento Concentrado">Alimento Concentrado (Kg)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Tipo Movimiento:</label>
-          <select class="form-control" id="kardex-tipo">
-            <option value="Entrada">Entrada (+)</option>
-            <option value="Salida">Salida (-)</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Cantidad:</label><input type="number" id="kardex-cant" class="form-control" placeholder="Ej: 500"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Stock Mínimo (Punto Reorden):</label><input type="number" id="kardex-min" class="form-control" value="200"></div>
-        <div class="form-group"><label>Observaciones / Destino:</label><input type="text" id="kardex-obs" class="form-control" placeholder="Ej: Tractor Ford / Potrero Galpón"></div>
-      </div>
-      <button class="btn-action" onclick="registrarKardex()">Registrar Movimiento Kardex</button>
-
-      <div style="margin-top:16px;">
-        <h4 style="margin:0 0 8px 0; font-size:13px; color:var(--blue-primary);">Balance Actual de Insumos</h4>
-        <div class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr><th>Insumo</th><th>Stock Actual</th><th>Mínimo</th><th>Estado</th></tr>
-            </thead>
-            <tbody id="tabla-kardex-stock"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- MÓDULO EXPORTACIÓN AVANZADA -->
-    <section id="mod-export" class="module-view">
-      <div class="module-header"><h3>📊 Generación de Reportes Filtrados</h3></div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Módulo a Exportar:</label>
-          <select class="form-control" id="exp-modulo">
-            <option value="rotacion">Potreros y Rotación</option>
-            <option value="levante">Levante y Pesajes</option>
-            <option value="kardex">Inventario Kardex</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Fecha Desde:</label><input type="date" id="exp-f-desde" class="form-control"></div>
-        <div class="form-group"><label>Fecha Hasta:</label><input type="date" id="exp-f-hasta" class="form-control"></div>
-      </div>
-      <div class="form-group">
-        <label>Filtrar por Potrero / Lote / Insumo (Opcional):</label>
-        <input type="text" id="exp-filtro-texto" class="form-control" placeholder="Ej: Macanillal o Gasoil">
-      </div>
-      <button class="btn-export" style="padding:10px 16px; font-size:12px; margin-top:8px;" onclick="exportarCSVAvanzado()">📥 Exportar Reporte Filtrado (CSV)</button>
-    </section>
-
-    <!-- MÓDULOS SECUNDARIOS -->
-    <section id="mod-2" class="module-view">
-      <div class="module-header"><h3>2. Planificación y Tareas</h3></div>
-      <div class="form-group"><label>Descripción Tarea:</label><input type="text" id="mod2-tarea" class="form-control"></div>
-      <button class="btn-action" onclick="alert('✅ Tarea guardada.')">Guardar Tarea</button>
-    </section>
-
-    <section id="mod-3" class="module-view">
-      <div class="module-header"><h3>3. Manejo Sanitario Productivo</h3></div>
-      <div class="form-group"><label>Lote Trabajado:</label><input type="text" id="mod3-lote" class="form-control"></div>
-      <button class="btn-action" onclick="alert('✅ Sanidad guardada.')">Guardar Registro</button>
-    </section>
-
-    <section id="mod-4" class="module-view">
-      <div class="module-header"><h3>4. Eventos y Coordenadas GPS</h3></div>
-      <button class="btn-action" style="background:#2e7d32;" onclick="capturarGPS('mod4-geo')">📍 Capturar Coordenadas GPS</button>
-      <input type="text" id="mod4-geo" class="form-control" readonly style="margin-top:4px;">
-    </section>
-
-    <section id="mod-6" class="module-view">
-      <div class="module-header"><h3>🌤️ Control Meteorológico</h3></div>
-      <div style="text-align:center; padding:12px; background:#e3f2fd; border-radius:8px;">
-        <div style="font-weight:bold; font-size:13px;">📍 Mantecal, Apure</div>
-        <div style="font-size:32px; font-weight:bold; color:#0d47a1;">23°C</div>
-      </div>
-    </section>
-
-    <section id="mod-10" class="module-view">
-      <div class="module-header"><h3>🍽️ Logística de Comida</h3></div>
-      <button class="btn-action" onclick="alert('✅ Raciones registradas.')">Registrar Raciones</button>
-    </section>
   </main>
 
   <script>
-    const tg = window.Telegram?.WebApp;
-    if (tg) { tg.ready(); tg.expand(); }
-
-    const FACTORES_UGM = {
-      "Vaca": 1.0, "Toro": 1.2, "Novilla": 0.7, "Mautas": 0.5, "Mautes": 0.5, "Becerro": 0.25,
-      "Búfalas": 1.2, "Butoro": 1.4, "Buvillas": 0.8, "Bautas": 0.6, "Bautes": 0.6, "Bucerros": 0.3
-    };
-    const gruposBovinos = ["Vaca", "Novilla", "Mautas", "Mautes", "Toro", "Becerro"];
-    const gruposBufalinos = ["Búfalas", "Buvillas", "Bautas", "Bautes", "Butoro", "Bucerros"];
-
+    // INDEXEDDB CONFIG
     let db;
-    let syncPendiente = [];
-
-    // INDEXEDDB V2 CON STORES DEDICADOS Y COLA DE SINCRONIZACIÓN
-    const dbRequest = indexedDB.open("HatoLagunaBravaDB_v2", 2);
-    dbRequest.onupgradeneeded = (e) => {
+    const request = indexedDB.open("HatoLagunaBrava_v3", 1);
+    request.onupgradeneeded = (e) => {
       db = e.target.result;
-      if (!db.objectStoreNames.contains("rotacion")) db.createObjectStore("rotacion", { keyPath: "id", autoIncrement: true });
+      if (!db.objectStoreNames.contains("potreros")) db.createObjectStore("potreros", { keyPath: "id", autoIncrement: true });
       if (!db.objectStoreNames.contains("levante")) db.createObjectStore("levante", { keyPath: "id", autoIncrement: true });
-      if (!db.objectStoreNames.contains("kardex")) db.createObjectStore("kardex", { keyPath: "id", autoIncrement: true });
-      if (!db.objectStoreNames.contains("sync_queue")) db.createObjectStore("sync_queue", { keyPath: "id", autoIncrement: true });
     };
-    dbRequest.onsuccess = (e) => { 
-      db = e.target.result; 
-      cargarTodosLosRegistros();
-      renderizarStockKardex();
+    request.onsuccess = (e) => {
+      db = e.target.result;
+      cargarTablas();
     };
 
-    // CONEXIÓN Y SINCRONIZACIÓN
-    window.addEventListener('online', procesarSincronizacionBackend);
-    window.addEventListener('offline', updateOnlineStatus);
-
-    function updateOnlineStatus() {
-      const isOnline = navigator.onLine;
-      document.getElementById('sync-icon').innerText = isOnline ? "🟢" : "🟠";
-      document.getElementById('offline-tag').style.display = isOnline ? "none" : "block";
-    }
-
-    function procesarSincronizacionBackend() {
-      updateOnlineStatus();
-      if (!db) return;
-      const tx = db.transaction("sync_queue", "readwrite");
-      const store = tx.objectStore("sync_queue");
-      const req = store.getAll();
-      
-      req.onsuccess = () => {
-        const pendientes = req.result;
-        if (pendientes.length === 0) return;
-
-        // Simulador de envío a API/Servidor central
-        setTimeout(() => {
-          const clearTx = db.transaction("sync_queue", "readwrite");
-          clearTx.objectStore("sync_queue").clear();
-          mostrarNotificacion(`🟢 Sincronización Starlink completada: ${pendientes.length} registros subidos.`);
-        }, 1200);
-      };
-    }
+    // FACTORES UGM
+    const FACTORES_BOVINOS = { "Vacas Pñ": 1.0, "Vacas Paridas": 1.0, "Vacas Monta": 1.0, "Novillas Pñ": 0.7, "Novillas Monta": 0.7, "Mautas/Mautes": 0.5 };
+    const FACTORES_BUFALINOS = { "Búfala Pñ": 1.2, "Búfala Parida": 1.2, "Búfala Monta": 1.2, "Buvilla Pñ": 0.8, "Buvilla Monta": 0.8, "Bautas/Bautes": 0.6 };
 
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date().toISOString().split('T')[0];
       document.querySelectorAll("input[type='date']").forEach(i => i.value = hoy);
-      actualizarGruposEtarios();
-      updateOnlineStatus();
+      renderizarCamposEtarios1();
     });
 
-    function navegarA(idModulo, elemento) {
+    function navegarA(id, el) {
       document.querySelectorAll('.module-view').forEach(m => m.classList.remove('active'));
       document.querySelectorAll('.sidebar-menu li').forEach(l => l.classList.remove('active'));
-      document.getElementById(idModulo).classList.add('active');
-      if (elemento) elemento.classList.add('active');
+      document.getElementById(id).classList.add('active');
+      if (el) el.classList.add('active');
     }
 
-    function mostrarNotificacion(msj) {
-      const list = document.getElementById("notifications-list");
-      const li = document.createElement("li");
-      li.innerText = msj;
-      list.prepend(li);
+    // LÓGICA MÓDULO 1
+    function renderizarCamposEtarios1() {
+      const especie = document.getElementById("m1-especie").value;
+      const container = document.getElementById("m1-etarios-container");
+      container.innerHTML = "";
+      const factores = especie === "Bovino" ? FACTORES_BOVINOS : FACTORES_BUFALINOS;
+
+      Object.keys(factores).forEach(cat => {
+        const div = document.createElement("div");
+        div.className = "form-group";
+        div.innerHTML = `
+          <label style="font-size:10px;">${cat}:</label>
+          <input type="number" class="form-control input-etario" data-cat="${cat}" data-factor="${factores[cat]}" value="0" min="0" oninput="calcularUGM1()">
+        `;
+        container.appendChild(div);
+      });
+      calcularUGM1();
     }
 
-    // LEVANTE Y MÉTRICAS
+    function calcularUGM1() {
+      const ha = parseFloat(document.getElementById("m1-potrero").value) || 1;
+      let totalCabezas = 0;
+      let totalUGM = 0;
+
+      document.querySelectorAll(".input-etario").forEach(input => {
+        const cant = parseInt(input.value) || 0;
+        const factor = parseFloat(input.dataset.factor) || 1.0;
+        totalCabezas += cant;
+        totalUGM += (cant * factor);
+      });
+
+      const cargaHa = (totalUGM / ha).toFixed(2);
+      document.getElementById("m1-total-cabezas").value = totalCabezas;
+      document.getElementById("m1-total-ugm").value = `${totalUGM.toFixed(2)} UGM`;
+      document.getElementById("m1-carga-ha").value = `${cargaHa} UGM/ha`;
+    }
+
+    function guardarRegistroMod1() {
+      const selPotrero = document.getElementById("m1-potrero");
+      const potreroNombre = selPotrero.options[selPotrero.selectedIndex].text;
+      const ha = selPotrero.value;
+      const epoca = document.getElementById("m1-epoca").value;
+      const mov = document.getElementById("m1-movimiento").value;
+      const fIng = document.getElementById("m1-f-ingreso").value;
+      const fSal = document.getElementById("m1-f-salida").value;
+      const resp = document.getElementById("m1-responsable").value;
+      const especie = document.getElementById("m1-especie").value;
+      const cabezas = document.getElementById("m1-total-cabezas").value;
+      const ugmHa = document.getElementById("m1-carga-ha").value;
+      const ugmTotal = parseFloat(document.getElementById("m1-total-ugm").value) || 0;
+      const obs = document.getElementById("m1-obs").value;
+
+      if (cabezas <= 0) return alert("⚠️ Ingrese al menos una cabeza de ganado.");
+
+      const reg = { potreroNombre, ha, epoca, mov, fIng, fSal, resp, especie, cabezas: parseInt(cabezas), ugmHa, ugmTotal, obs };
+      
+      const tx = db.transaction("potreros", "readwrite");
+      tx.objectStore("potreros").add(reg);
+      tx.oncomplete = () => {
+        cargarTablas();
+        limpiarFormMod1();
+        alert("✅ Registro guardado y sincronizado localmente.");
+      };
+    }
+
+    function limpiarFormMod1() {
+      document.getElementById("form-mod1").reset();
+      renderizarCamposEtarios1();
+    }
+
+    // LÓGICA MÓDULO LEVANTE
     function calcularMetricasLevante() {
-      const fAnt = new Date(document.getElementById("lev-f-anterior").value);
-      const fAct = new Date(document.getElementById("lev-f-actual").value);
-      const pesoAnt = parseFloat(document.getElementById("lev-peso-anterior").value) || 0;
-      const pesoAct = parseFloat(document.getElementById("lev-peso-actual").value) || 0;
+      const fAnt = new Date(document.getElementById("lev-f-ant").value);
+      const fAct = new Date(document.getElementById("lev-f-act").value);
+      const pesoAnt = parseFloat(document.getElementById("lev-peso-ant").value) || 0;
+      const pesoAct = parseFloat(document.getElementById("lev-peso-act").value) || 0;
       const pesoMeta = parseFloat(document.getElementById("lev-peso-meta").value) || 0;
       const cant = parseInt(document.getElementById("lev-cant").value) || 1;
-      const alimDia = parseFloat(document.getElementById("lev-alimento-dia").value) || 0;
       const costoPeriodo = parseFloat(document.getElementById("lev-costo-periodo").value) || 0;
 
       if (fAct <= fAnt || pesoAnt <= 0 || pesoAct <= 0) return;
 
       const diffDias = Math.max(1, Math.round((fAct - fAnt) / (1000 * 60 * 60 * 24)));
-      const gmd = (pesoAct - pesoAnt) / diffDias;
-      const gananciaIndiv = pesoAct - pesoAnt;
-      const gananciaTotalLote = gananciaIndiv * cant;
+      const gananciaInd = pesoAct - pesoAnt;
+      const gmd = gananciaInd / diffDias;
+      const gananciaLote = gananciaInd * cant;
+      const costoKg = gananciaLote > 0 ? (costoPeriodo / gananciaLote).toFixed(2) : "0.00";
 
-      // Conversión Alimenticia = Alimento diario kg / GMD
-      const ca = gmd > 0 ? (alimDia / gmd).toFixed(2) : "0.00";
-      // Costo por kg ganado = Costo periodo / Kilos totales ganados en el lote
-      const costoKg = gananciaTotalLote > 0 ? (costoPeriodo / gananciaTotalLote).toFixed(2) : "0.00";
+      let mesesMeta = "0.0";
+      if (gmd > 0 && pesoMeta > pesoAct) {
+        mesesMeta = ((pesoMeta - pesoAct) / (gmd * 30.44)).toFixed(1);
+      }
 
       document.getElementById("kpi-gmd").innerText = gmd.toFixed(3);
-      document.getElementById("kpi-ca").innerText = ca;
+      document.getElementById("kpi-ganancia-total").innerText = `${gananciaLote.toFixed(1)} kg`;
       document.getElementById("kpi-costo-kg").innerText = `$${costoKg}`;
-
-      if (gmd > 0 && pesoMeta > pesoAct) {
-        const diasFaltantes = (pesoMeta - pesoAct) / gmd;
-        const fechaEstimadaMeta = new Date(fAct);
-        fechaEstimadaMeta.setDate(fechaEstimadaMeta.getDate() + diasFaltantes);
-        document.getElementById("kpi-fecha-meta").innerText = fechaEstimadaMeta.toISOString().split('T')[0];
-      } else {
-        document.getElementById("kpi-fecha-meta").innerText = "Meta alcanzada/N/A";
-      }
+      document.getElementById("kpi-meses-meta").innerText = `${mesesMeta} Meses`;
     }
 
     function guardarRegistroLevante() {
       const lote = document.getElementById("lev-lote").value;
+      const epoca = document.getElementById("lev-epoca").value;
       const sexo = document.getElementById("lev-sexo").value;
+      const especie = document.getElementById("lev-especie").value;
+      const grupo = document.getElementById("lev-grupo").value;
       const cant = document.getElementById("lev-cant").value;
       const gmd = document.getElementById("kpi-gmd").innerText;
-      const ca = document.getElementById("kpi-ca").innerText;
+      const ganLote = document.getElementById("kpi-ganancia-total").innerText;
       const costoKg = document.getElementById("kpi-costo-kg").innerText;
-      const estMeta = document.getElementById("kpi-fecha-meta").innerText;
-      const fecha = document.getElementById("lev-f-actual").value;
+      const mesesMeta = document.getElementById("kpi-meses-meta").innerText;
+      const proxPesaje = document.getElementById("lev-f-prox").value;
+      const obs = document.getElementById("lev-obs").value;
 
-      if (!lote || !cant) return alert("⚠️ Ingrese el lote y cantidad.");
+      if (!lote || !cant) return alert("⚠️ Ingrese el lote y la cantidad de animales.");
 
-      const reg = { lote, sexo, cant, gmd, ca, costoKg, estMeta, fecha };
-      guardarEnStore("levante", reg, () => {
-        renderFilaLevante(reg);
-        alert("✅ Pesaje y métricas avanzadas registradas.");
-      });
+      const reg = { lote, epoca, sexo, especie, grupo, cant, gmd, ganLote, costoKg, mesesMeta, proxPesaje, obs };
+
+      const tx = db.transaction("levante", "readwrite");
+      tx.objectStore("levante").add(reg);
+      tx.oncomplete = () => {
+        cargarTablas();
+        limpiarFormLevante();
+        alert("✅ Pesaje registrado correctamente.");
+      };
     }
 
-    // KARDEX E INSUMOS
-    function registrarKardex() {
-      const insumo = document.getElementById("kardex-articulo").value;
-      const tipo = document.getElementById("kardex-tipo").value;
-      const cant = parseFloat(document.getElementById("kardex-cant").value) || 0;
-      const min = parseFloat(document.getElementById("kardex-min").value) || 0;
-      const obs = document.getElementById("kardex-obs").value;
-      const fecha = new Date().toISOString().split('T')[0];
-
-      if (cant <= 0) return alert("⚠️ Ingrese una cantidad mayor a cero.");
-
-      const reg = { insumo, tipo, cant, min, obs, fecha };
-      guardarEnStore("kardex", reg, () => {
-        renderizarStockKardex();
-        alert("✅ Movimiento de Kardex asentado.");
-      });
+    function limpiarFormLevante() {
+      document.getElementById("form-levante").reset();
+      document.getElementById("kpi-gmd").innerText = "0.000";
+      document.getElementById("kpi-ganancia-total").innerText = "0 kg";
+      document.getElementById("kpi-costo-kg").innerText = "$0.00";
+      document.getElementById("kpi-meses-meta").innerText = "0.0 Meses";
     }
 
-    function renderizarStockKardex() {
+    // ELIMINAR Y CARGAR REGISTROS
+    function borrarFila(store, id) {
+      if (confirm("¿Desea borrar este registro?")) {
+        const tx = db.transaction(store, "readwrite");
+        tx.objectStore(store).delete(id);
+        tx.oncomplete = () => cargarTablas();
+      }
+    }
+
+    function cargarTablas() {
       if (!db) return;
-      const tx = db.transaction("kardex", "readonly");
-      const req = tx.objectStore("kardex").getAll();
 
-      req.onsuccess = () => {
-        const registros = req.result;
-        const balance = {};
-        const minimos = {};
-
-        registros.forEach(r => {
-          if (!balance[r.insumo]) balance[r.insumo] = 0;
-          minimos[r.insumo] = r.min || 100;
-          if (r.tipo === "Entrada") balance[r.insumo] += r.cant;
-          else balance[r.insumo] -= r.cant;
-        });
-
-        const tbody = document.getElementById("tabla-kardex-stock");
+      // MODULO 1
+      const tx1 = db.transaction("potreros", "readonly");
+      tx1.objectStore("potreros").getAll().onsuccess = (e) => {
+        const list = e.target.result;
+        const tbody = document.getElementById("tabla-mod1-body");
         tbody.innerHTML = "";
+        let totCab = 0; let totUgm = 0;
 
-        Object.keys(balance).forEach(ins => {
-          const actual = balance[ins];
-          const min = minimos[ins];
-          const bajoStock = actual <= min;
-
-          if (bajoStock) {
-            mostrarNotificacion(`⚠️ ALERTA STOCK: ${ins} en nivel crítico (${actual} unidades).`);
-          }
-
+        list.forEach(r => {
+          totCab += r.cabezas;
+          totUgm += r.ugmTotal;
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td><b>${ins}</b></td>
-            <td>${actual}</td>
-            <td>${min}</td>
-            <td><span class="kardex-badge ${bajoStock ? 'badge-warn' : 'badge-ok'}">${bajoStock ? 'REABASTECER' : 'OK'}</span></td>
+            <td>${r.potreroNombre}</td><td>${r.ha}</td><td>${r.epoca}</td><td>${r.mov}</td>
+            <td>${r.especie}</td><td>${r.cabezas}</td><td>${r.ugmHa}</td><td>${r.resp || '-'}</td>
+            <td><button class="btn-danger" onclick="borrarFila('potreros', ${r.id})">Borrar</button></td>
           `;
-          tbody.appendChild(tr);
+          tbody.prepend(tr);
+        });
+
+        document.getElementById("stat-cabezas").innerText = totCab;
+        document.getElementById("stat-ugm").innerText = totUgm.toFixed(1);
+      };
+
+      // MODULO LEVANTE
+      const tx2 = db.transaction("levante", "readonly");
+      tx2.objectStore("levante").getAll().onsuccess = (e) => {
+        const list = e.target.result;
+        const tbody = document.getElementById("tabla-levante-body");
+        tbody.innerHTML = "";
+
+        list.forEach(r => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.lote}</td><td>${r.sexo}/${r.especie}</td><td>${r.cant}</td><td>${r.gmd}</td>
+            <td>${r.ganLote}</td><td>${r.costoKg}</td><td>${r.mesesMeta}</td><td>${r.proxPesaje}</td>
+            <td><button class="btn-danger" onclick="borrarFila('levante', ${r.id})">Borrar</button></td>
+          `;
+          tbody.prepend(tr);
         });
       };
     }
-
-    // EXPORTACIÓN AVANZADA CSV
-    function exportarCSVAvanzado() {
-      const storeName = document.getElementById("exp-modulo").value;
-      const fDesde = document.getElementById("exp-f-desde").value;
-      const fHasta = document.getElementById("exp-f-hasta").value;
-      const filtro = document.getElementById("exp-filtro-texto").value.toLowerCase();
-
-      if (!db) return;
-      const tx = db.transaction(storeName, "readonly");
-      tx.objectStore(storeName).getAll().onsuccess = (e) => {
-        let items = e.target.result;
-
-        // Filtrado por fecha
-        if (fDesde) items = items.filter(i => (i.fecha || i.fIngreso) >= fDesde);
-        if (fHasta) items = items.filter(i => (i.fecha || i.fSalida) <= fHasta);
-
-        // Filtrado por texto
-        if (filtro) {
-          items = items.filter(i => JSON.stringify(i).toLowerCase().includes(filtro));
-        }
-
-        if (items.length === 0) return alert("⚠️ No existen registros para los filtros seleccionados.");
-
-        let csv = "data:text/csv;charset=utf-8,";
-        csv += Object.keys(items[0]).join(",") + "\r\n";
-        items.forEach(r => { csv += Object.values(r).join(",") + "\r\n"; });
-
-        const encoded = encodeURI(csv);
-        const link = document.createElement("a");
-        link.setAttribute("href", encoded);
-        link.setAttribute("download", `reporte_${storeName}_hato_laguna_brava.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      };
-    }
-
-    // AUXILIARES PERSISTENCIA
-    function guardarEnStore(storeName, data, cb) {
-      if (!db) return;
-      const tx = db.transaction([storeName, "sync_queue"], "readwrite");
-      tx.objectStore(storeName).add(data);
-      tx.objectStore("sync_queue").add({ store: storeName, payload: data, timestamp: new Date() });
-      tx.oncomplete = () => { 
-        if (cb) cb(); 
-        if (navigator.onLine) procesarSincronizacionBackend();
-      };
-    }
-
-    function cargarTodosLosRegistros() {
-      if (!db) return;
-      db.transaction("rotacion", "readonly").objectStore("rotacion").getAll().onsuccess = (e) => {
-        e.target.result.forEach(r => renderFilaRotacion(r));
-      };
-      db.transaction("levante", "readonly").objectStore("levante").getAll().onsuccess = (e) => {
-        e.target.result.forEach(r => renderFilaLevante(r));
-      };
-    }
-
-    function renderFilaRotacion(d) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${d.potrero}</td><td>${d.fIngreso}</td><td>${d.fSalida}</td><td>${d.cat}</td><td>${d.grupo}</td><td>${d.cant}</td><td>${d.ugm}</td>`;
-      document.getElementById("tabla-rotacion-body").prepend(tr);
-    }
-
-    function renderFilaLevante(d) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${d.lote}</td><td>${d.cant}</td><td>${d.gmd}</td><td>${d.ca}</td><td>${d.costoKg}</td><td>${d.cant * 30} kg</td><td>${d.estMeta}</td>`;
-      document.getElementById("tabla-levante-body").prepend(tr);
-    }
-
-    function actualizarGruposEtarios() {
-      const cat = document.getElementById("mod1-categoria").value;
-      const selectGrupo = document.getElementById("mod1-grupo-etario");
-      selectGrupo.innerHTML = "";
-      const lista = (cat === "Bovinos") ? gruposBovinos : gruposBufalinos;
-      lista.forEach(g => {
-        const opt = document.createElement("option"); opt.value = g; opt.innerText = g;
-        selectGrupo.appendChild(opt);
-      });
-    }
-
-    function calcularUGM() {
-      const grupo = document.getElementById("mod1-grupo-etario").value;
-      const cantidad = parseFloat(document.getElementById("mod1-cantidad").value) || 0;
-      const factor = FACTORES_UGM[grupo] || 1.0;
-      const totalUGM = (cantidad * factor).toFixed(2);
-      document.getElementById("mod1-ugm").value = `${totalUGM} UGM`;
-      return totalUGM;
-    }
-
-    function validarFechasRotacion() {
-      const fIngreso = document.getElementById("mod1-f-ingreso").value;
-      const fSalida = document.getElementById("mod1-f-salida").value;
-      if (fIngreso && fSalida && fSalida < fIngreso) {
-        alert("⚠️ La fecha de salida no puede ser anterior a la de ingreso.");
-        document.getElementById("mod1-f-salida").value = fIngreso;
-      }
-    }
-
-    function registrarMovimientoRotacion() {
-      const potrero = document.getElementById("mod1-potrero").value;
-      const fIngreso = document.getElementById("mod1-f-ingreso").value;
-      const fSalida = document.getElementById("mod1-f-salida").value;
-      const cat = document.getElementById("mod1-categoria").value;
-      const grupo = document.getElementById("mod1-grupo-etario").value;
-      const cant = document.getElementById("mod1-cantidad").value;
-      const ugm = calcularUGM();
-
-      if (!cant || cant <= 0) return alert("⚠️ Ingrese una cantidad válida.");
-
-      const reg = { potrero, fIngreso, fSalida, cat, grupo, cant, ugm, fecha: fIngreso };
-      guardarEnStore("rotacion", reg, () => {
-        renderFilaRotacion(reg);
-        alert("✅ Movimiento registrado.");
-      });
-    }
-
-    function capturarGPS(inputId) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          document.getElementById(inputId).value = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
-        }, () => alert("⚠️ GPS no disponible."));
-      }
-    }
-
-    function cargarDetalleArticulo() {}
   </script>
 </body>
 </html>
