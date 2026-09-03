@@ -16,7 +16,6 @@
       --bg-body: #f4f6f8;
       --alert-color: #d32f2f;
       --alert-bg: #fde8e8;
-      --success-color: #2e7d32;
       --warning-color: #ed6c02;
     }
 
@@ -27,74 +26,36 @@
       margin: 0; padding: 0;
       background-color: var(--bg-body);
       color: var(--text-main);
-      display: flex;
-      min-height: 100vh;
+      display: flex; min-height: 100vh;
     }
 
     .sidebar {
-      width: 260px;
-      background: #0d47a1;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      z-index: 100;
+      width: 260px; background: #0d47a1; color: #ffffff;
+      display: flex; flex-direction: column; z-index: 100;
     }
 
     .sidebar-header {
-      padding: 16px;
-      background: #0a3880;
-      font-weight: bold;
-      font-size: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 16px; background: #0a3880; font-weight: bold; font-size: 15px;
+      display: flex; align-items: center; justify-content: space-between;
     }
 
-    .sidebar-menu {
-      list-style: none;
-      padding: 0; margin: 0;
-      overflow-y: auto; flex-grow: 1;
-    }
-
-    .sidebar-menu li {
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      cursor: pointer;
-      font-size: 13px;
-    }
-
+    .sidebar-menu { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
+    .sidebar-menu li { padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); cursor: pointer; font-size: 13px; }
     .sidebar-menu li:hover, .sidebar-menu li.active { background: var(--blue-primary); }
 
-    .main-wrapper {
-      flex: 1; padding: 16px;
-      overflow-y: auto; max-width: 1200px;
-      margin: 0 auto;
-    }
+    .main-wrapper { flex: 1; padding: 16px; overflow-y: auto; max-width: 1200px; margin: 0 auto; }
 
     .header-card {
-      background: linear-gradient(135deg, #1d72b8, #0d47a1);
-      color: #ffffff;
-      border-radius: 12px; padding: 16px;
-      margin-bottom: 16px;
-      display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(135deg, #1d72b8, #0d47a1); color: #ffffff;
+      border-radius: 12px; padding: 16px; margin-bottom: 16px;
     }
-
     .header-card h2 { margin: 0 0 4px 0; font-size: 18px; }
     .header-card p { margin: 0; opacity: 0.9; font-size: 12px; }
 
-    .module-view {
-      display: none; background: var(--bg-card);
-      border-radius: 12px; padding: 16px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
+    .module-view { display: none; background: var(--bg-card); border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
     .module-view.active { display: block; }
 
-    .module-header {
-      border-bottom: 1px solid #eef0f2;
-      padding-bottom: 10px; margin-bottom: 14px;
-    }
-
+    .module-header { border-bottom: 1px solid #eef0f2; padding-bottom: 10px; margin-bottom: 14px; }
     .module-header h3 { margin: 0; color: var(--blue-primary); font-size: 16px; }
 
     .form-group { margin-bottom: 12px; }
@@ -108,25 +69,12 @@
     }
 
     .btn-group { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-
-    .btn-action {
-      background-color: var(--blue-primary); color: #ffffff;
-      border: none; padding: 10px 14px; border-radius: 8px;
-      font-size: 12px; font-weight: bold; cursor: pointer;
-    }
-
+    .btn-action { background-color: var(--blue-primary); color: #ffffff; border: none; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
     .btn-reset { background-color: var(--warning-color); }
     .btn-danger { background-color: var(--alert-color); color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; }
 
-    .table-container {
-      width: 100%; overflow-x: auto;
-      margin-top: 14px; border: 1px solid #eef0f2; border-radius: 6px;
-    }
-
-    .data-table {
-      width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;
-    }
-
+    .table-container { width: 100%; overflow-x: auto; margin-top: 14px; border: 1px solid #eef0f2; border-radius: 6px; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
     .data-table th { background-color: #f0f4f8; padding: 8px 6px; border-bottom: 1px solid #cfd8dc; }
     .data-table td { padding: 8px 6px; border-bottom: 1px solid #eef0f2; }
 
@@ -136,9 +84,11 @@
     .kpi-value { font-size: 14px; font-weight: bold; color: var(--blue-primary); margin-top: 2px; }
 
     .category-grid {
-      background: #f4f6f8; padding: 12px; border-radius: 8px; margin-bottom: 12px;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;
+      background: #f4f6f8; padding: 10px; border-radius: 8px; margin-bottom: 12px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;
     }
+
+    .cat-box { background: #ffffff; padding: 8px; border: 1px solid #cfd8dc; border-radius: 6px; }
 
     @media (max-width: 768px) {
       body { flex-direction: column; }
@@ -153,7 +103,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <span>Hato Laguna Brava</span>
-      <span id="sync-icon">🟢</span>
+      <span>🟢</span>
     </div>
     <ul class="sidebar-menu">
       <li class="active" onclick="navegarA('mod-1', this)">🌾 Potreros y UGM</li>
@@ -163,10 +113,8 @@
 
   <main class="main-wrapper">
     <div class="header-card">
-      <div>
-        <h2>¡Hola, Juan José! 🤠</h2>
-        <p>Sistema Integrado de Control Ganadero - Hato Laguna Brava</p>
-      </div>
+      <h2>¡Hola, Juan José! 🤠</h2>
+      <p>Sistema Integrado de Control Ganadero - Hato Laguna Brava</p>
     </div>
 
     <!-- MÓDULO 1: POTREROS Y UGM -->
@@ -218,16 +166,8 @@
           <div class="form-group"><label>Responsable:</label><input type="text" id="m1-responsable" class="form-control" placeholder="Ej: Caporal"></div>
         </div>
 
-        <div class="form-group">
-          <label>Especie:</label>
-          <select class="form-control" id="m1-especie" onchange="renderizarCamposEtarios1()">
-            <option value="Bovino">Bovino</option>
-            <option value="Bufalino">Bufalino</option>
-          </select>
-        </div>
-
-        <!-- CASILLAS CON ETIQUETAS ARRIBA SEGÚN CATEGORÍA -->
-        <label style="font-size:11px; font-weight:bold; color:var(--blue-primary); display:block; margin-top:8px;">Distribución de Animales por Categoría:</label>
+        <!-- CONTENEDOR CON DESPLEGABLES INDIVIDUALES POR CASILLA -->
+        <label style="font-size:11px; font-weight:bold; margin-bottom:6px; display:block;">Distribución de Animales por Categoría:</label>
         <div class="category-grid" id="m1-etarios-container"></div>
 
         <div class="form-row">
@@ -256,10 +196,10 @@
         </div>
       </form>
 
-      <!-- RESUMEN GENERAL Y ESTADÍSTICAS DEL HATO -->
+      <!-- RESUMEN GENERAL -->
       <div style="margin-top:20px;">
-        <h4 style="margin:0 0 8px 0; font-size:13px; color:var(--blue-primary);">Resumen General de Animales en Pastoreo</h4>
-        <div class="kpi-container" id="m1-estadisticas-container">
+        <h4 style="margin:0 0 8px 0; font-size:13px; color:var(--blue-primary);">Resumen General del Hato en Pastoreo</h4>
+        <div class="kpi-container">
           <div class="kpi-card"><div class="kpi-title">Total Cabezas</div><div class="kpi-value" id="stat-cabezas">0</div></div>
           <div class="kpi-card"><div class="kpi-title">Total UGM Hato</div><div class="kpi-value" id="stat-ugm">0.0</div></div>
         </div>
@@ -268,7 +208,7 @@
       <div class="table-container">
         <table class="data-table">
           <thead>
-            <tr><th>Potrero</th><th>Ha</th><th>Época</th><th>Mov.</th><th>Especie</th><th>Cabezas</th><th>UGM/Ha</th><th>Responsable</th><th>Acción</th></tr>
+            <tr><th>Potrero</th><th>Ha</th><th>Época</th><th>Mov.</th><th>Detalle Categorías</th><th>Cabezas</th><th>UGM/Ha</th><th>Responsable</th><th>Acción</th></tr>
           </thead>
           <tbody id="tabla-mod1-body"></tbody>
         </table>
@@ -319,7 +259,6 @@
           <div class="form-group"><label>Costo Periodo ($):</label><input type="number" id="lev-costo-periodo" class="form-control" placeholder="Ej: 500" oninput="calcularMetricasLevante()"></div>
         </div>
 
-        <!-- KPI DEDICADOS -->
         <div class="kpi-container">
           <div class="kpi-card"><div class="kpi-title">GMD (kg/an/día)</div><div class="kpi-value" id="kpi-gmd">0.000</div></div>
           <div class="kpi-card"><div class="kpi-title">Ganancia Total Lote</div><div class="kpi-value" id="kpi-ganancia-total">0 kg</div></div>
@@ -347,7 +286,6 @@
   </main>
 
   <script>
-    // INDEXEDDB CONFIG
     let db;
     const request = indexedDB.open("HatoLagunaBrava_v4", 1);
     request.onupgradeneeded = (e) => {
@@ -360,35 +298,38 @@
       cargarTablas();
     };
 
-    // CATEGORÍAS Y FACTORES DE CONVERSIÓN UGM
-    const CATEGORIAS_BOVINAS = [
-      { id: "vacas_pñ", etiqueta: "Vacas Pñ", factor: 1.0 },
-      { id: "vacas_paridas", etiqueta: "Vacas Paridas", factor: 1.0 },
-      { id: "vacas_monta", etiqueta: "Vacas Monta", factor: 1.0 },
-      { id: "vacas_vacias", etiqueta: "Vacas Vacías", factor: 1.0 },
-      { id: "novillas_pñ", etiqueta: "Novillas Pñ", factor: 0.7 },
-      { id: "novillas_monta", etiqueta: "Novillas Monta", factor: 0.7 },
-      { id: "mautas_mautes", etiqueta: "Mautas / Mautes", factor: 0.5 },
-      { id: "becerros", etiqueta: "Becerros", factor: 0.25 },
-      { id: "toros", etiqueta: "Toros", factor: 1.3 }
-    ];
+    // FACTORES UGM ESPECÍFICOS POR SUBCATEGORÍA
+    const FACTORES_UGM = {
+      "Mautas": 0.5, "Bautas": 0.6,
+      "Mautes": 0.5, "Bautes": 0.6,
+      "Becerros": 0.25, "Bucerros": 0.3,
+      "Vacas Vacías": 1.0, "Búfalas Vacías": 1.2,
+      "Toros": 1.5, "Butoros": 1.5,
+      "Vacas Pñ": 1.0, "Búfala Pñ": 1.2,
+      "Vacas Paridas": 1.0, "Búfala Parida": 1.2,
+      "Vacas Monta": 1.0, "Búfala Monta": 1.2,
+      "Novillas Pñ": 0.7, "Buvilla Pñ": 0.8,
+      "Novillas Monta": 0.7, "Buvilla Monta": 0.8
+    };
 
-    const CATEGORIAS_BUFALINAS = [
-      { id: "bufala_pñ", etiqueta: "Búfala Pñ", factor: 1.2 },
-      { id: "bufala_parida", etiqueta: "Búfala Parida", factor: 1.2 },
-      { id: "bufala_monta", etiqueta: "Búfala Monta", factor: 1.2 },
-      { id: "bufalas_vacias", etiqueta: "Búfalas Vacías", factor: 1.2 },
-      { id: "buvilla_pñ", etiqueta: "Buvilla Pñ", factor: 0.8 },
-      { id: "buvilla_monta", etiqueta: "Buvilla Monta", factor: 0.8 },
-      { id: "bautes_bautas", etiqueta: "Bautes / Bautas", factor: 0.6 },
-      { id: "bucerros", etiqueta: "Bucerros", factor: 0.3 },
-      { id: "butoros", etiqueta: "Butoros", factor: 1.5 }
+    // PARES DE DESPLEGABLES SEGÚN TU LISTA
+    const GRUPOS_DESPLEGABLES = [
+      ["Mautas", "Bautas"],
+      ["Mautes", "Bautes"],
+      ["Becerros", "Bucerros"],
+      ["Vacas Vacías", "Búfalas Vacías"],
+      ["Toros", "Butoros"],
+      ["Vacas Pñ", "Búfala Pñ"],
+      ["Vacas Paridas", "Búfala Parida"],
+      ["Vacas Monta", "Búfala Monta"],
+      ["Novillas Pñ", "Buvilla Pñ"],
+      ["Novillas Monta", "Buvilla Monta"]
     ];
 
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date().toISOString().split('T')[0];
       document.querySelectorAll("input[type='date']").forEach(i => i.value = hoy);
-      renderizarCamposEtarios1();
+      generarCamposEtarios1();
     });
 
     function navegarA(id, el) {
@@ -398,19 +339,19 @@
       if (el) el.classList.add('active');
     }
 
-    // DINÁMICA MÓDULO 1
-    function renderizarCamposEtarios1() {
-      const especie = document.getElementById("m1-especie").value;
+    function generarCamposEtarios1() {
       const container = document.getElementById("m1-etarios-container");
       container.innerHTML = "";
-      const listaCategorias = especie === "Bovino" ? CATEGORIAS_BOVINAS : CATEGORIAS_BUFALINAS;
 
-      listaCategorias.forEach(item => {
+      GRUPOS_DESPLEGABLES.forEach((opciones, idx) => {
         const div = document.createElement("div");
-        div.className = "form-group";
+        div.className = "cat-box";
         div.innerHTML = `
-          <label style="font-size:10px; color:#333;">${item.etiqueta}:</label>
-          <input type="number" class="form-control input-etario" data-cat="${item.etiqueta}" data-factor="${item.factor}" value="0" min="0" oninput="calcularUGM1()">
+          <select class="form-control select-cat" style="margin-bottom:4px; font-weight:bold;" onchange="calcularUGM1()">
+            <option value="${opciones[0]}">${opciones[0]}</option>
+            <option value="${opciones[1]}">${opciones[1]}</option>
+          </select>
+          <input type="number" class="form-control input-cant" value="0" min="0" placeholder="Cant." oninput="calcularUGM1()">
         `;
         container.appendChild(div);
       });
@@ -422,9 +363,12 @@
       let totalCabezas = 0;
       let totalUGM = 0;
 
-      document.querySelectorAll(".input-etario").forEach(input => {
-        const cant = parseInt(input.value) || 0;
-        const factor = parseFloat(input.dataset.factor) || 1.0;
+      const boxes = document.querySelectorAll(".cat-box");
+      boxes.forEach(box => {
+        const catSelected = box.querySelector(".select-cat").value;
+        const cant = parseInt(box.querySelector(".input-cant").value) || 0;
+        const factor = FACTORES_UGM[catSelected] || 1.0;
+
         totalCabezas += cant;
         totalUGM += (cant * factor);
       });
@@ -444,31 +388,37 @@
       const fIng = document.getElementById("m1-f-ingreso").value;
       const fSal = document.getElementById("m1-f-salida").value;
       const resp = document.getElementById("m1-responsable").value;
-      const especie = document.getElementById("m1-especie").value;
-      const cabezas = document.getElementById("m1-total-cabezas").value;
+      const cabezas = parseInt(document.getElementById("m1-total-cabezas").value) || 0;
       const ugmHa = document.getElementById("m1-carga-ha").value;
       const ugmTotal = parseFloat(document.getElementById("m1-total-ugm").value) || 0;
       const obs = document.getElementById("m1-obs").value;
 
-      if (cabezas <= 0) return alert("⚠️ Ingrese al menos una cabeza de ganado.");
+      if (cabezas <= 0) return alert("⚠️ Ingrese al menos un animal.");
 
-      const reg = { potreroNombre, ha, epoca, mov, fIng, fSal, resp, especie, cabezas: parseInt(cabezas), ugmHa, ugmTotal, obs };
-      
+      let desgloseText = [];
+      document.querySelectorAll(".cat-box").forEach(box => {
+        const cat = box.querySelector(".select-cat").value;
+        const cant = parseInt(box.querySelector(".input-cant").value) || 0;
+        if (cant > 0) desgloseText.push(`${cat}: ${cant}`);
+      });
+
+      const reg = { potreroNombre, ha, epoca, mov, fIng, fSal, resp, detalle: desgloseText.join(", "), cabezas, ugmHa, ugmTotal, obs };
+
       const tx = db.transaction("potreros", "readwrite");
       tx.objectStore("potreros").add(reg);
       tx.oncomplete = () => {
         cargarTablas();
         limpiarFormMod1();
-        alert("✅ Registro guardado y sincronizado localmente.");
+        alert("✅ Registro guardado.");
       };
     }
 
     function limpiarFormMod1() {
       document.getElementById("form-mod1").reset();
-      renderizarCamposEtarios1();
+      generarCamposEtarios1();
     }
 
-    // DINÁMICA MÓDULO LEVANTE
+    // LEVANTE
     function calcularMetricasLevante() {
       const fAnt = new Date(document.getElementById("lev-f-ant").value);
       const fAct = new Date(document.getElementById("lev-f-act").value);
@@ -520,7 +470,7 @@
       tx.oncomplete = () => {
         cargarTablas();
         limpiarFormLevante();
-        alert("✅ Pesaje registrado correctamente.");
+        alert("✅ Pesaje registrado.");
       };
     }
 
@@ -556,7 +506,7 @@
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td>${r.potreroNombre}</td><td>${r.ha}</td><td>${r.epoca}</td><td>${r.mov}</td>
-            <td>${r.especie}</td><td>${r.cabezas}</td><td>${r.ugmHa}</td><td>${r.resp || '-'}</td>
+            <td>${r.detalle || '-'}</td><td>${r.cabezas}</td><td>${r.ugmHa}</td><td>${r.resp || '-'}</td>
             <td><button class="btn-danger" onclick="borrarFila('potreros', ${r.id})">Borrar</button></td>
           `;
           tbody.prepend(tr);
