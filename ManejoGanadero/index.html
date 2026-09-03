@@ -17,6 +17,7 @@
       --alert-color: #d32f2f;
       --alert-bg: #fde8e8;
       --warning-color: #ed6c02;
+      --success-color: #2e7d32;
     }
 
     * { box-sizing: border-box; }
@@ -38,6 +39,27 @@
       padding: 12px 16px; background: #0a3880; font-weight: bold; font-size: 14px;
       display: flex; align-items: center; justify-content: space-between;
     }
+
+    /* ESTILOS DEL SEMÁFORO */
+    .sync-semaforo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+    }
+    .semaforo-luz {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background-color: #757575;
+      box-shadow: 0 0 4px rgba(0,0,0,0.3);
+      transition: background-color 0.3s ease;
+    }
+    .semaforo-luz.rojo { background-color: var(--alert-color); box-shadow: 0 0 6px var(--alert-color); }
+    .semaforo-luz.amarillo { background-color: var(--warning-color); box-shadow: 0 0 6px var(--warning-color); }
+    .semaforo-luz.verde { background-color: var(--success-color); box-shadow: 0 0 6px var(--success-color); }
 
     .sidebar-menu { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
     .sidebar-menu li { padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); cursor: pointer; font-size: 12px; }
@@ -68,7 +90,6 @@
       font-size: 11px; background: #fafafa; height: 28px;
     }
 
-    /* GRID COMPACTA DE CATEGORÍAS EN MÓVIL */
     .category-grid {
       background: #f4f6f8; padding: 6px; border-radius: 6px; margin-bottom: 8px;
       display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
@@ -113,7 +134,11 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <span>Hato Laguna Brava</span>
-      <span>🟢</span>
+      <!-- SEMÁFORO INTEGRADO -->
+      <div class="sync-semaforo" title="Estado de sincronización">
+        <div id="luz-semaforo" class="semaforo-luz verde"></div>
+        <span id="texto-semaforo">Sincronizado</span>
+      </div>
     </div>
     <ul class="sidebar-menu">
       <li class="active" onclick="navegarA('mod-1', this)">🌾 Potreros y UGM</li>
@@ -317,15 +342,33 @@
 
   <script>
     let db;
+    
+    // Función controladora del Semáforo
+    function actualizarSemaforo(estado, texto) {
+      const luz = document.getElementById("luz-semaforo");
+      const txt = document.getElementById("texto-semaforo");
+      
+      luz.className = "semaforo-luz " + estado;
+      txt.innerText = texto;
+    }
+
+    actualizarSemaforo("amarillo", "Cargando...");
+
     const request = indexedDB.open("HatoLagunaBrava_v5", 1);
     request.onupgradeneeded = (e) => {
       db = e.target.result;
       if (!db.objectStoreNames.contains("potreros")) db.createObjectStore("potreros", { keyPath: "id", autoIncrement: true });
       if (!db.objectStoreNames.contains("levante")) db.createObjectStore("levante", { keyPath: "id", autoIncrement: true });
     };
+    
     request.onsuccess = (e) => {
       db = e.target.result;
+      actualizarSemaforo("verde", "Sincronizado");
       cargarTablas();
+    };
+
+    request.onerror = (e) => {
+      actualizarSemaforo("rojo", "Error DB");
     };
 
     const FACTORES_UGM = {
@@ -440,6 +483,9 @@
 
       if (cabezas <= 0) return alert("⚠️ Ingrese al menos un animal.");
 
+      // Indicador en cola / procesamiento
+      actualizarSemaforo("amarillo", "En cola...");
+
       let desgloseText = [];
       document.querySelectorAll(".cat-box").forEach(box => {
         const cat = box.querySelector(".select-cat").value;
@@ -451,10 +497,16 @@
 
       const tx = db.transaction("potreros", "readwrite");
       tx.objectStore("potreros").add(reg);
+      
       tx.oncomplete = () => {
         cargarTablas();
         limpiarFormMod1();
-        alert("✅ Registro guardado.");
+        actualizarSemaforo("verde", "Sincronizado");
+        alert("✅ Registro guardado y sincronizado.");
+      };
+
+      tx.onerror = () => {
+        actualizarSemaforo("rojo", "Error guardando");
       };
     }
 
@@ -507,14 +559,22 @@
 
       if (!lote || !cant) return alert("⚠️ Ingrese el lote y la cantidad de animales.");
 
+      actualizarSemaforo("amarillo", "En cola...");
+
       const reg = { lote, epoca, sexo, especie, grupo, cant, gmd, ganLote, mesesMeta, proxPesaje, obs };
 
       const tx = db.transaction("levante", "readwrite");
       tx.objectStore("levante").add(reg);
+      
       tx.oncomplete = () => {
         cargarTablas();
         limpiarFormLevante();
-        alert("✅ Pesaje registrado.");
+        actualizarSemaforo("verde", "Sincronizado");
+        alert("✅ Pesaje registrado y sincronizado.");
+      };
+
+      tx.onerror = () => {
+        actualizarSemaforo("rojo", "Error guardando");
       };
     }
 
@@ -527,9 +587,13 @@
 
     function borrarFila(store, id) {
       if (confirm("¿Desea borrar este registro?")) {
+        actualizarSemaforo("amarillo", "En cola...");
         const tx = db.transaction(store, "readwrite");
         tx.objectStore(store).delete(id);
-        tx.oncomplete = () => cargarTablas();
+        tx.oncomplete = () => {
+          cargarTablas();
+          actualizarSemaforo("verde", "Sincronizado");
+        };
       }
     }
 
