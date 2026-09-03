@@ -35,66 +35,76 @@
     }
 
     .sidebar-header {
-      padding: 16px; background: #0a3880; font-weight: bold; font-size: 15px;
+      padding: 12px 16px; background: #0a3880; font-weight: bold; font-size: 14px;
       display: flex; align-items: center; justify-content: space-between;
     }
 
     .sidebar-menu { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
-    .sidebar-menu li { padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); cursor: pointer; font-size: 13px; }
+    .sidebar-menu li { padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); cursor: pointer; font-size: 12px; }
     .sidebar-menu li:hover, .sidebar-menu li.active { background: var(--blue-primary); }
 
-    .main-wrapper { flex: 1; padding: 16px; overflow-y: auto; max-width: 1200px; margin: 0 auto; }
+    .main-wrapper { flex: 1; padding: 8px; overflow-y: auto; max-width: 1200px; margin: 0 auto; width: 100%; }
 
     .header-card {
       background: linear-gradient(135deg, #1d72b8, #0d47a1); color: #ffffff;
-      border-radius: 12px; padding: 16px; margin-bottom: 16px;
+      border-radius: 8px; padding: 10px 12px; margin-bottom: 8px;
     }
-    .header-card h2 { margin: 0 0 4px 0; font-size: 18px; }
-    .header-card p { margin: 0; opacity: 0.9; font-size: 12px; }
+    .header-card h2 { margin: 0 0 2px 0; font-size: 15px; }
+    .header-card p { margin: 0; opacity: 0.9; font-size: 11px; }
 
-    .module-view { display: none; background: var(--bg-card); border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+    .module-view { display: none; background: var(--bg-card); border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); }
     .module-view.active { display: block; }
 
-    .module-header { border-bottom: 1px solid #eef0f2; padding-bottom: 10px; margin-bottom: 14px; }
-    .module-header h3 { margin: 0; color: var(--blue-primary); font-size: 16px; }
+    .module-header { border-bottom: 1px solid #eef0f2; padding-bottom: 6px; margin-bottom: 8px; }
+    .module-header h3 { margin: 0; color: var(--blue-primary); font-size: 14px; }
 
-    .form-group { margin-bottom: 12px; }
-    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
-    .form-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+    .form-group { margin-bottom: 6px; }
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; }
+    .form-group label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 2px; }
     
     .form-control {
-      width: 100%; padding: 8px 10px;
-      border: 1px solid #cfd8dc; border-radius: 6px;
-      font-size: 12px; background: #fafafa;
+      width: 100%; padding: 5px 6px;
+      border: 1px solid #cfd8dc; border-radius: 4px;
+      font-size: 11px; background: #fafafa; height: 28px;
     }
 
-    .btn-group { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-    .btn-action { background-color: var(--blue-primary); color: #ffffff; border: none; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
-    .btn-reset { background-color: var(--warning-color); }
-    .btn-danger { background-color: var(--alert-color); color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; }
-
-    .table-container { width: 100%; overflow-x: auto; margin-top: 14px; border: 1px solid #eef0f2; border-radius: 6px; }
-    .data-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
-    .data-table th { background-color: #f0f4f8; padding: 8px 6px; border-bottom: 1px solid #cfd8dc; }
-    .data-table td { padding: 8px 6px; border-bottom: 1px solid #eef0f2; }
-
-    .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin: 12px 0; }
-    .kpi-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center; }
-    .kpi-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
-    .kpi-value { font-size: 14px; font-weight: bold; color: var(--blue-primary); margin-top: 2px; }
-
+    /* GRID COMPACTA DE CATEGORÍAS EN MÓVIL */
     .category-grid {
-      background: #f4f6f8; padding: 10px; border-radius: 8px; margin-bottom: 12px;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;
+      background: #f4f6f8; padding: 6px; border-radius: 6px; margin-bottom: 8px;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
     }
 
-    .cat-box { background: #ffffff; padding: 8px; border: 1px solid #cfd8dc; border-radius: 6px; }
+    .cat-box { background: #ffffff; padding: 4px; border: 1px solid #cfd8dc; border-radius: 4px; }
+    .cat-box select { font-size: 10px; padding: 2px 4px; height: 24px; font-weight: bold; margin-bottom: 3px; }
+    .cat-box input { font-size: 11px; padding: 2px 4px; height: 24px; text-align: center; }
+
+    .btn-group { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .btn-action { background-color: var(--blue-primary); color: #ffffff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; flex: 1; }
+    .btn-reset { background-color: var(--warning-color); }
+    .btn-danger { background-color: var(--alert-color); color: #fff; border: none; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+
+    .table-container { width: 100%; overflow-x: auto; margin-top: 10px; border: 1px solid #eef0f2; border-radius: 6px; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 10px; text-align: left; }
+    .data-table th { background-color: #f0f4f8; padding: 6px 4px; border-bottom: 1px solid #cfd8dc; }
+    .data-table td { padding: 6px 4px; border-bottom: 1px solid #eef0f2; }
+
+    .kpi-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 8px 0; }
+    .kpi-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 4px; text-align: center; }
+    .kpi-title { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
+    .kpi-value { font-size: 12px; font-weight: bold; color: var(--blue-primary); margin-top: 1px; }
+
+    @media (min-width: 600px) {
+      .category-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (min-width: 900px) {
+      .category-grid { grid-template-columns: repeat(4, 1fr); }
+    }
 
     @media (max-width: 768px) {
       body { flex-direction: column; }
       .sidebar { width: 100%; }
       .sidebar-menu { display: flex; overflow-x: auto; }
-      .sidebar-menu li { white-space: nowrap; }
+      .sidebar-menu li { white-space: nowrap; flex: 1; text-align: center; }
     }
   </style>
 </head>
@@ -125,7 +135,7 @@
       
       <form id="form-mod1">
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group" style="grid-column: span 2;">
             <label>Potrero / Hectáreas:</label>
             <select class="form-control" id="m1-potrero" onchange="calcularUGM1()">
               <option value="432">Macanillal (432 ha)</option>
@@ -151,7 +161,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Época del Año:</label>
+            <label>Época:</label>
             <select class="form-control" id="m1-epoca"><option>Invierno</option><option>Verano</option></select>
           </div>
           <div class="form-group">
@@ -162,46 +172,46 @@
 
         <div class="form-row">
           <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="m1-f-ingreso" class="form-control" onchange="calcularOcupacionMeses()"></div>
-          <div class="form-group"><label>Fecha Salida Est.:</label><input type="date" id="m1-f-salida" class="form-control" onchange="calcularOcupacionMeses()"></div>
-          <div class="form-group"><label>Ocupación (Meses):</label><input type="text" id="m1-ocupacion-meses" class="form-control" readonly value="0.00 Meses"></div>
-          <div class="form-group"><label>Responsable:</label><input type="text" id="m1-responsable" class="form-control" placeholder="Ej: Caporal"></div>
+          <div class="form-group"><label>Salida Est.:</label><input type="date" id="m1-f-salida" class="form-control" onchange="calcularOcupacionMeses()"></div>
+          <div class="form-group"><label>Ocupación:</label><input type="text" id="m1-ocupacion-meses" class="form-control" readonly value="0.00 Meses"></div>
+          <div class="form-group"><label>Responsable:</label><input type="text" id="m1-responsable" class="form-control" placeholder="Caporal"></div>
         </div>
 
-        <label style="font-size:11px; font-weight:bold; margin-bottom:6px; display:block;">Distribución de Animales por Categoría:</label>
+        <label style="font-size:10px; font-weight:bold; margin: 4px 0 2px 0; display:block;">Categorías (Cantidad):</label>
         <div class="category-grid" id="m1-etarios-container"></div>
 
         <div class="form-row">
           <div class="form-group">
             <label>Total Cabezas:</label>
-            <input type="number" id="m1-total-cabezas" class="form-control" readonly value="0">
+            <input type="number" id="m1-total-cabezas" class="form-control" readonly value="0" style="font-weight:bold;">
           </div>
           <div class="form-group">
-            <label>Total UGM Estimado:</label>
-            <input type="text" id="m1-total-ugm" class="form-control" readonly value="0.0 UGM">
+            <label>Total UGM:</label>
+            <input type="text" id="m1-total-ugm" class="form-control" readonly value="0.0 UGM" style="font-weight:bold; color:var(--blue-primary);">
           </div>
           <div class="form-group">
             <label>Carga (UGM/Ha):</label>
-            <input type="text" id="m1-carga-ha" class="form-control" readonly value="0.00 UGM/ha">
+            <input type="text" id="m1-carga-ha" class="form-control" readonly value="0.00 UGM/ha" style="font-weight:bold;">
           </div>
         </div>
 
         <div class="form-group">
           <label>Observaciones:</label>
-          <input type="text" id="m1-obs" class="form-control" placeholder="Estado del pasto, disponibilidad de agua, etc.">
+          <input type="text" id="m1-obs" class="form-control" placeholder="Estado del pasto, agua, etc.">
         </div>
 
         <div class="btn-group">
-          <button type="button" class="btn-action" onclick="guardarRegistroMod1()">Guardar y Sincronizar</button>
-          <button type="button" class="btn-action btn-reset" onclick="limpiarFormMod1()">Rehacer / Limpiar</button>
+          <button type="button" class="btn-action" onclick="guardarRegistroMod1()">Guardar</button>
+          <button type="button" class="btn-action btn-reset" onclick="limpiarFormMod1()">Limpiar</button>
         </div>
       </form>
 
-      <div style="margin-top:20px;">
-        <h4 style="margin:0 0 8px 0; font-size:13px; color:var(--blue-primary);">Resumen General del Hato en Pastoreo</h4>
+      <div style="margin-top:12px;">
+        <h4 style="margin:0 0 4px 0; font-size:11px; color:var(--blue-primary);">Resumen de Pastoreo</h4>
         <div class="kpi-container">
-          <div class="kpi-card"><div class="kpi-title">Total Cabezas</div><div class="kpi-value" id="stat-cabezas">0</div></div>
-          <div class="kpi-card"><div class="kpi-title">Total UGM Hato</div><div class="kpi-value" id="stat-ugm">0.0</div></div>
-          <div class="kpi-card"><div class="kpi-title">Ocupación Acumulada</div><div class="kpi-value" id="stat-ocupacion-meses">0.00 Meses</div></div>
+          <div class="kpi-card"><div class="kpi-title">Cabezas</div><div class="kpi-value" id="stat-cabezas">0</div></div>
+          <div class="kpi-card"><div class="kpi-title">UGM Hato</div><div class="kpi-value" id="stat-ugm">0.0</div></div>
+          <div class="kpi-card"><div class="kpi-title">Ocupación</div><div class="kpi-value" id="stat-ocupacion-meses">0.00 M</div></div>
         </div>
       </div>
 
@@ -214,11 +224,11 @@
               <th>Época</th>
               <th>Mov.</th>
               <th>Detalle Categorías</th>
-              <th>Cabezas</th>
+              <th>Cab.</th>
               <th>UGM/Ha</th>
-              <th>Ocupación (Meses)</th>
-              <th>Responsable</th>
-              <th>Observación</th>
+              <th>Ocup.</th>
+              <th>Resp.</th>
+              <th>Obs.</th>
               <th>Acción</th>
             </tr>
           </thead>
@@ -230,14 +240,14 @@
     <!-- MÓDULO LEVANTE -->
     <section id="mod-levante" class="module-view">
       <div class="module-header">
-        <h3>⚖️ Módulo de Levante y Eficiencia Zooplánctica / Ponderal</h3>
+        <h3>⚖️ Módulo de Levante y Eficiencia Ponderal</h3>
       </div>
 
       <form id="form-levante">
         <div class="form-row">
-          <div class="form-group"><label>Lote:</label><input type="text" id="lev-lote" class="form-control" placeholder="Ej: Lote Mautes 2026"></div>
+          <div class="form-group"><label>Lote:</label><input type="text" id="lev-lote" class="form-control" placeholder="Lote Mautes 2026"></div>
           <div class="form-group">
-            <label>Época del Año:</label>
+            <label>Época:</label>
             <select class="form-control" id="lev-epoca"><option>Invierno</option><option>Verano</option></select>
           </div>
           <div class="form-group">
@@ -251,18 +261,18 @@
         </div>
 
         <div class="form-row">
-          <div class="form-group"><label>Grupo Etario:</label><input type="text" id="lev-grupo" class="form-control" placeholder="Ej: Mautes / Bautes"></div>
-          <div class="form-group"><label>N° Animales Lote:</label><input type="number" id="lev-cant" class="form-control" placeholder="Ej: 50" oninput="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Grupo Etario:</label><input type="text" id="lev-grupo" class="form-control" placeholder="Mautes / Bautes"></div>
+          <div class="form-group"><label>N° Animales:</label><input type="number" id="lev-cant" class="form-control" placeholder="50" oninput="calcularMetricasLevante()"></div>
         </div>
 
         <div class="form-row">
           <div class="form-group"><label>Fecha Pesaje Ant.:</label><input type="date" id="lev-f-ant" class="form-control" onchange="calcularMetricasLevante()"></div>
-          <div class="form-group"><label>Peso Prom. Ant. (kg):</label><input type="number" id="lev-peso-ant" class="form-control" placeholder="180" oninput="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Ant. (kg):</label><input type="number" id="lev-peso-ant" class="form-control" placeholder="180" oninput="calcularMetricasLevante()"></div>
         </div>
 
         <div class="form-row">
           <div class="form-group"><label>Fecha Pesaje Act.:</label><input type="date" id="lev-f-act" class="form-control" onchange="calcularMetricasLevante()"></div>
-          <div class="form-group"><label>Peso Prom. Act. (kg):</label><input type="number" id="lev-peso-act" class="form-control" placeholder="205" oninput="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Act. (kg):</label><input type="number" id="lev-peso-act" class="form-control" placeholder="205" oninput="calcularMetricasLevante()"></div>
           <div class="form-group"><label>Peso Meta (kg):</label><input type="number" id="lev-peso-meta" class="form-control" value="320" oninput="calcularMetricasLevante()"></div>
         </div>
 
@@ -271,16 +281,16 @@
         </div>
 
         <div class="kpi-container">
-          <div class="kpi-card"><div class="kpi-title">GMD (kg/an/día)</div><div class="kpi-value" id="kpi-gmd">0.000</div></div>
-          <div class="kpi-card"><div class="kpi-title">Ganancia Total Lote</div><div class="kpi-value" id="kpi-ganancia-total">0 kg</div></div>
-          <div class="kpi-card"><div class="kpi-title">Proyección Meta</div><div class="kpi-value" id="kpi-meses-meta">0.0 Meses</div></div>
+          <div class="kpi-card"><div class="kpi-title">GMD (kg/día)</div><div class="kpi-value" id="kpi-gmd">0.000</div></div>
+          <div class="kpi-card"><div class="kpi-title">Ganancia Lote</div><div class="kpi-value" id="kpi-ganancia-total">0 kg</div></div>
+          <div class="kpi-card"><div class="kpi-title">Meses a Meta</div><div class="kpi-value" id="kpi-meses-meta">0.0 M</div></div>
         </div>
 
-        <div class="form-group"><label>Observaciones:</label><input type="text" id="lev-obs" class="form-control" placeholder="Notas del pesaje, condición corporal, suplementación, etc."></div>
+        <div class="form-group"><label>Observaciones:</label><input type="text" id="lev-obs" class="form-control" placeholder="Suplementación, condición corporal, etc."></div>
 
         <div class="btn-group">
-          <button type="button" class="btn-action" onclick="guardarRegistroLevante()">Guardar y Sincronizar</button>
-          <button type="button" class="btn-action btn-reset" onclick="limpiarFormLevante()">Rehacer / Limpiar</button>
+          <button type="button" class="btn-action" onclick="guardarRegistroLevante()">Guardar</button>
+          <button type="button" class="btn-action btn-reset" onclick="limpiarFormLevante()">Limpiar</button>
         </div>
       </form>
 
@@ -295,7 +305,7 @@
               <th>Ganancia Lote</th>
               <th>Meta (Meses)</th>
               <th>Próx Pesaje</th>
-              <th>Observación</th>
+              <th>Obs.</th>
               <th>Acción</th>
             </tr>
           </thead>
@@ -318,7 +328,6 @@
       cargarTablas();
     };
 
-    // FACTORES UGM ESPECÍFICOS POR SUBCATEGORÍA
     const FACTORES_UGM = {
       "Mautas": 0.5, "Bautas": 0.6,
       "Mautes": 0.5, "Bautes": 0.6,
@@ -333,7 +342,6 @@
       "Novillas Vacías": 0.7, "Buvillas Vacías": 0.8
     };
 
-    // PARES DE DESPLEGABLES INCLUYENDO MAUTES/BAUTES Y NOVILLAS VACÍAS/BUVILLAS VACÍAS
     const GRUPOS_DESPLEGABLES = [
       ["Mautas", "Bautas"],
       ["Mautes", "Bautes"],
@@ -370,7 +378,7 @@
         const div = document.createElement("div");
         div.className = "cat-box";
         div.innerHTML = `
-          <select class="form-control select-cat" style="margin-bottom:4px; font-weight:bold;" onchange="calcularUGM1()">
+          <select class="form-control select-cat" onchange="calcularUGM1()">
             <option value="${opciones[0]}">${opciones[0]}</option>
             <option value="${opciones[1]}">${opciones[1]}</option>
           </select>
@@ -388,9 +396,9 @@
       if (!isNaN(fIng) && !isNaN(fSal) && fSal >= fIng) {
         const diffDias = Math.max(0, Math.round((fSal - fIng) / (1000 * 60 * 60 * 24)));
         const meses = (diffDias / 30.42).toFixed(2);
-        document.getElementById("m1-ocupacion-meses").value = `${meses} Meses`;
+        document.getElementById("m1-ocupacion-meses").value = `${meses} M`;
       } else {
-        document.getElementById("m1-ocupacion-meses").value = "0.00 Meses";
+        document.getElementById("m1-ocupacion-meses").value = "0.00 M";
       }
     }
 
@@ -411,7 +419,7 @@
 
       const cargaHa = (totalUGM / ha).toFixed(2);
       document.getElementById("m1-total-cabezas").value = totalCabezas;
-      document.getElementById("m1-total-ugm").value = `${totalUGM.toFixed(2)} UGM`;
+      document.getElementById("m1-total-ugm").value = `${totalUGM.toFixed(1)} UGM`;
       document.getElementById("m1-carga-ha").value = `${cargaHa} UGM/ha`;
     }
 
@@ -459,7 +467,6 @@
       calcularOcupacionMeses();
     }
 
-    // LEVANTE
     function calcularMetricasLevante() {
       const fAnt = new Date(document.getElementById("lev-f-ant").value);
       const fAct = new Date(document.getElementById("lev-f-act").value);
@@ -482,7 +489,7 @@
 
       document.getElementById("kpi-gmd").innerText = gmd.toFixed(3);
       document.getElementById("kpi-ganancia-total").innerText = `${gananciaLote.toFixed(1)} kg`;
-      document.getElementById("kpi-meses-meta").innerText = `${mesesMeta} Meses`;
+      document.getElementById("kpi-meses-meta").innerText = `${mesesMeta} M`;
     }
 
     function guardarRegistroLevante() {
@@ -515,7 +522,7 @@
       document.getElementById("form-levante").reset();
       document.getElementById("kpi-gmd").innerText = "0.000";
       document.getElementById("kpi-ganancia-total").innerText = "0 kg";
-      document.getElementById("kpi-meses-meta").innerText = "0.0 Meses";
+      document.getElementById("kpi-meses-meta").innerText = "0.0 M";
     }
 
     function borrarFila(store, id) {
@@ -549,7 +556,7 @@
             <td>${r.detalle || '-'}</td>
             <td>${r.cabezas}</td>
             <td>${r.ugmHa}</td>
-            <td>${(r.ocupacionMeses || 0).toFixed(2)} Meses</td>
+            <td>${(r.ocupacionMeses || 0).toFixed(2)} M</td>
             <td>${r.resp || '-'}</td>
             <td>${r.obs || '-'}</td>
             <td><button class="btn-danger" onclick="borrarFila('potreros', ${r.id})">Borrar</button></td>
@@ -559,7 +566,7 @@
 
         document.getElementById("stat-cabezas").innerText = totCab;
         document.getElementById("stat-ugm").innerText = totUgm.toFixed(1);
-        document.getElementById("stat-ocupacion-meses").innerText = `${totOcupacion.toFixed(2)} Meses`;
+        document.getElementById("stat-ocupacion-meses").innerText = `${totOcupacion.toFixed(2)} M`;
       };
 
       const tx2 = db.transaction("levante", "readonly");
