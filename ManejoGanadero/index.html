@@ -42,19 +42,13 @@
 
     /* ESTILOS DEL SEMÁFORO */
     .sync-semaforo {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0, 0, 0, 0.2);
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 10px;
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(0, 0, 0, 0.2); padding: 3px 8px;
+      border-radius: 12px; font-size: 10px;
     }
     .semaforo-luz {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background-color: #757575;
-      box-shadow: 0 0 4px rgba(0,0,0,0.3);
+      width: 10px; height: 10px; border-radius: 50%;
+      background-color: #757575; box-shadow: 0 0 4px rgba(0,0,0,0.3);
       transition: background-color 0.3s ease;
     }
     .semaforo-luz.rojo { background-color: var(--alert-color); box-shadow: 0 0 6px var(--alert-color); }
@@ -77,7 +71,7 @@
     .module-view { display: none; background: var(--bg-card); border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); }
     .module-view.active { display: block; }
 
-    .module-header { border-bottom: 1px solid #eef0f2; padding-bottom: 6px; margin-bottom: 8px; }
+    .module-header { border-bottom: 1px solid #eef0f2; padding-bottom: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
     .module-header h3 { margin: 0; color: var(--blue-primary); font-size: 14px; }
 
     .form-group { margin-bottom: 6px; }
@@ -114,6 +108,21 @@
     .kpi-title { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
     .kpi-value { font-size: 12px; font-weight: bold; color: var(--blue-primary); margin-top: 1px; }
 
+    /* ESTILOS ADICIONALES PARA MÓDULO 3 */
+    .sug-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; margin-bottom: 10px; }
+    .sug-box { background: #ffffff; border-radius: 6px; padding: 8px; border: 1px solid #cfd8dc; }
+    .sug-box.success { border-left: 4px solid var(--success-color); }
+    .sug-box.danger { border-left: 4px solid var(--alert-color); }
+    .sug-box h4 { margin: 0 0 6px 0; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; }
+    .sug-list { list-style: none; padding: 0; margin: 0; font-size: 10px; }
+    .sug-list li { padding: 4px 0; border-bottom: 1px dashed #eef0f2; display: flex; justify-content: space-between; align-items: center; }
+
+    .badge { padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; color: #fff; }
+    .badge-success { background-color: var(--success-color); }
+    .badge-warning { background-color: var(--warning-color); }
+    .badge-danger { background-color: var(--alert-color); }
+    .badge-info { background-color: var(--blue-primary); }
+
     @media (min-width: 600px) {
       .category-grid { grid-template-columns: repeat(3, 1fr); }
     }
@@ -134,7 +143,6 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <span>Hato Laguna Brava</span>
-      <!-- SEMÁFORO INTEGRADO -->
       <div class="sync-semaforo" title="Estado de sincronización">
         <div id="luz-semaforo" class="semaforo-luz verde"></div>
         <span id="texto-semaforo">Sincronizado</span>
@@ -143,6 +151,7 @@
     <ul class="sidebar-menu">
       <li class="active" onclick="navegarA('mod-1', this)">🌾 Potreros y UGM</li>
       <li onclick="navegarA('mod-levante', this)">⚖️ Módulo Levante</li>
+      <li onclick="navegarA('mod-rotacion', this)">🔄 Rotación y Carga</li>
     </ul>
   </aside>
 
@@ -152,7 +161,6 @@
       <p>Sistema Integrado de Control Ganadero - Hato Laguna Brava</p>
     </div>
 
-    <!-- MÓDULO 1: POTREROS Y UGM -->
     <section id="mod-1" class="module-view active">
       <div class="module-header">
         <h3>1. Control de Pastoreo, Potreros y UGM</h3>
@@ -262,7 +270,6 @@
       </div>
     </section>
 
-    <!-- MÓDULO LEVANTE -->
     <section id="mod-levante" class="module-view">
       <div class="module-header">
         <h3>⚖️ Módulo de Levante y Eficiencia Ponderal</h3>
@@ -338,16 +345,105 @@
         </table>
       </div>
     </section>
+
+    <section id="mod-rotacion" class="module-view">
+      <div class="module-header">
+        <h3>🔄 Historial, Rotación y Capacidad de Carga</h3>
+        <div>
+          <select id="m3-select-epoca" class="form-control" style="font-weight: bold; border-color: var(--blue-primary);" onchange="procesarModulo3()">
+            <option value="INVIERNO" selected>🌧️ Invierno (1.8 Cab/ha)</option>
+            <option value="VERANO">☀️ Verano (2.8 Cab/ha)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sug-container">
+        <div class="sug-box success">
+          <h4 style="color: var(--success-color);">
+            <span>📥 Mayor Descanso (Entrada)</span>
+            <span class="badge badge-success" id="m3-badge-descanso">Sugerencia</span>
+          </h4>
+          <ul class="sug-list" id="m3-lista-descanso">
+            <li class="text-muted">Procesando potreros...</li>
+          </ul>
+        </div>
+        <div class="sug-box danger">
+          <h4 style="color: var(--alert-color);">
+            <span>📤 Mayor Ocupación (Rotación)</span>
+            <span class="badge badge-danger" id="m3-badge-uso">Evaluación</span>
+          </h4>
+          <ul class="sug-list" id="m3-lista-uso">
+            <li class="text-muted">Procesando potreros...</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 8px;">
+        <div class="form-row">
+          <div class="form-group" style="grid-column: span 2;">
+            <label>Seleccionar Potrero para Ficha Técnica:</label>
+            <select class="form-control" id="m3-select-potrero" onchange="analizarPotreroM3()">
+              <option value="">-- Selecciona un potrero --</option>
+            </select>
+          </div>
+          <div class="form-group" style="display: flex; align-items: flex-end; justify-content: flex-end;">
+            <span id="m3-semaforo-estado" class="badge bg-secondary" style="font-size: 11px; padding: 6px 10px;">Estado: Sin Selección</span>
+          </div>
+        </div>
+
+        <div class="kpi-container" id="m3-panel-metricas" style="display:none; margin-top: 6px;">
+          <div class="kpi-card">
+            <div class="kpi-title">Superficie</div>
+            <div class="kpi-value" id="m3-lbl-ha">0 ha</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Cap. Sugerida</div>
+            <div class="kpi-value" id="m3-lbl-cap" style="color: var(--success-color);">0 Cab</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Días Reposo</div>
+            <div class="kpi-value" id="m3-lbl-reposo">0 Días</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Entrada</th>
+              <th>Salida</th>
+              <th>Días</th>
+              <th>Mov.</th>
+              <th>Cabezas</th>
+              <th>Cap. Sugerida</th>
+              <th>Estado Carga</th>
+              <th>Resp.</th>
+            </tr>
+          </thead>
+          <tbody id="m3-tabla-historial">
+            <tr><td colspan="8" style="text-align:center;" class="text-muted">Seleccione un potrero para desplegar el historial.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
   <script>
     let db;
     
-    // Función controladora del Semáforo
+    // Lista global compilada desde el DOM
+    let LISTA_POTREROS_BASE = [];
+
+    // Factores de carga configurados
+    const FACTORES_CARGA_HA = {
+      INVIERNO: 1.8,
+      VERANO: 2.8
+    };
+
     function actualizarSemaforo(estado, texto) {
       const luz = document.getElementById("luz-semaforo");
       const txt = document.getElementById("texto-semaforo");
-      
       luz.className = "semaforo-luz " + estado;
       txt.innerText = texto;
     }
@@ -404,6 +500,7 @@
       document.querySelectorAll("input[type='date']").forEach(i => i.value = hoy);
       generarCamposEtarios1();
       calcularOcupacionMeses();
+      extraerCatalogoPotreros();
     });
 
     function navegarA(id, el) {
@@ -411,6 +508,32 @@
       document.querySelectorAll('.sidebar-menu li').forEach(l => l.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       if (el) el.classList.add('active');
+
+      if (id === 'mod-rotacion') {
+        procesarModulo3();
+      }
+    }
+
+    function extraerCatalogoPotreros() {
+      const selectM1 = document.getElementById("m1-potrero");
+      const selectM3 = document.getElementById("m3-select-potrero");
+      
+      LISTA_POTREROS_BASE = [];
+      selectM3.innerHTML = '<option value="">-- Selecciona un potrero --</option>';
+
+      Array.from(selectM1.options).forEach(opt => {
+        const ha = parseFloat(opt.value);
+        const nombreCompleto = opt.text;
+        const nombreLimpio = nombreCompleto.replace(/\s*\(\d+\s*ha\)/i, '').trim();
+        
+        const obj = { nombre: nombreLimpio, ha: ha, textoFull: nombreCompleto };
+        LISTA_POTREROS_BASE.push(obj);
+
+        const newOpt = document.createElement("option");
+        newOpt.value = nombreLimpio;
+        newOpt.textContent = `${nombreLimpio} (${ha} ha)`;
+        selectM3.appendChild(newOpt);
+      });
     }
 
     function generarCamposEtarios1() {
@@ -468,7 +591,7 @@
 
     function guardarRegistroMod1() {
       const selPotrero = document.getElementById("m1-potrero");
-      const potreroNombre = selPotrero.options[selPotrero.selectedIndex].text;
+      const potreroNombre = selPotrero.options[selPotrero.selectedIndex].text.replace(/\s*\(\d+\s*ha\)/i, '').trim();
       const ha = selPotrero.value;
       const epoca = document.getElementById("m1-epoca").value;
       const mov = document.getElementById("m1-movimiento").value;
@@ -483,7 +606,6 @@
 
       if (cabezas <= 0) return alert("⚠️ Ingrese al menos un animal.");
 
-      // Indicador en cola / procesamiento
       actualizarSemaforo("amarillo", "En cola...");
 
       let desgloseText = [];
@@ -631,6 +753,11 @@
         document.getElementById("stat-cabezas").innerText = totCab;
         document.getElementById("stat-ugm").innerText = totUgm.toFixed(1);
         document.getElementById("stat-ocupacion-meses").innerText = `${totOcupacion.toFixed(2)} M`;
+        
+        // Si el Módulo 3 está activo, re-sincronizar los cálculos
+        if (document.getElementById("mod-rotacion").classList.contains("active")) {
+          procesarModulo3();
+        }
       };
 
       const tx2 = db.transaction("levante", "readonly");
@@ -656,6 +783,33 @@
         });
       };
     }
-  </script>
-</body>
-</html>
+
+    // =======================================================
+    // LÓGICA CORE - MÓDULO 3: ROTACIÓN Y CAPACIDAD DE CARGA
+    // =======================================================
+    function procesarModulo3() {
+      if (!db) return;
+
+      const epoca = document.getElementById("m3-select-epoca").value;
+      const factorCarga = FACTORES_CARGA_HA[epoca];
+
+      const tx = db.transaction("potreros", "readonly");
+      tx.objectStore("potreros").getAll().onsuccess = (e) => {
+        const movs = e.target.result;
+        const hoy = new Date();
+
+        let analisisPotreros = LISTA_POTREROS_BASE.map(p => {
+          // Filtrar movimientos por este potrero
+          let his = movs.filter(m => m.potreroNombre === p.nombre);
+          his.sort((a, b) => new Date(b.fIng) - new Date(a.fIng));
+
+          let ocupado = false;
+          let diasDescanso = 0;
+          let diasUso = 0;
+          let cabezasActuales = 0;
+          let ultimoMov = his[0];
+
+          if (ultimoMov) {
+            if (ultimoMov.mov === "Ingreso") {
+              ocupado = true;
+              diasUso = Math.max(0, Math.round((hoy - new Date(ultimoMov.fIng)) / (1000 *
