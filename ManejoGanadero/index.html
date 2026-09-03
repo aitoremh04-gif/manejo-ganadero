@@ -166,7 +166,6 @@
           <div class="form-group"><label>Responsable:</label><input type="text" id="m1-responsable" class="form-control" placeholder="Ej: Caporal"></div>
         </div>
 
-        <!-- CONTENEDOR CON DESPLEGABLES INDIVIDUALES POR CASILLA -->
         <label style="font-size:11px; font-weight:bold; margin-bottom:6px; display:block;">Distribución de Animales por Categoría:</label>
         <div class="category-grid" id="m1-etarios-container"></div>
 
@@ -186,8 +185,8 @@
         </div>
 
         <div class="form-group">
-          <label>Observación:</label>
-          <input type="text" id="m1-obs" class="form-control" placeholder="Estado del pasto, agua, etc.">
+          <label>Observaciones:</label>
+          <input type="text" id="m1-obs" class="form-control" placeholder="Estado del pasto, disponibilidad de agua, etc.">
         </div>
 
         <div class="btn-group">
@@ -196,7 +195,6 @@
         </div>
       </form>
 
-      <!-- RESUMEN GENERAL -->
       <div style="margin-top:20px;">
         <h4 style="margin:0 0 8px 0; font-size:13px; color:var(--blue-primary);">Resumen General del Hato en Pastoreo</h4>
         <div class="kpi-container">
@@ -208,7 +206,18 @@
       <div class="table-container">
         <table class="data-table">
           <thead>
-            <tr><th>Potrero</th><th>Ha</th><th>Época</th><th>Mov.</th><th>Detalle Categorías</th><th>Cabezas</th><th>UGM/Ha</th><th>Responsable</th><th>Acción</th></tr>
+            <tr>
+              <th>Potrero</th>
+              <th>Ha</th>
+              <th>Época</th>
+              <th>Mov.</th>
+              <th>Detalle Categorías</th>
+              <th>Cabezas</th>
+              <th>UGM/Ha</th>
+              <th>Responsable</th>
+              <th>Observación</th>
+              <th>Acción</th>
+            </tr>
           </thead>
           <tbody id="tabla-mod1-body"></tbody>
         </table>
@@ -218,7 +227,7 @@
     <!-- MÓDULO LEVANTE -->
     <section id="mod-levante" class="module-view">
       <div class="module-header">
-        <h3>⚖️ Módulo de Levante y Eficiencia Económica</h3>
+        <h3>⚖️ Módulo de Levante y Eficiencia Zooplánctica / Ponderal</h3>
       </div>
 
       <form id="form-levante">
@@ -256,17 +265,15 @@
 
         <div class="form-row">
           <div class="form-group"><label>Próximo Pesaje:</label><input type="date" id="lev-f-prox" class="form-control"></div>
-          <div class="form-group"><label>Costo Periodo ($):</label><input type="number" id="lev-costo-periodo" class="form-control" placeholder="Ej: 500" oninput="calcularMetricasLevante()"></div>
         </div>
 
         <div class="kpi-container">
           <div class="kpi-card"><div class="kpi-title">GMD (kg/an/día)</div><div class="kpi-value" id="kpi-gmd">0.000</div></div>
           <div class="kpi-card"><div class="kpi-title">Ganancia Total Lote</div><div class="kpi-value" id="kpi-ganancia-total">0 kg</div></div>
-          <div class="kpi-card"><div class="kpi-title">Costo / kg Ganado</div><div class="kpi-value" id="kpi-costo-kg">$0.00</div></div>
           <div class="kpi-card"><div class="kpi-title">Proyección Meta</div><div class="kpi-value" id="kpi-meses-meta">0.0 Meses</div></div>
         </div>
 
-        <div class="form-group"><label>Observaciones:</label><input type="text" id="lev-obs" class="form-control" placeholder="Notas del pesaje"></div>
+        <div class="form-group"><label>Observaciones:</label><input type="text" id="lev-obs" class="form-control" placeholder="Notas del pesaje, condición corporal, suplementación, etc."></div>
 
         <div class="btn-group">
           <button type="button" class="btn-action" onclick="guardarRegistroLevante()">Guardar y Sincronizar</button>
@@ -277,7 +284,17 @@
       <div class="table-container">
         <table class="data-table">
           <thead>
-            <tr><th>Lote</th><th>Sexo/Esp</th><th>Cant</th><th>GMD (kg/d)</th><th>Ganancia Lote</th><th>Costo/Kg</th><th>Meta (Meses)</th><th>Próx Pesaje</th><th>Acción</th></tr>
+            <tr>
+              <th>Lote</th>
+              <th>Sexo/Esp</th>
+              <th>Cant</th>
+              <th>GMD (kg/d)</th>
+              <th>Ganancia Lote</th>
+              <th>Meta (Meses)</th>
+              <th>Próx Pesaje</th>
+              <th>Observación</th>
+              <th>Acción</th>
+            </tr>
           </thead>
           <tbody id="tabla-levante-body"></tbody>
         </table>
@@ -287,7 +304,7 @@
 
   <script>
     let db;
-    const request = indexedDB.open("HatoLagunaBrava_v4", 1);
+    const request = indexedDB.open("HatoLagunaBrava_v5", 1);
     request.onupgradeneeded = (e) => {
       db = e.target.result;
       if (!db.objectStoreNames.contains("potreros")) db.createObjectStore("potreros", { keyPath: "id", autoIncrement: true });
@@ -298,10 +315,9 @@
       cargarTablas();
     };
 
-    // FACTORES UGM ESPECÍFICOS POR SUBCATEGORÍA
+    // FACTORES UGM AJUSTADOS A CONDICIONES TROPICALES
     const FACTORES_UGM = {
-      "Mautas": 0.5, "Bautas": 0.6,
-      "Mautes": 0.5, "Bautes": 0.6,
+      "Mautas": 0.5, "Mautes": 0.5,
       "Becerros": 0.25, "Bucerros": 0.3,
       "Vacas Vacías": 1.0, "Búfalas Vacías": 1.2,
       "Toros": 1.5, "Butoros": 1.5,
@@ -312,10 +328,9 @@
       "Novillas Monta": 0.7, "Buvilla Monta": 0.8
     };
 
-    // PARES DE DESPLEGABLES SEGÚN TU LISTA
+    // PARES DE DESPLEGABLES EXCLUYENDO CATEGORÍAS INDICADAS
     const GRUPOS_DESPLEGABLES = [
-      ["Mautas", "Bautas"],
-      ["Mautes", "Bautes"],
+      ["Mautas", "Mautes"],
       ["Becerros", "Bucerros"],
       ["Vacas Vacías", "Búfalas Vacías"],
       ["Toros", "Butoros"],
@@ -343,7 +358,7 @@
       const container = document.getElementById("m1-etarios-container");
       container.innerHTML = "";
 
-      GRUPOS_DESPLEGABLES.forEach((opciones, idx) => {
+      GRUPOS_DESPLEGABLES.forEach((opciones) => {
         const div = document.createElement("div");
         div.className = "cat-box";
         div.innerHTML = `
@@ -426,7 +441,6 @@
       const pesoAct = parseFloat(document.getElementById("lev-peso-act").value) || 0;
       const pesoMeta = parseFloat(document.getElementById("lev-peso-meta").value) || 0;
       const cant = parseInt(document.getElementById("lev-cant").value) || 1;
-      const costoPeriodo = parseFloat(document.getElementById("lev-costo-periodo").value) || 0;
 
       if (fAct <= fAnt || pesoAnt <= 0 || pesoAct <= 0) return;
 
@@ -434,7 +448,6 @@
       const gananciaInd = pesoAct - pesoAnt;
       const gmd = gananciaInd / diffDias;
       const gananciaLote = gananciaInd * cant;
-      const costoKg = gananciaLote > 0 ? (costoPeriodo / gananciaLote).toFixed(2) : "0.00";
 
       let mesesMeta = "0.0";
       if (gmd > 0 && pesoMeta > pesoAct) {
@@ -443,7 +456,6 @@
 
       document.getElementById("kpi-gmd").innerText = gmd.toFixed(3);
       document.getElementById("kpi-ganancia-total").innerText = `${gananciaLote.toFixed(1)} kg`;
-      document.getElementById("kpi-costo-kg").innerText = `$${costoKg}`;
       document.getElementById("kpi-meses-meta").innerText = `${mesesMeta} Meses`;
     }
 
@@ -456,14 +468,13 @@
       const cant = document.getElementById("lev-cant").value;
       const gmd = document.getElementById("kpi-gmd").innerText;
       const ganLote = document.getElementById("kpi-ganancia-total").innerText;
-      const costoKg = document.getElementById("kpi-costo-kg").innerText;
       const mesesMeta = document.getElementById("kpi-meses-meta").innerText;
       const proxPesaje = document.getElementById("lev-f-prox").value;
       const obs = document.getElementById("lev-obs").value;
 
       if (!lote || !cant) return alert("⚠️ Ingrese el lote y la cantidad de animales.");
 
-      const reg = { lote, epoca, sexo, especie, grupo, cant, gmd, ganLote, costoKg, mesesMeta, proxPesaje, obs };
+      const reg = { lote, epoca, sexo, especie, grupo, cant, gmd, ganLote, mesesMeta, proxPesaje, obs };
 
       const tx = db.transaction("levante", "readwrite");
       tx.objectStore("levante").add(reg);
@@ -478,7 +489,6 @@
       document.getElementById("form-levante").reset();
       document.getElementById("kpi-gmd").innerText = "0.000";
       document.getElementById("kpi-ganancia-total").innerText = "0 kg";
-      document.getElementById("kpi-costo-kg").innerText = "$0.00";
       document.getElementById("kpi-meses-meta").innerText = "0.0 Meses";
     }
 
@@ -505,8 +515,15 @@
           totUgm += r.ugmTotal;
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${r.potreroNombre}</td><td>${r.ha}</td><td>${r.epoca}</td><td>${r.mov}</td>
-            <td>${r.detalle || '-'}</td><td>${r.cabezas}</td><td>${r.ugmHa}</td><td>${r.resp || '-'}</td>
+            <td>${r.potreroNombre}</td>
+            <td>${r.ha}</td>
+            <td>${r.epoca}</td>
+            <td>${r.mov}</td>
+            <td>${r.detalle || '-'}</td>
+            <td>${r.cabezas}</td>
+            <td>${r.ugmHa}</td>
+            <td>${r.resp || '-'}</td>
+            <td>${r.obs || '-'}</td>
             <td><button class="btn-danger" onclick="borrarFila('potreros', ${r.id})">Borrar</button></td>
           `;
           tbody.prepend(tr);
@@ -525,8 +542,14 @@
         list.forEach(r => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${r.lote}</td><td>${r.sexo}/${r.especie}</td><td>${r.cant}</td><td>${r.gmd}</td>
-            <td>${r.ganLote}</td><td>${r.costoKg}</td><td>${r.mesesMeta}</td><td>${r.proxPesaje}</td>
+            <td>${r.lote}</td>
+            <td>${r.sexo}/${r.especie}</td>
+            <td>${r.cant}</td>
+            <td>${r.gmd}</td>
+            <td>${r.ganLote}</td>
+            <td>${r.mesesMeta}</td>
+            <td>${r.proxPesaje}</td>
+            <td>${r.obs || '-'}</td>
             <td><button class="btn-danger" onclick="borrarFila('levante', ${r.id})">Borrar</button></td>
           `;
           tbody.prepend(tr);
