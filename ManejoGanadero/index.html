@@ -434,6 +434,12 @@
   <script>
     let db;
     
+    // Inicialización del SDK de Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
+    }
+
     function actualizarSemaforo(estado, texto) {
       const luz = document.getElementById("luz-semaforo");
       const txt = document.getElementById("texto-semaforo");
@@ -460,14 +466,15 @@
       actualizarSemaforo("rojo", "Error DB");
     };
 
+    // Ponderaciones zootécnicas ajustadas para trópico bajo y búfalos
     const FACTORES_UGM = {
-      "Mautas": 0.5, "Bautas": 0.6,
-      "Mautes": 0.5, "Bautes": 0.6,
-      "Becerros": 0.25, "Bucerros": 0.3,
+      "Mautas": 0.5, "Bautas": 0.5,
+      "Mautes": 0.5, "Bautes": 0.5,
+      "Becerros": 0.25, "Bucerros": 0.25,
       "Vacas Vacías": 1.0, "Búfalas Vacías": 1.2,
       "Toros": 1.5, "Butoros": 1.5,
       "Vacas Pñ": 1.0, "Búfala Pñ": 1.2,
-      "Vacas Paridas": 1.0, "Búfala Parida": 1.2,
+      "Vacas Paridas": 1.0, "Búfala Parida": 1.3,
       "Vacas Monta": 1.0, "Búfala Monta": 1.2,
       "Novillas Pñ": 0.7, "Buvilla Pñ": 0.8,
       "Novillas Monta": 0.7, "Buvilla Monta": 0.8,
@@ -695,6 +702,7 @@
     function cargarTablas() {
       if (!db) return;
 
+      // Cargar Módulo 1 (Potreros)
       const tx1 = db.transaction("potreros", "readonly");
       tx1.objectStore("potreros").getAll().onsuccess = (e) => {
         const list = e.target.result;
@@ -720,16 +728,15 @@
             <td>${r.obs || '-'}</td>
             <td><button class="btn-danger" onclick="borrarFila('potreros', ${r.id})">Borrar</button></td>
           `;
-          tbody.prepend(tr);
+          tbody.appendChild(tr);
         });
 
         document.getElementById("stat-cabezas").innerText = totCab;
         document.getElementById("stat-ugm").innerText = totUgm.toFixed(1);
         document.getElementById("stat-ocupacion-meses").innerText = `${totOcupacion.toFixed(2)} M`;
-        
-        analizarPotreroHistorial();
       };
 
+      // Cargar Módulo Levante
       const tx2 = db.transaction("levante", "readonly");
       tx2.objectStore("levante").getAll().onsuccess = (e) => {
         const list = e.target.result;
@@ -740,61 +747,62 @@
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td>${r.lote}</td>
-            <td>${r.sexo}/${r.especie}</td>
+            <td>${r.sexo} / ${r.especie}</td>
             <td>${r.cant}</td>
             <td>${r.gmd}</td>
             <td>${r.ganLote}</td>
             <td>${r.mesesMeta}</td>
-            <td>${r.proxPesaje}</td>
+            <td>${r.proxPesaje || '-'}</td>
             <td>${r.obs || '-'}</td>
             <td><button class="btn-danger" onclick="borrarFila('levante', ${r.id})">Borrar</button></td>
           `;
-          tbody.prepend(tr);
+          tbody.appendChild(tr);
         });
       };
     }
 
-    /* LÓGICA DEL MÓDULO 3: HISTORIAL Y ROTACIÓN DE POTREROS */
+    // Análisis de Historial y Rotación por Potrero (Módulo 3)
     function analizarPotreroHistorial() {
-      const tbody3 = document.getElementById("tabla-mod3-body");
-      if (!tbody3) return;
-      tbody3.innerHTML = "";
-
-      const potreroSel = document.getElementById("m3-potrero-select").value;
-
-      if (!db) {
-        resetearKpisM3();
-        return;
-      }
-
+      if (!db) return;
+      const targetPotrero = document.getElementById("m3-potrero-select").value;
+      
       const tx = db.transaction("potreros", "readonly");
       tx.objectStore("potreros").getAll().onsuccess = (e) => {
-        const list = e.target.result.filter(r => r.potreroNombre === potreroSel);
+        const registros = e.target.result.filter(r => r.potreroNombre === targetPotrero);
+        const tbody = document.getElementById("tabla-mod3-body");
+        tbody.innerHTML = "";
 
-        if (list.length === 0) {
-          resetearKpisM3();
+        if (registros.length === 0) {
+          document.getElementById("m3-dias-descanso").innerText = "Sin registros";
+          document.getElementById("m3-semaforo-status").innerText = "Sin Datos";
+          document.getElementById("m3-semaforo-status").className = "status-badge badge-amarillo";
+          document.getElementById("m3-dias-uso-prom").innerText = "0.0 Días";
+          document.getElementById("m3-carga-inv").innerText = "0.00 UGM/ha";
+          document.getElementById("m3-carga-ver").innerText = "0.00 UGM/ha";
+          document.getElementById("m3-total-cabezas").innerText = "0 Cab.";
           return;
         }
 
-        // Ordenar por fecha de salida descendente
-        list.sort((a, b) => new Date(b.fSal) - new Date(a.fSal));
+        // Ordenar cronológicamente por fecha de salida/ingreso
+        registros.sort((a, b) => new Date(b.fSal) - new Date(a.fSal));
 
-        let totCab = 0;
-        let sumDiasUso = 0;
-        let cInv = [], cVer = [];
-        const hoy = new Date();
+        let totalCab = 0;
+        let sumUgmInv = 0, countInv = 0;
+        let sumUgmVer = 0, countVer = 0;
+        let totalDiasOcupacion = 0;
 
-        list.forEach(r => {
-          totCab += r.cabezas;
+        registros.forEach(r => {
+          totalCab += r.cabezas;
+          const ugmVal = parseFloat(r.ugmHa) || 0;
           
+          if (r.epoca === "Invierno") { sumUgmInv += ugmVal; countInv++; }
+          else { sumUgmVer += ugmVal; countVer++; }
+
           const dIng = new Date(r.fIng);
           const dSal = new Date(r.fSal);
-          const diffUso = Math.max(1, Math.round((dSal - dIng) / (1000 * 60 * 60 * 24)));
-          sumDiasUso += diffUso;
-
-          const numCarga = parseFloat(r.ugmHa) || 0;
-          if (r.epoca === "Invierno") cInv.push(numCarga);
-          else cVer.push(numCarga);
+          if (!isNaN(dIng) && !isNaN(dSal)) {
+            totalDiasOcupacion += Math.max(0, Math.round((dSal - dIng) / (1000 * 60 * 60 * 24)));
+          }
 
           const tr = document.createElement("tr");
           tr.innerHTML = `
@@ -808,49 +816,35 @@
             <td>${r.resp || '-'}</td>
             <td>${r.obs || '-'}</td>
           `;
-          tbody3.appendChild(tr);
+          tbody.appendChild(tr);
         });
 
-        // 1. Días de Descanso y Semáforo
-        const ultimaSalida = new Date(list[0].fSal);
-        const diasDescanso = Math.max(0, Math.floor((hoy - ultimaSalida) / (1000 * 60 * 60 * 24)));
-        document.getElementById("m3-dias-descanso").innerText = `${diasDescanso} Días`;
+        // Cálculo de días de descanso desde el último egreso
+        const ultimoRegistro = registros[0];
+        const hoy = new Date();
+        const ultimaSalida = new Date(ultimoRegistro.fSal);
+        const diasDescanso = Math.max(0, Math.round((hoy - ultimaSalida) / (1000 * 60 * 60 * 24)));
 
-        const badge = document.getElementById("m3-semaforo-status");
-        if (diasDescanso >= 42) {
-          badge.className = "status-badge badge-verde";
-          badge.innerText = "🟢 Listo para Pastorear";
+        document.getElementById("m3-dias-descanso").innerText = `${diasDescanso} Días`;
+        
+        // Semáforo de disponibilidad por descanso estacional
+        const semaforoEl = document.getElementById("m3-semaforo-status");
+        if (diasDescanso >= 35) {
+          semaforoEl.innerText = "Óptimo";
+          semaforoEl.className = "status-badge badge-verde";
         } else if (diasDescanso >= 21) {
-          badge.className = "status-badge badge-amarillo";
-          badge.innerText = "🟡 En Recuperación";
+          semaforoEl.innerText = "Recuperación";
+          semaforoEl.className = "status-badge badge-amarillo";
         } else {
-          badge.className = "status-badge badge-rojo";
-          badge.innerText = "🔴 Descanso Insuficiente";
+          semaforoEl.innerText = "Ocupado / Reciente";
+          semaforoEl.className = "status-badge badge-rojo";
         }
 
-        // 2. Días de Uso Promedio
-        const promUso = (sumDiasUso / list.length).toFixed(1);
-        document.getElementById("m3-dias-uso-prom").innerText = `${promUso} Días`;
-
-        // 3. Cargas Promedio e Histórico Cabezas
-        const avgInv = cInv.length ? (cInv.reduce((a, b) => a + b, 0) / cInv.length).toFixed(2) : "0.00";
-        const avgVer = cVer.length ? (cVer.reduce((a, b) => a + b, 0) / cVer.length).toFixed(2) : "0.00";
-
-        document.getElementById("m3-carga-inv").innerText = `${avgInv} UGM/ha`;
-        document.getElementById("m3-carga-ver").innerText = `${avgVer} UGM/ha`;
-        document.getElementById("m3-total-cabezas").innerText = `${totCab} Cab.`;
+        document.getElementById("m3-dias-uso-prom").innerText = `${(totalDiasOcupacion / registros.length).toFixed(1)} Días`;
+        document.getElementById("m3-carga-inv").innerText = `${countInv > 0 ? (sumUgmInv / countInv).toFixed(2) : "0.00"} UGM/ha`;
+        document.getElementById("m3-carga-ver").innerText = `${countVer > 0 ? (sumUgmVer / countVer).toFixed(2) : "0.00"} UGM/ha`;
+        document.getElementById("m3-total-cabezas").innerText = `${totalCab} Cab.`;
       };
-    }
-
-    function resetearKpisM3() {
-      document.getElementById("m3-dias-descanso").innerText = "Sin registros";
-      const badge = document.getElementById("m3-semaforo-status");
-      badge.className = "status-badge badge-amarillo";
-      badge.innerText = "Sin Datos";
-      document.getElementById("m3-dias-uso-prom").innerText = "0.0 Días";
-      document.getElementById("m3-carga-inv").innerText = "0.00 UGM/ha";
-      document.getElementById("m3-carga-ver").innerText = "0.00 UGM/ha";
-      document.getElementById("m3-total-cabezas").innerText = "0 Cab.";
     }
   </script>
 </body>
