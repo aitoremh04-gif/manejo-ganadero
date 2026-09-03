@@ -42,13 +42,19 @@
 
     /* ESTILOS DEL SEMÁFORO */
     .sync-semaforo {
-      display: flex; align-items: center; gap: 6px;
-      background: rgba(0, 0, 0, 0.2); padding: 3px 8px;
-      border-radius: 12px; font-size: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 10px;
     }
     .semaforo-luz {
-      width: 10px; height: 10px; border-radius: 50%;
-      background-color: #757575; box-shadow: 0 0 4px rgba(0,0,0,0.3);
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background-color: #757575;
+      box-shadow: 0 0 4px rgba(0,0,0,0.3);
       transition: background-color 0.3s ease;
     }
     .semaforo-luz.rojo { background-color: var(--alert-color); box-shadow: 0 0 6px var(--alert-color); }
@@ -71,7 +77,7 @@
     .module-view { display: none; background: var(--bg-card); border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); }
     .module-view.active { display: block; }
 
-    .module-header { border-bottom: 1px solid #eef0f2; padding-bottom: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .module-header { border-bottom: 1px solid #eef0f2; padding-bottom: 6px; margin-bottom: 8px; }
     .module-header h3 { margin: 0; color: var(--blue-primary); font-size: 14px; }
 
     .form-group { margin-bottom: 6px; }
@@ -108,21 +114,6 @@
     .kpi-title { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
     .kpi-value { font-size: 12px; font-weight: bold; color: var(--blue-primary); margin-top: 1px; }
 
-    /* ESTILOS ADICIONALES PARA MÓDULO 3 */
-    .sug-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; margin-bottom: 10px; }
-    .sug-box { background: #ffffff; border-radius: 6px; padding: 8px; border: 1px solid #cfd8dc; }
-    .sug-box.success { border-left: 4px solid var(--success-color); }
-    .sug-box.danger { border-left: 4px solid var(--alert-color); }
-    .sug-box h4 { margin: 0 0 6px 0; font-size: 11px; font-weight: bold; display: flex; justify-content: space-between; }
-    .sug-list { list-style: none; padding: 0; margin: 0; font-size: 10px; }
-    .sug-list li { padding: 4px 0; border-bottom: 1px dashed #eef0f2; display: flex; justify-content: space-between; align-items: center; }
-
-    .badge { padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; color: #fff; }
-    .badge-success { background-color: var(--success-color); }
-    .badge-warning { background-color: var(--warning-color); }
-    .badge-danger { background-color: var(--alert-color); }
-    .badge-info { background-color: var(--blue-primary); }
-
     @media (min-width: 600px) {
       .category-grid { grid-template-columns: repeat(3, 1fr); }
     }
@@ -143,6 +134,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <span>Hato Laguna Brava</span>
+      <!-- SEMÁFORO INTEGRADO -->
       <div class="sync-semaforo" title="Estado de sincronización">
         <div id="luz-semaforo" class="semaforo-luz verde"></div>
         <span id="texto-semaforo">Sincronizado</span>
@@ -151,7 +143,6 @@
     <ul class="sidebar-menu">
       <li class="active" onclick="navegarA('mod-1', this)">🌾 Potreros y UGM</li>
       <li onclick="navegarA('mod-levante', this)">⚖️ Módulo Levante</li>
-      <li onclick="navegarA('mod-rotacion', this)">🔄 Rotación y Carga</li>
     </ul>
   </aside>
 
@@ -161,6 +152,7 @@
       <p>Sistema Integrado de Control Ganadero - Hato Laguna Brava</p>
     </div>
 
+    <!-- MÓDULO 1: POTREROS Y UGM -->
     <section id="mod-1" class="module-view active">
       <div class="module-header">
         <h3>1. Control de Pastoreo, Potreros y UGM</h3>
@@ -270,6 +262,7 @@
       </div>
     </section>
 
+    <!-- MÓDULO LEVANTE -->
     <section id="mod-levante" class="module-view">
       <div class="module-header">
         <h3>⚖️ Módulo de Levante y Eficiencia Ponderal</h3>
@@ -345,105 +338,16 @@
         </table>
       </div>
     </section>
-
-    <section id="mod-rotacion" class="module-view">
-      <div class="module-header">
-        <h3>🔄 Historial, Rotación y Capacidad de Carga</h3>
-        <div>
-          <select id="m3-select-epoca" class="form-control" style="font-weight: bold; border-color: var(--blue-primary);" onchange="procesarModulo3()">
-            <option value="INVIERNO" selected>🌧️ Invierno (1.8 Cab/ha)</option>
-            <option value="VERANO">☀️ Verano (2.8 Cab/ha)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="sug-container">
-        <div class="sug-box success">
-          <h4 style="color: var(--success-color);">
-            <span>📥 Mayor Descanso (Entrada)</span>
-            <span class="badge badge-success" id="m3-badge-descanso">Sugerencia</span>
-          </h4>
-          <ul class="sug-list" id="m3-lista-descanso">
-            <li class="text-muted">Procesando potreros...</li>
-          </ul>
-        </div>
-        <div class="sug-box danger">
-          <h4 style="color: var(--alert-color);">
-            <span>📤 Mayor Ocupación (Rotación)</span>
-            <span class="badge badge-danger" id="m3-badge-uso">Evaluación</span>
-          </h4>
-          <ul class="sug-list" id="m3-lista-uso">
-            <li class="text-muted">Procesando potreros...</li>
-          </ul>
-        </div>
-      </div>
-
-      <div style="background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 8px;">
-        <div class="form-row">
-          <div class="form-group" style="grid-column: span 2;">
-            <label>Seleccionar Potrero para Ficha Técnica:</label>
-            <select class="form-control" id="m3-select-potrero" onchange="analizarPotreroM3()">
-              <option value="">-- Selecciona un potrero --</option>
-            </select>
-          </div>
-          <div class="form-group" style="display: flex; align-items: flex-end; justify-content: flex-end;">
-            <span id="m3-semaforo-estado" class="badge bg-secondary" style="font-size: 11px; padding: 6px 10px;">Estado: Sin Selección</span>
-          </div>
-        </div>
-
-        <div class="kpi-container" id="m3-panel-metricas" style="display:none; margin-top: 6px;">
-          <div class="kpi-card">
-            <div class="kpi-title">Superficie</div>
-            <div class="kpi-value" id="m3-lbl-ha">0 ha</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-title">Cap. Sugerida</div>
-            <div class="kpi-value" id="m3-lbl-cap" style="color: var(--success-color);">0 Cab</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-title">Días Reposo</div>
-            <div class="kpi-value" id="m3-lbl-reposo">0 Días</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Entrada</th>
-              <th>Salida</th>
-              <th>Días</th>
-              <th>Mov.</th>
-              <th>Cabezas</th>
-              <th>Cap. Sugerida</th>
-              <th>Estado Carga</th>
-              <th>Resp.</th>
-            </tr>
-          </thead>
-          <tbody id="m3-tabla-historial">
-            <tr><td colspan="8" style="text-align:center;" class="text-muted">Seleccione un potrero para desplegar el historial.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
   </main>
 
   <script>
     let db;
     
-    // Lista global compilada desde el DOM
-    let LISTA_POTREROS_BASE = [];
-
-    // Factores de carga configurados
-    const FACTORES_CARGA_HA = {
-      INVIERNO: 1.8,
-      VERANO: 2.8
-    };
-
+    // Función controladora del Semáforo
     function actualizarSemaforo(estado, texto) {
       const luz = document.getElementById("luz-semaforo");
       const txt = document.getElementById("texto-semaforo");
+      
       luz.className = "semaforo-luz " + estado;
       txt.innerText = texto;
     }
@@ -500,7 +404,6 @@
       document.querySelectorAll("input[type='date']").forEach(i => i.value = hoy);
       generarCamposEtarios1();
       calcularOcupacionMeses();
-      extraerCatalogoPotreros();
     });
 
     function navegarA(id, el) {
@@ -508,32 +411,6 @@
       document.querySelectorAll('.sidebar-menu li').forEach(l => l.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       if (el) el.classList.add('active');
-
-      if (id === 'mod-rotacion') {
-        procesarModulo3();
-      }
-    }
-
-    function extraerCatalogoPotreros() {
-      const selectM1 = document.getElementById("m1-potrero");
-      const selectM3 = document.getElementById("m3-select-potrero");
-      
-      LISTA_POTREROS_BASE = [];
-      selectM3.innerHTML = '<option value="">-- Selecciona un potrero --</option>';
-
-      Array.from(selectM1.options).forEach(opt => {
-        const ha = parseFloat(opt.value);
-        const nombreCompleto = opt.text;
-        const nombreLimpio = nombreCompleto.replace(/\s*\(\d+\s*ha\)/i, '').trim();
-        
-        const obj = { nombre: nombreLimpio, ha: ha, textoFull: nombreCompleto };
-        LISTA_POTREROS_BASE.push(obj);
-
-        const newOpt = document.createElement("option");
-        newOpt.value = nombreLimpio;
-        newOpt.textContent = `${nombreLimpio} (${ha} ha)`;
-        selectM3.appendChild(newOpt);
-      });
     }
 
     function generarCamposEtarios1() {
@@ -591,7 +468,7 @@
 
     function guardarRegistroMod1() {
       const selPotrero = document.getElementById("m1-potrero");
-      const potreroNombre = selPotrero.options[selPotrero.selectedIndex].text.replace(/\s*\(\d+\s*ha\)/i, '').trim();
+      const potreroNombre = selPotrero.options[selPotrero.selectedIndex].text;
       const ha = selPotrero.value;
       const epoca = document.getElementById("m1-epoca").value;
       const mov = document.getElementById("m1-movimiento").value;
@@ -606,6 +483,7 @@
 
       if (cabezas <= 0) return alert("⚠️ Ingrese al menos un animal.");
 
+      // Indicador en cola / procesamiento
       actualizarSemaforo("amarillo", "En cola...");
 
       let desgloseText = [];
@@ -753,11 +631,6 @@
         document.getElementById("stat-cabezas").innerText = totCab;
         document.getElementById("stat-ugm").innerText = totUgm.toFixed(1);
         document.getElementById("stat-ocupacion-meses").innerText = `${totOcupacion.toFixed(2)} M`;
-        
-        // Si el Módulo 3 está activo, re-sincronizar los cálculos
-        if (document.getElementById("mod-rotacion").classList.contains("active")) {
-          procesarModulo3();
-        }
       };
 
       const tx2 = db.transaction("levante", "readonly");
@@ -783,33 +656,337 @@
         });
       };
     }
+  </script>
+</body>
 
-    // =======================================================
-    // LÓGICA CORE - MÓDULO 3: ROTACIÓN Y CAPACIDAD DE CARGA
-    // =======================================================
-    function procesarModulo3() {
-      if (!db) return;
+ <!-- ======================================================= -->
+<!-- MÓDULO 3: HISTORIAL, ROTACIÓN Y CAPACIDAD DE CARGA      -->
+<!-- ======================================================= -->
+<div id="modulo3" class="modulo-seccion">
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-7">
+      <h3 class="fw-bold text-success"><i class="bi bi-diagram-3-fill me-2"></i>Historial, Rotación y Capacidad de Carga</h3>
+      <p class="text-muted small mb-0">Monitoreo de tiempo de descanso, balance de ocupación y capacidad sugerida por hectárea.</p>
+    </div>
+    
+    <!-- CONTROLADOR DE ÉPOCA Y PARÁMETRO DE CARGA -->
+    <div class="col-md-5 mt-3 mt-md-0">
+      <div class="p-2 bg-light rounded border border-success d-flex align-items-center justify-content-between">
+        <label for="selectEpocaAno" class="form-label fw-bold mb-0 me-2 small text-dark"><i class="bi bi-calendar3 me-1"></i>Época del Año:</label>
+        <select id="selectEpocaAno" class="form-select form-select-sm border-success fw-bold w-auto" onchange="actualizarEpocaYCargas()">
+          <option value="INVIERNO" selected>🌧️ Invierno (1.8 Cab/ha)</option>
+          <option value="VERANO">☀️ Verano (2.8 Cab/ha)</option>
+        </select>
+      </div>
+    </div>
+  </div>
 
-      const epoca = document.getElementById("m3-select-epoca").value;
-      const factorCarga = FACTORES_CARGA_HA[epoca];
+  <!-- 1. ÁREA DE SUGERENCIAS Y RECOMENDACIÓN DEL SISTEMA -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-stars text-warning me-2"></i>Sugerencias Inteligentes de Rotación</span>
+      <span class="badge bg-success" id="badgeFactorCarga">Factor Activo: 1.8 UGM/ha</span>
+    </div>
+    <div class="card-body bg-light">
+      <div class="row g-3">
+        <!-- Potreros listos para entrada -->
+        <div class="col-md-6">
+          <div class="p-3 bg-white rounded border border-success border-2 h-100">
+            <h6 class="fw-bold text-success"><i class="bi bi-box-arrow-in-right me-1"></i> Potreros con Mayor Descanso (Listos para Entrada)</h6>
+            <hr class="my-2">
+            <ul class="list-group list-group-flush small" id="listaPotrerosMayorDescanso">
+              <li class="list-group-item text-muted">Cargando datos de reposo...</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Potreros para salir/rotar -->
+        <div class="col-md-6">
+          <div class="p-3 bg-white rounded border border-danger border-2 h-100">
+            <h6 class="fw-bold text-danger"><i class="bi bi-box-arrow-left me-1"></i> Potreros Ocupados (Evaluación de Carga)</h6>
+            <hr class="my-2">
+            <ul class="list-group list-group-flush small" id="listaPotrerosMayorUso">
+              <li class="list-group-item text-muted">Cargando datos de ocupación...</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-      const tx = db.transaction("potreros", "readonly");
-      tx.objectStore("potreros").getAll().onsuccess = (e) => {
-        const movs = e.target.result;
-        const hoy = new Date();
+  <!-- 2. SELECCIÓN DETALLADA Y FICHA DEL POTRERO -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row align-items-center g-3">
+        <div class="col-md-6">
+          <label for="selectPotreroHistorial" class="form-label fw-bold">Seleccionar Potrero para Ficha Técnica:</label>
+          <select id="selectPotreroHistorial" class="form-select border-success" onchange="analizarPotreroSeleccionado()">
+            <option value="">-- Selecciona un potrero --</option>
+          </select>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <span id="semaforoPotrero" class="badge p-2 fs-6 bg-secondary">Estado: Sin Selección</span>
+        </div>
+      </div>
 
-        let analisisPotreros = LISTA_POTREROS_BASE.map(p => {
-          // Filtrar movimientos por este potrero
-          let his = movs.filter(m => m.potreroNombre === p.nombre);
-          his.sort((a, b) => new Date(b.fIng) - new Date(a.fIng));
+      <!-- TARJETAS DE MÉTRICAS DEL POTRERO SELECCIONADO -->
+      <div class="row g-3 mt-2" id="panelMetricasPotrero" style="display: none;">
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-light rounded text-center border">
+            <span class="d-block text-muted small">Superficie Total</span>
+            <span class="fs-4 fw-bold text-dark" id="lblHectareasPotrero">0</span> <small>ha</small>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-light rounded text-center border border-success">
+            <span class="d-block text-success fw-bold small">Capacidad Sugerida</span>
+            <span class="fs-4 fw-bold text-success" id="lblCapacidadSugerida">0</span> <small>Cabezas</small>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-light rounded text-center border">
+            <span class="d-block text-muted small">Días Descanso Actual</span>
+            <span class="fs-4 fw-bold text-primary" id="lblDiasDescanso">0</span> <small>días</small>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-light rounded text-center border">
+            <span class="d-block text-muted small">Días de Uso Promedio</span>
+            <span class="fs-4 fw-bold text-dark" id="lblDiasUsoProm">0</span> <small>días</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-          let ocupado = false;
-          let diasDescanso = 0;
-          let diasUso = 0;
-          let cabezasActuales = 0;
-          let ultimoMov = his[0];
+  <!-- 3. TABLA DEL HISTORIAL INDIVIDUAL -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-journal-text me-2"></i>Historial Registrado del Potrero</span>
+      <span class="text-muted small" id="lblInfoCargaCálculo"></span>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle small">
+          <thead class="table-dark">
+            <tr>
+              <th>Fecha Ent.</th>
+              <th>Fecha Sal.</th>
+              <th>Días Uso</th>
+              <th>Lote / Grupo</th>
+              <th>Cabezas Reales</th>
+              <th>Cap. Sugerida</th>
+              <th>Estado Carga</th>
+              <th>Época</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyHistorialPotrero">
+            <tr>
+              <td colspan="8" class="text-center text-muted py-3">Selecciona un potrero para desplegar el historial.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
-          if (ultimoMov) {
-            if (ultimoMov.mov === "Ingreso") {
-              ocupado = true;
-              diasUso = Math.max(0, Math.round((hoy - new Date(ultimoMov.fIng)) / (1000 *
+<!-- LÓGICA Y CÁLCULOS JS -->
+<script>
+// Definición de factores de carga según requerimiento
+const FACTOR_CARGA = {
+  INVIERNO: 1.8, // 1.8 cabezas/ha en época de lluvias
+  VERANO: 2.8    // 2.8 cabezas/ha en época de sequía
+};
+
+let globalPotreros = [];
+let globalMovimientos = [];
+
+function inicializarModulo3(listaPotreros, listaMovimientos) {
+  globalPotreros = listaPotreros;
+  globalMovimientos = listaMovimientos;
+  
+  cargarDesplegablePotrerosM3(globalPotreros);
+  actualizarEpocaYCargas();
+}
+
+// Actualiza los factores al cambiar el combo Invierno/Verano
+function actualizarEpocaYCargas() {
+  const epocaSeleccionada = document.getElementById('selectEpocaAno').value;
+  const factor = FACTOR_CARGA[epocaSeleccionada];
+  
+  document.getElementById('badgeFactorCarga').textContent = `Factor Activo: ${factor} Cab/ha (${epocaSeleccionada})`;
+  
+  // Re-calcular rankings y vista individual si hay un potrero seleccionado
+  generarSugerenciasAutomaticas(globalPotreros, globalMovimientos, factor);
+  if (document.getElementById('selectPotreroHistorial').value) {
+    analizarPotreroSeleccionado();
+  }
+}
+
+function cargarDesplegablePotrerosM3(potreros) {
+  const select = document.getElementById('selectPotreroHistorial');
+  select.innerHTML = '<option value="">-- Selecciona un potrero --</option>';
+  potreros.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id || p.nombre;
+    opt.textContent = `${p.nombre} (${p.hectareas} ha)`;
+    select.appendChild(opt);
+  });
+}
+
+function generarSugerenciasAutomaticas(potreros, movimientos, factorCargaActual) {
+  const hoy = new Date();
+
+  let datosAnalizados = potreros.map(potrero => {
+    let movs = movimientos.filter(m => m.idPotrero === potrero.id || m.nombrePotrero === potrero.nombre);
+    movs.sort((a, b) => new Date(b.fechaEntrada) - new Date(a.fechaEntrada));
+
+    let ocupadoActual = false;
+    let diasDescanso = 0;
+    let diasUsoActual = 0;
+    let cabezasActuales = 0;
+
+    let ultimoMov = movs[0];
+
+    if (ultimoMov) {
+      if (ultimoMov.enUso || !ultimoMov.fechaSalida) {
+        ocupadoActual = true;
+        diasUsoActual = calcularDiferenciaDias(new Date(ultimoMov.fechaEntrada), hoy);
+        cabezasActuales = ultimoMov.cabezas || 0;
+      } else {
+        diasDescanso = calcularDiferenciaDias(new Date(ultimoMov.fechaSalida), hoy);
+      }
+    } else {
+      diasDescanso = 999;
+    }
+
+    // Cálculo de Capacidad Sugerida en función de las Hectáreas
+    let capacidadSugerida = Math.round(potrero.hectareas * factorCargaActual);
+
+    return {
+      id: potrero.id || potrero.nombre,
+      nombre: potrero.nombre,
+      hectareas: potrero.hectareas,
+      capacidadSugerida: capacidadSugerida,
+      ocupado: ocupadoActual,
+      diasDescanso: diasDescanso,
+      diasUsoActual: diasUsoActual,
+      cabezasActuales: cabezasActuales
+    };
+  });
+
+  // A) Top Potreros con Mayor Descanso
+  let libres = datosAnalizados.filter(p => !p.ocupado);
+  libres.sort((a, b) => b.diasDescanso - a.diasDescanso);
+
+  const ulDescanso = document.getElementById('listaPotrerosMayorDescanso');
+  ulDescanso.innerHTML = '';
+  
+  if (libres.length === 0) {
+    ulDescanso.innerHTML = '<li class="list-group-item text-muted">Todos los potreros están ocupados.</li>';
+  } else {
+    libres.slice(0, 4).forEach(p => {
+      let diasTexto = p.diasDescanso === 999 ? 'Sin registros (Libre)' : `${p.diasDescanso} días libre`;
+      ulDescanso.innerHTML += `
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>${p.nombre}</strong> <small class="text-muted">(${p.hectareas} ha)</small>
+            <br><small class="text-secondary">${diasTexto} | Capacidad: <strong>${p.capacidadSugerida} cab.</strong></small>
+          </div>
+          <span class="badge bg-success">Disponible</span>
+        </li>
+      `;
+    });
+  }
+
+  // B) Top Potreros Ocupados (Monitoreo de Carga y Días)
+  let ocupados = datosAnalizados.filter(p => p.ocupado);
+  ocupados.sort((a, b) => b.diasUsoActual - a.diasUsoActual);
+
+  const ulUso = document.getElementById('listaPotrerosMayorUso');
+  ulUso.innerHTML = '';
+
+  if (ocupados.length === 0) {
+    ulUso.innerHTML = '<li class="list-group-item text-muted">No hay potreros con ganado activo.</li>';
+  } else {
+    ocupados.slice(0, 4).forEach(p => {
+      let sobreCargado = p.cabezasActuales > p.capacidadSugerida;
+      let badgeCarga = sobreCargado 
+        ? `<span class="badge bg-danger">Sobre-carga (${p.cabezasActuales}/${p.capacidadSugerida} Cab)</span>`
+        : `<span class="badge bg-info text-dark">Carga Ok (${p.cabezasActuales}/${p.capacidadSugerida} Cab)</span>`;
+
+      ulUso.innerHTML += `
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>${p.nombre}</strong> <small class="text-muted">(${p.diasUsoActual} días uso)</small>
+            <br><small class="text-secondary">Capacidad Sugerida: ${p.capacidadSugerida} Cab.</small>
+          </div>
+          ${badgeCarga}
+        </li>
+      `;
+    });
+  }
+}
+
+// Analizar Ficha Técnica del Potrero Seleccionado
+function analizarPotreroSeleccionado() {
+  const potreroId = document.getElementById('selectPotreroHistorial').value;
+  const panel = document.getElementById('panelMetricasPotrero');
+  
+  if (!potreroId) {
+    panel.style.display = 'none';
+    document.getElementById('semaforoPotrero').className = 'badge p-2 fs-6 bg-secondary';
+    document.getElementById('semaforoPotrero').textContent = 'Estado: Sin Selección';
+    document.getElementById('tbodyHistorialPotrero').innerHTML = '<tr><td colspan="8" class="text-center text-muted py-3">Selecciona un potrero para desplegar el historial.</td></tr>';
+    return;
+  }
+
+  const potrero = globalPotreros.find(p => (p.id || p.nombre) == potreroId);
+  const factorActual = FACTOR_CARGA[document.getElementById('selectEpocaAno').value];
+  
+  if (potrero) {
+    panel.style.display = 'flex';
+    let capacidadSugerida = Math.round(potrero.hectareas * factorActual);
+
+    document.getElementById('lblHectareasPotrero').textContent = potrero.hectareas;
+    document.getElementById('lblCapacidadSugerida').textContent = capacidadSugerida;
+
+    // Movimientos del potrero
+    let movs = globalMovimientos.filter(m => m.idPotrero === potrero.id || m.nombrePotrero === potrero.nombre);
+    movs.sort((a, b) => new Date(b.fechaEntrada) - new Date(a.fechaEntrada));
+
+    const tbody = document.getElementById('tbodyHistorialPotrero');
+    tbody.innerHTML = '';
+
+    if (movs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-3">No hay movimientos registrados para este potrero.</td></tr>';
+    } else {
+      movs.forEach(m => {
+        let diasUso = m.fechaSalida ? calcularDiferenciaDias(new Date(m.fechaEntrada), new Date(m.fechaSalida)) : calcularDiferenciaDias(new Date(m.fechaEntrada), new Date());
+        let sobrecargado = m.cabezas > capacidadSugerida;
+        let badgeEstadoCarga = sobrecargado 
+          ? '<span class="badge bg-danger">Sobre Carga</span>' 
+          : '<span class="badge bg-success">Óptimo</span>';
+
+        tbody.innerHTML += `
+          <tr>
+            <td>${m.fechaEntrada}</td>
+            <td>${m.fechaSalida || '<span class="badge bg-warning text-dark">Activo</span>'}</td>
+            <td>${diasUso} días</td>
+            <td>${m.lote || 'N/A'}</td>
+            <td><strong>${m.cabezas}</strong></td>
+            <td>${capacidadSugerida}</td>
+            <td>${badgeEstadoCarga}</td>
+            <td>${m.epoca || document.getElementById('selectEpocaAno').value}</td>
+          </tr>
+        `;
+      });
+    }
+  }
+}
+
+function calcularDiferenciaDias(f1, f2) {
+  return Math.floor(Math.abs(f2 - f1) / (1000 * 60 * 60 * 24));
+}
+</script> 
+</html>
