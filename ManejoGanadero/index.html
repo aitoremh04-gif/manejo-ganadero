@@ -18,7 +18,6 @@
       --alert-bg: #fde8e8;
       --success-color: #2e7d32;
       --warning-color: #ed6c02;
-      --warning-bg: #fff4e5;
     }
 
     * { box-sizing: border-box; }
@@ -137,8 +136,8 @@
     .kpi-value { font-size: 14px; font-weight: bold; color: var(--blue-primary); margin-top: 2px; }
 
     .category-grid {
-      background: #f4f6f8; padding: 10px; border-radius: 8px; margin-bottom: 12px;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;
+      background: #f4f6f8; padding: 12px; border-radius: 8px; margin-bottom: 12px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;
     }
 
     @media (max-width: 768px) {
@@ -227,8 +226,8 @@
           </select>
         </div>
 
-        <!-- 6 CASILLAS DE GRUPOS ETARIOS -->
-        <label style="font-size:11px; font-weight:bold;">Distribución de Animales por Categoría:</label>
+        <!-- CASILLAS CON ETIQUETAS ARRIBA SEGÚN CATEGORÍA -->
+        <label style="font-size:11px; font-weight:bold; color:var(--blue-primary); display:block; margin-top:8px;">Distribución de Animales por Categoría:</label>
         <div class="category-grid" id="m1-etarios-container"></div>
 
         <div class="form-row">
@@ -257,9 +256,9 @@
         </div>
       </form>
 
-      <!-- RESUMEN / ESTADÍSTICAS DEL HATO -->
+      <!-- RESUMEN GENERAL Y ESTADÍSTICAS DEL HATO -->
       <div style="margin-top:20px;">
-        <h4 style="margin:0 0 8px 0; font-size:13px; color:var(--blue-primary);">Resumen General del Hato en Pastoreo</h4>
+        <h4 style="margin:0 0 8px 0; font-size:13px; color:var(--blue-primary);">Resumen General de Animales en Pastoreo</h4>
         <div class="kpi-container" id="m1-estadisticas-container">
           <div class="kpi-card"><div class="kpi-title">Total Cabezas</div><div class="kpi-value" id="stat-cabezas">0</div></div>
           <div class="kpi-card"><div class="kpi-title">Total UGM Hato</div><div class="kpi-value" id="stat-ugm">0.0</div></div>
@@ -350,7 +349,7 @@
   <script>
     // INDEXEDDB CONFIG
     let db;
-    const request = indexedDB.open("HatoLagunaBrava_v3", 1);
+    const request = indexedDB.open("HatoLagunaBrava_v4", 1);
     request.onupgradeneeded = (e) => {
       db = e.target.result;
       if (!db.objectStoreNames.contains("potreros")) db.createObjectStore("potreros", { keyPath: "id", autoIncrement: true });
@@ -361,9 +360,30 @@
       cargarTablas();
     };
 
-    // FACTORES UGM
-    const FACTORES_BOVINOS = { "Vacas Pñ": 1.0, "Vacas Paridas": 1.0, "Vacas Monta": 1.0, "Novillas Pñ": 0.7, "Novillas Monta": 0.7, "Mautas/Mautes": 0.5 };
-    const FACTORES_BUFALINOS = { "Búfala Pñ": 1.2, "Búfala Parida": 1.2, "Búfala Monta": 1.2, "Buvilla Pñ": 0.8, "Buvilla Monta": 0.8, "Bautas/Bautes": 0.6 };
+    // CATEGORÍAS Y FACTORES DE CONVERSIÓN UGM
+    const CATEGORIAS_BOVINAS = [
+      { id: "vacas_pñ", etiqueta: "Vacas Pñ", factor: 1.0 },
+      { id: "vacas_paridas", etiqueta: "Vacas Paridas", factor: 1.0 },
+      { id: "vacas_monta", etiqueta: "Vacas Monta", factor: 1.0 },
+      { id: "vacas_vacias", etiqueta: "Vacas Vacías", factor: 1.0 },
+      { id: "novillas_pñ", etiqueta: "Novillas Pñ", factor: 0.7 },
+      { id: "novillas_monta", etiqueta: "Novillas Monta", factor: 0.7 },
+      { id: "mautas_mautes", etiqueta: "Mautas / Mautes", factor: 0.5 },
+      { id: "becerros", etiqueta: "Becerros", factor: 0.25 },
+      { id: "toros", etiqueta: "Toros", factor: 1.3 }
+    ];
+
+    const CATEGORIAS_BUFALINAS = [
+      { id: "bufala_pñ", etiqueta: "Búfala Pñ", factor: 1.2 },
+      { id: "bufala_parida", etiqueta: "Búfala Parida", factor: 1.2 },
+      { id: "bufala_monta", etiqueta: "Búfala Monta", factor: 1.2 },
+      { id: "bufalas_vacias", etiqueta: "Búfalas Vacías", factor: 1.2 },
+      { id: "buvilla_pñ", etiqueta: "Buvilla Pñ", factor: 0.8 },
+      { id: "buvilla_monta", etiqueta: "Buvilla Monta", factor: 0.8 },
+      { id: "bautes_bautas", etiqueta: "Bautes / Bautas", factor: 0.6 },
+      { id: "bucerros", etiqueta: "Bucerros", factor: 0.3 },
+      { id: "butoros", etiqueta: "Butoros", factor: 1.5 }
+    ];
 
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date().toISOString().split('T')[0];
@@ -378,19 +398,19 @@
       if (el) el.classList.add('active');
     }
 
-    // LÓGICA MÓDULO 1
+    // DINÁMICA MÓDULO 1
     function renderizarCamposEtarios1() {
       const especie = document.getElementById("m1-especie").value;
       const container = document.getElementById("m1-etarios-container");
       container.innerHTML = "";
-      const factores = especie === "Bovino" ? FACTORES_BOVINOS : FACTORES_BUFALINOS;
+      const listaCategorias = especie === "Bovino" ? CATEGORIAS_BOVINAS : CATEGORIAS_BUFALINAS;
 
-      Object.keys(factores).forEach(cat => {
+      listaCategorias.forEach(item => {
         const div = document.createElement("div");
         div.className = "form-group";
         div.innerHTML = `
-          <label style="font-size:10px;">${cat}:</label>
-          <input type="number" class="form-control input-etario" data-cat="${cat}" data-factor="${factores[cat]}" value="0" min="0" oninput="calcularUGM1()">
+          <label style="font-size:10px; color:#333;">${item.etiqueta}:</label>
+          <input type="number" class="form-control input-etario" data-cat="${item.etiqueta}" data-factor="${item.factor}" value="0" min="0" oninput="calcularUGM1()">
         `;
         container.appendChild(div);
       });
@@ -448,7 +468,7 @@
       renderizarCamposEtarios1();
     }
 
-    // LÓGICA MÓDULO LEVANTE
+    // DINÁMICA MÓDULO LEVANTE
     function calcularMetricasLevante() {
       const fAnt = new Date(document.getElementById("lev-f-ant").value);
       const fAct = new Date(document.getElementById("lev-f-act").value);
@@ -512,7 +532,6 @@
       document.getElementById("kpi-meses-meta").innerText = "0.0 Meses";
     }
 
-    // ELIMINAR Y CARGAR REGISTROS
     function borrarFila(store, id) {
       if (confirm("¿Desea borrar este registro?")) {
         const tx = db.transaction(store, "readwrite");
@@ -524,7 +543,6 @@
     function cargarTablas() {
       if (!db) return;
 
-      // MODULO 1
       const tx1 = db.transaction("potreros", "readonly");
       tx1.objectStore("potreros").getAll().onsuccess = (e) => {
         const list = e.target.result;
@@ -548,7 +566,6 @@
         document.getElementById("stat-ugm").innerText = totUgm.toFixed(1);
       };
 
-      // MODULO LEVANTE
       const tx2 = db.transaction("levante", "readonly");
       tx2.objectStore("levante").getAll().onsuccess = (e) => {
         const list = e.target.result;
