@@ -194,10 +194,9 @@
         </div>
 
         <div class="form-row">
-          <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="m1-f-ingreso" class="form-control" onchange="calcularOcupacionMeses()"></div>
-          <div class="form-group"><label>Salida Est.:</label><input type="date" id="m1-f-salida" class="form-control" onchange="calcularOcupacionMeses()"></div>
-          <div class="form-group"><label>Ocupación:</label><input type="text" id="m1-ocupacion-meses" class="form-control" readonly value="0.00 Meses"></div>
-          <div class="form-group"><label>Responsable:</label><input type="text" id="m1-responsable" class="form-control" placeholder="Caporal"></div>
+          <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="m1-f-ingreso" class="form-control"></div>
+          <div class="form-group"><label>Salida Est.:</label><input type="date" id="m1-f-salida" class="form-control"></div>
+          <div class="form-group" style="grid-column: span 2;"><label>Responsable:</label><input type="text" id="m1-responsable" class="form-control" placeholder="Caporal"></div>
         </div>
 
         <label style="font-size:10px; font-weight:bold; margin: 4px 0 2px 0; display:block;">Categorías (Cantidad):</label>
@@ -234,7 +233,6 @@
         <div class="kpi-container">
           <div class="kpi-card"><div class="kpi-title">Cabezas</div><div class="kpi-value" id="stat-cabezas">0</div></div>
           <div class="kpi-card"><div class="kpi-title">UGM Hato</div><div class="kpi-value" id="stat-ugm">0.0</div></div>
-          <div class="kpi-card"><div class="kpi-title">Ocupación</div><div class="kpi-value" id="stat-ocupacion-meses">0.00 M</div></div>
         </div>
       </div>
 
@@ -249,7 +247,6 @@
               <th>Detalle Categorías</th>
               <th>Cab.</th>
               <th>UGM/Ha</th>
-              <th>Ocup.</th>
               <th>Resp.</th>
               <th>Obs.</th>
               <th>Acción</th>
@@ -499,7 +496,6 @@
       const hoy = new Date().toISOString().split('T')[0];
       document.querySelectorAll("input[type='date']").forEach(i => i.value = hoy);
       generarCamposEtarios1();
-      calcularOcupacionMeses();
     });
 
     function navegarA(id, el) {
@@ -535,19 +531,6 @@
       calcularUGM1();
     }
 
-    function calcularOcupacionMeses() {
-      const fIng = new Date(document.getElementById("m1-f-ingreso").value);
-      const fSal = new Date(document.getElementById("m1-f-salida").value);
-      
-      if (!isNaN(fIng) && !isNaN(fSal) && fSal >= fIng) {
-        const diffDias = Math.max(0, Math.round((fSal - fIng) / (1000 * 60 * 60 * 24)));
-        const meses = (diffDias / 30.42).toFixed(2);
-        document.getElementById("m1-ocupacion-meses").value = `${meses} M`;
-      } else {
-        document.getElementById("m1-ocupacion-meses").value = "0.00 M";
-      }
-    }
-
     function calcularUGM1() {
       const ha = parseFloat(document.getElementById("m1-potrero").value) || 1;
       let totalCabezas = 0;
@@ -577,7 +560,6 @@
       const mov = document.getElementById("m1-movimiento").value;
       const fIng = document.getElementById("m1-f-ingreso").value;
       const fSal = document.getElementById("m1-f-salida").value;
-      const ocupacionMesesVal = parseFloat(document.getElementById("m1-ocupacion-meses").value) || 0;
       const resp = document.getElementById("m1-responsable").value;
       const cabezas = parseInt(document.getElementById("m1-total-cabezas").value) || 0;
       const ugmHa = document.getElementById("m1-carga-ha").value;
@@ -595,7 +577,7 @@
         if (cant > 0) desgloseText.push(`${cat}: ${cant}`);
       });
 
-      const reg = { potreroNombre, ha, epoca, mov, fIng, fSal, ocupacionMeses: ocupacionMesesVal, resp, detalle: desgloseText.join(", "), cabezas, ugmHa, ugmTotal, obs };
+      const reg = { potreroNombre, ha, epoca, mov, fIng, fSal, resp, detalle: desgloseText.join(", "), cabezas, ugmHa, ugmTotal, obs };
 
       const tx = db.transaction("potreros", "readwrite");
       tx.objectStore("potreros").add(reg);
@@ -618,7 +600,6 @@
       document.getElementById("m1-f-ingreso").value = hoy;
       document.getElementById("m1-f-salida").value = hoy;
       generarCamposEtarios1();
-      calcularOcupacionMeses();
     }
 
     function calcularMetricasLevante() {
@@ -708,12 +689,11 @@
         const list = e.target.result;
         const tbody = document.getElementById("tabla-mod1-body");
         tbody.innerHTML = "";
-        let totCab = 0; let totUgm = 0; let totOcupacion = 0;
+        let totCab = 0; let totUgm = 0;
 
         list.forEach(r => {
           totCab += r.cabezas;
           totUgm += r.ugmTotal;
-          totOcupacion += (r.ocupacionMeses || 0);
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td>${r.potreroNombre}</td>
@@ -723,7 +703,6 @@
             <td>${r.detalle || '-'}</td>
             <td>${r.cabezas}</td>
             <td>${r.ugmHa}</td>
-            <td>${(r.ocupacionMeses || 0).toFixed(2)} M</td>
             <td>${r.resp || '-'}</td>
             <td>${r.obs || '-'}</td>
             <td><button class="btn-danger" onclick="borrarFila('potreros', ${r.id})">Borrar</button></td>
@@ -733,7 +712,6 @@
 
         document.getElementById("stat-cabezas").innerText = totCab;
         document.getElementById("stat-ugm").innerText = totUgm.toFixed(1);
-        document.getElementById("stat-ocupacion-meses").innerText = `${totOcupacion.toFixed(2)} M`;
       };
 
       // Cargar Módulo Levante
