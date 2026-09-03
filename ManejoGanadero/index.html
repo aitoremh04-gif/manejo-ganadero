@@ -2,590 +2,856 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema Integrado de Gestión Ganadera - AgroTech</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Sistema Hato Laguna Brava</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     :root {
-      --bg-dark: #0f172a;
-      --card-bg: #1e293b;
-      --border-color: #334155;
-      --cyan-accent: #06b6d4;
-      --cyan-hover: #0891b2;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
+      --blue-primary: #1d72b8;
+      --blue-hover: #155a92;
+      --bg-card: #ffffff;
+      --text-main: #1c252e;
+      --text-muted: #637381;
+      --bg-body: #f4f6f8;
+      --alert-color: #d32f2f;
+      --alert-bg: #fde8e8;
+      --warning-color: #ed6c02;
+      --success-color: #2e7d32;
     }
+
+    * { box-sizing: border-box; }
+
     body {
-      background-color: var(--bg-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0; padding: 0;
+      background-color: var(--bg-body);
       color: var(--text-main);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding-bottom: 50px;
+      display: flex; min-height: 100vh;
     }
-    .card-dashboard {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-      margin-bottom: 2rem;
-      padding: 1.5rem;
+
+    .sidebar {
+      width: 260px; background: #0d47a1; color: #ffffff;
+      display: flex; flex-direction: column; z-index: 100;
     }
-    .border-bottom-cyan { border-bottom: 2px solid var(--cyan-accent); }
-    .border-left-cyan { border-left: 4px solid var(--cyan-accent); }
-    .border-left-warning { border-left: 4px solid #f59e0b; }
-    .text-cyan { color: var(--cyan-accent); }
-    .btn-cyan {
-      background-color: var(--cyan-accent);
-      color: #000;
-      font-weight: 600;
+
+    .sidebar-header {
+      padding: 12px 16px; background: #0a3880; font-weight: bold; font-size: 14px;
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .btn-cyan:hover {
-      background-color: var(--cyan-hover);
-      color: #fff;
+
+    .sync-semaforo {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(0, 0, 0, 0.2); padding: 3px 8px; border-radius: 12px; font-size: 10px;
     }
-    .input-dark {
-      background-color: #0f172a;
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
+    .semaforo-luz {
+      width: 10px; height: 10px; border-radius: 50%; background-color: #757575;
+      box-shadow: 0 0 4px rgba(0,0,0,0.3); transition: background-color 0.3s ease;
     }
-    .input-dark:focus {
-      background-color: #0f172a;
-      color: #fff;
-      border-color: var(--cyan-accent);
-      box-shadow: none;
+    .semaforo-luz.rojo { background-color: var(--alert-color); box-shadow: 0 0 6px var(--alert-color); }
+    .semaforo-luz.amarillo { background-color: var(--warning-color); box-shadow: 0 0 6px var(--warning-color); }
+    .semaforo-luz.verde { background-color: var(--success-color); box-shadow: 0 0 6px var(--success-color); }
+
+    .sidebar-menu { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
+    .sidebar-menu li { padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); cursor: pointer; font-size: 12px; }
+    .sidebar-menu li:hover, .sidebar-menu li.active { background: var(--blue-primary); }
+
+    .main-wrapper { flex: 1; padding: 8px; overflow-y: auto; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+    .header-card {
+      background: linear-gradient(135deg, #1d72b8, #0d47a1); color: #ffffff;
+      border-radius: 8px; padding: 10px 12px; margin-bottom: 8px;
     }
-    .bg-dark-eval { background-color: #0f172a; }
+    .header-card h2 { margin: 0 0 2px 0; font-size: 15px; }
+    .header-card p { margin: 0; opacity: 0.9; font-size: 11px; }
+
+    .module-view { display: none; background: var(--bg-card); border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); }
+    .module-view.active { display: block !important; }
+
+    .module-header { border-bottom: 1px solid #eef0f2; padding-bottom: 6px; margin-bottom: 8px; }
+    .module-header h3 { margin: 0; color: var(--blue-primary); font-size: 14px; }
+
+    .form-group { margin-bottom: 6px; }
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; }
+    .form-group label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 2px; }
+    
+    .form-control {
+      width: 100%; padding: 5px 6px;
+      border: 1px solid #cfd8dc; border-radius: 4px;
+      font-size: 11px; background: #fafafa; height: 28px;
+    }
+
+    .category-grid {
+      background: #f4f6f8; padding: 6px; border-radius: 6px; margin-bottom: 8px;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
+    }
+
+    .cat-box { background: #ffffff; padding: 4px; border: 1px solid #cfd8dc; border-radius: 4px; }
+    .cat-box select { font-size: 10px; padding: 2px 4px; height: 24px; font-weight: bold; margin-bottom: 3px; }
+    .cat-box input { font-size: 11px; padding: 2px 4px; height: 24px; text-align: center; }
+
+    .btn-group { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .btn-action { background-color: var(--blue-primary); color: #ffffff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; flex: 1; }
+    .btn-reset { background-color: var(--warning-color); }
+    .btn-danger { background-color: var(--alert-color); color: #fff; border: none; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+
+    .table-container { width: 100%; overflow-x: auto; margin-top: 10px; border: 1px solid #eef0f2; border-radius: 6px; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 10px; text-align: left; }
+    .data-table th { background-color: #f0f4f8; padding: 6px 4px; border-bottom: 1px solid #cfd8dc; }
+    .data-table td { padding: 6px 4px; border-bottom: 1px solid #eef0f2; }
+
+    .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 4px; margin: 8px 0; }
+    .kpi-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 4px; text-align: center; }
+    .kpi-title { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
+    .kpi-value { font-size: 12px; font-weight: bold; color: var(--blue-primary); margin-top: 1px; }
+
     .status-badge {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      display: inline-block;
+      display: inline-block; padding: 4px 8px; border-radius: 12px; font-weight: bold; font-size: 10px; text-align: center; color: #fff;
     }
-    .badge-rojo { background-color: #ef4444; color: #fff; }
-    .badge-amarillo { background-color: #f59e0b; color: #000; }
-    .badge-verde { background-color: #10b981; color: #fff; }
-    .table-dark { background-color: #1e293b; color: var(--text-main); }
-    .thead-cyan { background-color: #0f172a; color: var(--cyan-accent); }
+    .badge-verde { background-color: var(--success-color); }
+    .badge-amarillo { background-color: var(--warning-color); }
+    .badge-rojo { background-color: var(--alert-color); }
+
+    @media (min-width: 600px) {
+      .category-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (min-width: 900px) {
+      .category-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .sidebar-menu { display: flex; overflow-x: auto; }
+      .sidebar-menu li { white-space: nowrap; flex: 1; text-align: center; }
+    }
   </style>
 </head>
 <body>
 
-<div class="container-fluid pt-4 px-4">
-  <header class="mb-4 text-center text-md-left d-flex align-items-center justify-content-between flex-wrap">
-    <div>
-      <h2 class="text-cyan font-weight-bold mb-0"><i class="fas fa-microchip mr-2"></i>Dashboard Integral AgroTech</h2>
-      <small class="text-muted">Control de Rotación, Levante/Ceba y Bitácora Operativa</small>
-    </div>
-    <div class="mt-2 mt-md-0">
-      <span class="badge badge-outline-info p-2 border border-info text-info"><i class="fas fa-database mr-1"></i> Base de Datos: IndexedDB Activa</span>
-    </div>
-  </header>
-
-  <!-- ======================================================= -->
-  <!-- MÓDULO 1: ROTACIÓN Y CONTROL DE POTREROS                -->
-  <!-- ======================================================= -->
-  <section id="modulo-potreros" class="card card-dashboard">
-    <div class="card-header border-bottom-cyan mb-3 px-0 bg-transparent">
-      <h3 class="text-cyan font-weight-bold mb-0">
-        <i class="fas fa-vector-square mr-2"></i>Módulo I: Gestión de Potreros y Ocupación
-      </h3>
-    </div>
-    
-    <div class="row">
-      <div class="col-md-3 mb-3">
-        <label class="text-muted small">Seleccionar Potrero para Análisis:</label>
-        <select id="m3-potrero-select" class="form-control input-dark" onchange="analizarPotreroHistorial()">
-          <option value="Potrero 1">Potrero 1</option>
-          <option value="Potrero 2">Potrero 2</option>
-          <option value="Potrero 3">Potrero 3</option>
-          <option value="Potrero 4">Potrero 4</option>
-        </select>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span>Hato Laguna Brava</span>
+      <div class="sync-semaforo" title="Estado de sincronización">
+        <div id="luz-semaforo" class="semaforo-luz verde"></div>
+        <span id="texto-semaforo">Sincronizado</span>
       </div>
     </div>
+    <ul class="sidebar-menu">
+      <li class="active" onclick="navegarA('mod-1', this)">🌾 Potreros y UGM</li>
+      <li onclick="navegarA('mod-levante', this)">⚖️ Módulo Levante</li>
+      <li onclick="navegarA('mod-historial', this)">📊 Historial y Rotación</li>
+    </ul>
+  </aside>
 
-    <!-- METRICAS DEL POTRERO -->
-    <div class="row mb-3">
-      <div class="col-md-3 col-6 mb-2">
-        <div class="stat-card bg-dark-eval p-3 rounded border-left-cyan">
-          <span class="text-muted d-block small">Carga Prom. Invierno</span>
-          <span id="m3-carga-inv" class="h4 font-weight-bold text-light">0.00 UGM/ha</span>
-        </div>
-      </div>
-      <div class="col-md-3 col-6 mb-2">
-        <div class="stat-card bg-dark-eval p-3 rounded border-left-cyan">
-          <span class="text-muted d-block small">Carga Prom. Verano</span>
-          <span id="m3-carga-ver" class="h4 font-weight-bold text-light">0.00 UGM/ha</span>
-        </div>
-      </div>
-      <div class="col-md-2 col-6 mb-2">
-        <div class="stat-card bg-dark-eval p-3 rounded">
-          <span class="text-muted d-block small">Total Cabezas</span>
-          <span id="m3-total-cabezas" class="h4 font-weight-bold text-light">0 Cab.</span>
-        </div>
-      </div>
-      <div class="col-md-2 col-6 mb-2">
-        <div class="stat-card bg-dark-eval p-3 rounded">
-          <span class="text-muted d-block small">Días Uso Prom.</span>
-          <span id="m3-dias-uso-prom" class="h4 font-weight-bold text-light">0.0 Días</span>
-        </div>
-      </div>
-      <div class="col-md-2 col-12 mb-2">
-        <div class="stat-card bg-dark-eval p-3 rounded">
-          <span class="text-muted d-block small">Días Descanso</span>
-          <span id="m3-dias-descanso" class="h4 font-weight-bold text-warning d-block">0 Días</span>
-          <span id="m3-semaforo-status" class="status-badge badge-amarillo mt-1">Sin Datos</span>
-        </div>
-      </div>
+  <main class="main-wrapper">
+    <div class="header-card">
+      <h2>¡Hola, Juan José! 🤠</h2>
+      <p>Sistema Integrado de Control Ganadero - Hato Laguna Brava</p>
     </div>
 
-    <div class="table-responsive">
-      <table class="table table-dark table-hover table-bordered">
-        <thead class="thead-cyan">
-          <tr>
-            <th>F. Entrada</th>
-            <th>F. Salida</th>
-            <th>Época</th>
-            <th>Movimiento</th>
-            <th>Cabezas</th>
-            <th>UGM/ha</th>
-            <th>Detalles</th>
-            <th>Responsable</th>
-            <th>Observación</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-mod3-body">
-          <!-- Carga dinámicamente vía JS -->
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ======================================================= -->
-  <!-- MÓDULO 2: LEVANTE Y CEBA                                -->
-  <!-- ======================================================= -->
-  <section id="modulo-levante" class="card card-dashboard">
-    <div class="card-header border-bottom-cyan mb-3 px-0 bg-transparent">
-      <h3 class="text-cyan font-weight-bold mb-0">
-        <i class="fas fa-chart-line mr-2"></i>Módulo II: Levante y Ceba
-      </h3>
-    </div>
-    <div class="row mb-3">
-      <div class="col-md-4 mb-2">
-        <div class="stat-card bg-dark-eval p-3 rounded border-left-cyan">
-          <span class="text-muted d-block small">Total Cabezas Registradas</span>
-          <span id="stat-cabezas" class="h4 font-weight-bold text-light">0</span>
-        </div>
+    <!-- MÓDULO 1: POTREROS Y UGM -->
+    <section id="mod-1" class="module-view active">
+      <div class="module-header">
+        <h3>1. Control de Pastoreo, Potreros y UGM</h3>
       </div>
-      <div class="col-md-4 mb-2">
-        <div class="stat-card bg-dark-eval p-3 rounded border-left-cyan">
-          <span class="text-muted d-block small">Total UGM</span>
-          <span id="stat-ugm" class="h4 font-weight-bold text-light">0.0</span>
-        </div>
-      </div>
-      <div class="col-md-4 mb-2">
-        <div class="stat-card bg-dark-eval p-3 rounded border-left-cyan">
-          <span class="text-muted d-block small">Ocupación Estimada</span>
-          <span id="stat-ocupacion-meses" class="h4 font-weight-bold text-light">0.00 M</span>
-        </div>
-      </div>
-    </div>
-    <div class="table-responsive">
-      <table class="table table-dark table-hover table-bordered">
-        <thead class="thead-cyan">
-          <tr>
-            <th>Lote</th>
-            <th>Sexo/Especie</th>
-            <th>Cant.</th>
-            <th>GMD (kg)</th>
-            <th>Gan. Lote</th>
-            <th>Meses Meta</th>
-            <th>Próx. Pesaje</th>
-            <th>Obs.</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-levante-body">
-          <!-- Carga dinámicamente vía JS -->
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ======================================================= -->
-  <!-- MÓDULO 3: PLANIFICACIÓN Y TAREAS CON BITÁCORA            -->
-  <!-- ======================================================= -->
-  <section id="modulo-tareas" class="card card-dashboard">
-    <div class="card-header border-bottom-cyan mb-3 px-0 bg-transparent">
-      <h3 class="text-cyan font-weight-bold mb-0">
-        <i class="fas fa-tasks mr-2"></i>Módulo III: Planificación y Tareas
-      </h3>
-    </div>
-
-    <!-- FORMULARIO DE REGISTRO DE TAREAS -->
-    <form id="form-planificacion-tareas" onsubmit="guardarTarea(event)">
-      <div class="row">
-        <div class="col-md-4 mb-3">
-          <label for="tarea-descripcion" class="form-label text-light">Descripción de tareas:</label>
-          <input type="text" id="tarea-descripcion" class="form-control input-dark" placeholder="Ej: Reparación de cerca potrero 3 / Mantenimiento bomba" required>
-        </div>
-
-        <div class="col-md-3 mb-3">
-          <label for="tarea-responsable" class="form-label text-light">Responsable:</label>
-          <input type="text" id="tarea-responsable" class="form-control input-dark" placeholder="Nombre del encargado" required>
-        </div>
-
-        <div class="col-md-2 mb-3">
-          <label for="tarea-fecha" class="form-label text-light">Fecha de asignación:</label>
-          <input type="date" id="tarea-fecha" class="form-control input-dark" required>
-        </div>
-
-        <div class="col-md-3 mb-3">
-          <label for="tarea-observacion" class="form-label text-light">Observación:</label>
-          <input type="text" id="tarea-observacion" class="form-control input-dark" placeholder="Detalles operativos">
-        </div>
-      </div>
-
-      <!-- BOTONES DE ACCIÓN -->
-      <div class="row mb-4">
-        <div class="col-12 d-flex flex-wrap gap-2">
-          <button type="submit" class="btn btn-cyan mr-2 mb-2">
-            <i class="fas fa-save mr-1"></i> Guardar tareas
-          </button>
-          <button type="button" class="btn btn-warning text-dark font-weight-bold mr-2 mb-2" onclick="rehacerFormularioTarea()">
-            <i class="fas fa-undo mr-1"></i> Rehacer tareas
-          </button>
-          <button type="button" class="btn btn-outline-info mb-2" onclick="sincronizarTareas()">
-            <i class="fas fa-sync-alt mr-1"></i> Sincronizar
-          </button>
-        </div>
-      </div>
-    </form>
-
-    <hr class="border-secondary my-4">
-
-    <!-- APARTADO DE BITÁCORA Y RESUMEN -->
-    <div class="bitacora-container">
-      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-        <h4 class="text-light mb-2">
-          <i class="fas fa-book-open text-warning mr-2"></i>Bitácora o Resumen de Tareas
-        </h4>
-        <button type="button" class="btn btn-danger font-weight-bold mb-2" onclick="borrarTodasLasTareas()">
-          <i class="fas fa-trash-alt mr-1"></i> Borrar tareas
-        </button>
-      </div>
-
-      <!-- ESTADÍSTICAS BITÁCORA -->
-      <div class="row mb-3">
-        <div class="col-md-6 mb-2">
-          <div class="stat-card bg-dark-eval p-3 rounded border-left-cyan">
-            <span class="text-muted d-block small">Total Tareas Registradas</span>
-            <span id="stat-total-tareas" class="h4 font-weight-bold text-cyan">0</span>
+      
+      <form id="form-mod1">
+        <div class="form-row">
+          <div class="form-group" style="grid-column: span 2;">
+            <label>Potrero / Hectáreas:</label>
+            <select class="form-control" id="m1-potrero" onchange="calcularUGM1()">
+              <option value="432">Macanillal (432 ha)</option>
+              <option value="569">El Galpón (569 ha)</option>
+              <option value="80">Mata del Muerto (80 ha)</option>
+              <option value="234">Manguito (234 ha)</option>
+              <option value="205">Mata de Piña (205 ha)</option>
+              <option value="102">Las Rallas (102 ha)</option>
+              <option value="703">Potrero del Medio (703 ha)</option>
+              <option value="77">Cuatro Esquinas (77 ha)</option>
+              <option value="418">Paulero (418 ha)</option>
+              <option value="422">Jobo Gacho (422 ha)</option>
+              <option value="40">Curva del Peligro (40 ha)</option>
+              <option value="36">Módulo A (36 ha)</option>
+              <option value="36">Módulo B (36 ha)</option>
+              <option value="36">Módulo C (36 ha)</option>
+              <option value="36">Módulo D (36 ha)</option>
+              <option value="143">Módulo F (143 ha)</option>
+              <option value="125">Saladillal (125 ha)</option>
+              <option value="142">Carretera (142 ha)</option>
+              <option value="32">María del Carmen (32 ha)</option>
+              <option value="26">Casa (26 ha)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Época:</label>
+            <select class="form-control" id="m1-epoca"><option>Invierno</option><option>Verano</option></select>
+          </div>
+          <div class="form-group">
+            <label>Movimiento:</label>
+            <select class="form-control" id="m1-movimiento"><option>Ingreso</option><option>Egreso</option></select>
           </div>
         </div>
-        <div class="col-md-6 mb-2">
-          <div class="stat-card bg-dark-eval p-3 rounded border-left-warning">
-            <span class="text-muted d-block small">Última Fecha Asignada</span>
-            <span id="stat-ultima-fecha-tarea" class="h4 font-weight-bold text-warning">-</span>
+
+        <div class="form-row">
+          <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="m1-f-ingreso" class="form-control" onchange="calcularOcupacionMeses()"></div>
+          <div class="form-group"><label>Salida Est.:</label><input type="date" id="m1-f-salida" class="form-control" onchange="calcularOcupacionMeses()"></div>
+          <div class="form-group"><label>Ocupación:</label><input type="text" id="m1-ocupacion-meses" class="form-control" readonly value="0.00 Meses"></div>
+          <div class="form-group"><label>Responsable:</label><input type="text" id="m1-responsable" class="form-control" placeholder="Caporal"></div>
+        </div>
+
+        <label style="font-size:10px; font-weight:bold; margin: 4px 0 2px 0; display:block;">Categorías (Cantidad):</label>
+        <div class="category-grid" id="m1-etarios-container"></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Total Cabezas:</label>
+            <input type="number" id="m1-total-cabezas" class="form-control" readonly value="0" style="font-weight:bold;">
           </div>
+          <div class="form-group">
+            <label>Total UGM:</label>
+            <input type="text" id="m1-total-ugm" class="form-control" readonly value="0.0 UGM" style="font-weight:bold; color:var(--blue-primary);">
+          </div>
+          <div class="form-group">
+            <label>Carga (UGM/Ha):</label>
+            <input type="text" id="m1-carga-ha" class="form-control" readonly value="0.00 UGM/ha" style="font-weight:bold;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Observaciones:</label>
+          <input type="text" id="m1-obs" class="form-control" placeholder="Estado del pasto, agua, etc.">
+        </div>
+
+        <div class="btn-group">
+          <button type="button" class="btn-action" onclick="guardarRegistroMod1()">Guardar</button>
+          <button type="button" class="btn-action btn-reset" onclick="limpiarFormMod1()">Limpiar</button>
+        </div>
+      </form>
+
+      <div style="margin-top:12px;">
+        <h4 style="margin:0 0 4px 0; font-size:11px; color:var(--blue-primary);">Resumen de Pastoreo</h4>
+        <div class="kpi-container">
+          <div class="kpi-card"><div class="kpi-title">Cabezas</div><div class="kpi-value" id="stat-cabezas">0</div></div>
+          <div class="kpi-card"><div class="kpi-title">UGM Hato</div><div class="kpi-value" id="stat-ugm">0.0</div></div>
+          <div class="kpi-card"><div class="kpi-title">Ocupación</div><div class="kpi-value" id="stat-ocupacion-meses">0.00 M</div></div>
         </div>
       </div>
 
-      <!-- TABLA BITÁCORA -->
-      <div class="table-responsive">
-        <table class="table table-dark table-hover table-bordered" id="tabla-tareas">
-          <thead class="thead-cyan">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
             <tr>
-              <th>ID</th>
-              <th>Descripción de tareas</th>
-              <th>Responsable</th>
-              <th>Fecha de asignación</th>
-              <th>Observación</th>
-              <th>Acciones</th>
+              <th>Potrero</th>
+              <th>Ha</th>
+              <th>Época</th>
+              <th>Mov.</th>
+              <th>Detalle Categorías</th>
+              <th>Cab.</th>
+              <th>UGM/Ha</th>
+              <th>Ocup.</th>
+              <th>Resp.</th>
+              <th>Obs.</th>
+              <th>Acción</th>
             </tr>
           </thead>
-          <tbody id="tabla-tareas-body">
-            <!-- Carga dinámica vía JS -->
-          </tbody>
+          <tbody id="tabla-mod1-body"></tbody>
         </table>
       </div>
-    </div>
-  </section>
-</div>
+    </section>
 
-<!-- ======================================================= -->
-<!-- LÓGICA JAVASCRIPT E INDEXEDDB                           -->
-<!-- ======================================================= -->
-<script>
-  let db;
-  const DB_NAME = "AgroTechDB";
-  const DB_VERSION = 2; // Incrementado para incluir el almacén de tareas
+    <!-- MÓDULO LEVANTE -->
+    <section id="mod-levante" class="module-view">
+      <div class="module-header">
+        <h3>⚖️ Módulo de Levante y Eficiencia Ponderal</h3>
+      </div>
 
-  document.addEventListener("DOMContentLoaded", () => {
-    initDB();
-    const elemFecha = document.getElementById("tarea-fecha");
-    if (elemFecha) {
-      elemFecha.value = new Date().toISOString().split("T")[0];
+      <form id="form-levante">
+        <div class="form-row">
+          <div class="form-group"><label>Lote:</label><input type="text" id="lev-lote" class="form-control" placeholder="Lote Mautes 2026"></div>
+          <div class="form-group">
+            <label>Época:</label>
+            <select class="form-control" id="lev-epoca"><option>Invierno</option><option>Verano</option></select>
+          </div>
+          <div class="form-group">
+            <label>Sexo:</label>
+            <select class="form-control" id="lev-sexo"><option>Macho</option><option>Hembra</option></select>
+          </div>
+          <div class="form-group">
+            <label>Especie:</label>
+            <select class="form-control" id="lev-especie"><option>Bovino</option><option>Bufalino</option></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Grupo Etario:</label><input type="text" id="lev-grupo" class="form-control" placeholder="Mautes / Bautes"></div>
+          <div class="form-group"><label>N° Animales:</label><input type="number" id="lev-cant" class="form-control" placeholder="50" oninput="calcularMetricasLevante()"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Fecha Pesaje Ant.:</label><input type="date" id="lev-f-ant" class="form-control" onchange="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Ant. (kg):</label><input type="number" id="lev-peso-ant" class="form-control" placeholder="180" oninput="calcularMetricasLevante()"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Fecha Pesaje Act.:</label><input type="date" id="lev-f-act" class="form-control" onchange="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Act. (kg):</label><input type="number" id="lev-peso-act" class="form-control" placeholder="205" oninput="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Meta (kg):</label><input type="number" id="lev-peso-meta" class="form-control" value="320" oninput="calcularMetricasLevante()"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Próximo Pesaje:</label><input type="date" id="lev-f-prox" class="form-control"></div>
+        </div>
+
+        <div class="kpi-container">
+          <div class="kpi-card"><div class="kpi-title">GMD (kg/día)</div><div class="kpi-value" id="kpi-gmd">0.000</div></div>
+          <div class="kpi-card"><div class="kpi-title">Ganancia Lote</div><div class="kpi-value" id="kpi-ganancia-total">0 kg</div></div>
+          <div class="kpi-card"><div class="kpi-title">Meses a Meta</div><div class="kpi-value" id="kpi-meses-meta">0.0 M</div></div>
+        </div>
+
+        <div class="form-group"><label>Observaciones:</label><input type="text" id="lev-obs" class="form-control" placeholder="Suplementación, condición corporal, etc."></div>
+
+        <div class="btn-group">
+          <button type="button" class="btn-action" onclick="guardarRegistroLevante()">Guardar</button>
+          <button type="button" class="btn-action btn-reset" onclick="limpiarFormLevante()">Limpiar</button>
+        </div>
+      </form>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Lote</th>
+              <th>Sexo/Esp</th>
+              <th>Cant</th>
+              <th>GMD (kg/d)</th>
+              <th>Ganancia Lote</th>
+              <th>Meta (Meses)</th>
+              <th>Próx Pesaje</th>
+              <th>Obs.</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-levante-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MÓDULO 3: HISTORIAL, ROTACIÓN Y ESTADÍSTICA -->
+    <section id="mod-historial" class="module-view">
+      <div class="module-header">
+        <h3>📊 Historial, Rotación y Estadística de Potreros</h3>
+      </div>
+
+      <div class="form-row" style="margin-bottom: 12px;">
+        <div class="form-group" style="grid-column: span 2;">
+          <label>Seleccionar Potrero para Análisis:</label>
+          <select class="form-control" id="m3-potrero-select" onchange="analizarPotreroHistorial()">
+            <option value="Macanillal (432 ha)">Macanillal (432 ha)</option>
+            <option value="El Galpón (569 ha)">El Galpón (569 ha)</option>
+            <option value="Mata del Muerto (80 ha)">Mata del Muerto (80 ha)</option>
+            <option value="Manguito (234 ha)">Manguito (234 ha)</option>
+            <option value="Mata de Piña (205 ha)">Mata de Piña (205 ha)</option>
+            <option value="Las Rallas (102 ha)">Las Rallas (102 ha)</option>
+            <option value="Potrero del Medio (703 ha)">Potrero del Medio (703 ha)</option>
+            <option value="Cuatro Esquinas (77 ha)">Cuatro Esquinas (77 ha)</option>
+            <option value="Paulero (418 ha)">Paulero (418 ha)</option>
+            <option value="Jobo Gacho (422 ha)">Jobo Gacho (422 ha)</option>
+            <option value="Curva del Peligro (40 ha)">Curva del Peligro (40 ha)</option>
+            <option value="Módulo A (36 ha)">Módulo A (36 ha)</option>
+            <option value="Módulo B (36 ha)">Módulo B (36 ha)</option>
+            <option value="Módulo C (36 ha)">Módulo C (36 ha)</option>
+            <option value="Módulo D (36 ha)">Módulo D (36 ha)</option>
+            <option value="Módulo F (143 ha)">Módulo F (143 ha)</option>
+            <option value="Saladillal (125 ha)">Saladillal (125 ha)</option>
+            <option value="Carretera (142 ha)">Carretera (142 ha)</option>
+            <option value="María del Carmen (32 ha)">María del Carmen (32 ha)</option>
+            <option value="Casa (26 ha)">Casa (26 ha)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- KPI ESTADO ACTUAL -->
+      <h4 style="margin: 4px 0; font-size: 11px; color: var(--blue-primary);">Estado Actual y Disponibilidad</h4>
+      <div class="kpi-container">
+        <div class="kpi-card">
+          <div class="kpi-title">Días Descanso</div>
+          <div class="kpi-value" id="m3-dias-descanso">0 Días</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Disponibilidad</div>
+          <div style="margin-top:2px;" id="m3-container-semaforo">
+            <span class="status-badge badge-amarillo" id="m3-semaforo-status">Sin datos</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Uso Promedio</div>
+          <div class="kpi-value" id="m3-dias-uso-prom">0.0 Días</div>
+        </div>
+      </div>
+
+      <!-- ESTADÍSTICA ESTACIONAL -->
+      <h4 style="margin: 10px 0 4px 0; font-size: 11px; color: var(--blue-primary);">Análisis Estacional (Invierno vs Verano)</h4>
+      <div class="kpi-container">
+        <div class="kpi-card">
+          <div class="kpi-title">Carga Invierno</div>
+          <div class="kpi-value" id="m3-carga-inv">0.00 UGM/ha</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Carga Verano</div>
+          <div class="kpi-value" id="m3-carga-ver">0.00 UGM/ha</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Transeúntes Totales</div>
+          <div class="kpi-value" id="m3-total-cabezas">0 Cab.</div>
+        </div>
+      </div>
+
+      <!-- BITÁCORA DEL POTRERO -->
+      <h4 style="margin: 10px 0 4px 0; font-size: 11px; color: var(--blue-primary);">Bitácora Cronológica del Potrero</h4>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ingreso</th>
+              <th>Salida</th>
+              <th>Época</th>
+              <th>Mov.</th>
+              <th>Cabezas</th>
+              <th>UGM/Ha</th>
+              <th>Detalle Categorías</th>
+              <th>Resp.</th>
+              <th>Observaciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-mod3-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    let db;
+    
+    function actualizarSemaforo(estado, texto) {
+      const luz = document.getElementById("luz-semaforo");
+      const txt = document.getElementById("texto-semaforo");
+      if (luz) luz.className = "semaforo-luz " + estado;
+      if (txt) txt.innerText = texto;
     }
-  });
 
-  function initDB() {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    actualizarSemaforo("amarillo", "Cargando...");
 
+    const request = indexedDB.open("HatoLagunaBrava_v5", 1);
     request.onupgradeneeded = (e) => {
       db = e.target.result;
-      if (!db.objectStoreNames.contains("potreros")) {
-        db.createObjectStore("potreros", { keyPath: "id", autoIncrement: true });
-      }
-      if (!db.objectStoreNames.contains("levante")) {
-        db.createObjectStore("levante", { keyPath: "id", autoIncrement: true });
-      }
-      if (!db.objectStoreNames.contains("tareas")) {
-        db.createObjectStore("tareas", { keyPath: "id", autoIncrement: true });
-      }
+      if (!db.objectStoreNames.contains("potreros")) db.createObjectStore("potreros", { keyPath: "id", autoIncrement: true });
+      if (!db.objectStoreNames.contains("levante")) db.createObjectStore("levante", { keyPath: "id", autoIncrement: true });
     };
-
+    
     request.onsuccess = (e) => {
       db = e.target.result;
-      cargarDatosTablas();
-      cargarTablaTareas();
+      actualizarSemaforo("verde", "Sincronizado");
+      cargarTablas();
     };
 
     request.onerror = (e) => {
-      console.error("Error al abrir IndexedDB:", e.target.error);
-    };
-  }
-
-  function cargarDatosTablas() {
-    if (!db) return;
-
-    // Cargar datos Módulo 1 (Potreros)
-    const tx1 = db.transaction("potreros", "readonly");
-    tx1.objectStore("potreros").getAll().onsuccess = (e) => {
-      analizarPotreroHistorial();
+      actualizarSemaforo("rojo", "Error DB");
     };
 
-    // Cargar datos Módulo 2 (Levante)
-    const tx2 = db.transaction("levante", "readonly");
-    tx2.objectStore("levante").getAll().onsuccess = (e) => {
-      const list = e.target.result || [];
-      const tbody = document.getElementById("tabla-levante-body");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-
-      let totCab = 0;
-      let totUgm = 0;
-      let totOcupacion = 0;
-
-      list.forEach(r => {
-        totCab += parseInt(r.cant) || 0;
-        totUgm += parseFloat(r.ugm) || 0;
-        totOcupacion += parseFloat(r.mesesMeta) || 0;
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${r.lote}</td>
-          <td>${r.sexo}/${r.especie}</td>
-          <td>${r.cant}</td>
-          <td>${r.gmd}</td>
-          <td>${r.ganLote}</td>
-          <td>${r.mesesMeta}</td>
-          <td>${r.proxPesaje || '-'}</td>
-          <td>${r.obs || '-'}</td>
-          <td><button class="btn btn-sm btn-danger" onclick="borrarFila('levante', ${r.id})">Borrar</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      document.getElementById("stat-cabezas").innerText = totCab;
-      document.getElementById("stat-ugm").innerText = totUgm.toFixed(1);
-      document.getElementById("stat-ocupacion-meses").innerText = `${totOcupacion.toFixed(2)} M`;
+    const FACTORES_UGM = {
+      "Mautas": 0.5, "Bautas": 0.6,
+      "Mautes": 0.5, "Bautes": 0.6,
+      "Becerros": 0.25, "Bucerros": 0.3,
+      "Vacas Vacías": 1.0, "Búfalas Vacías": 1.2,
+      "Toros": 1.5, "Butoros": 1.5,
+      "Vacas Pñ": 1.0, "Búfala Pñ": 1.2,
+      "Vacas Paridas": 1.0, "Búfala Parida": 1.2,
+      "Vacas Monta": 1.0, "Búfala Monta": 1.2,
+      "Novillas Pñ": 0.7, "Buvilla Pñ": 0.8,
+      "Novillas Monta": 0.7, "Buvilla Monta": 0.8,
+      "Novillas Vacías": 0.7, "Buvillas Vacías": 0.8
     };
-  }
 
-  function analizarPotreroHistorial() {
-    if (!db) return;
+    const GRUPOS_DESPLEGABLES = [
+      ["Mautas", "Bautas"],
+      ["Mautes", "Bautes"],
+      ["Becerros", "Bucerros"],
+      ["Vacas Vacías", "Búfalas Vacías"],
+      ["Toros", "Butoros"],
+      ["Vacas Pñ", "Búfala Pñ"],
+      ["Vacas Paridas", "Búfala Parida"],
+      ["Vacas Monta", "Búfala Monta"],
+      ["Novillas Pñ", "Buvilla Pñ"],
+      ["Novillas Monta", "Buvilla Monta"],
+      ["Novillas Vacías", "Buvillas Vacías"]
+    ];
 
-    const potreroSel = document.getElementById("m3-potrero-select").value;
-    const tbody = document.getElementById("tabla-mod3-body");
-    if (!tbody) return;
-    tbody.innerHTML = "";
+    document.addEventListener("DOMContentLoaded", () => {
+      const hoy = new Date().toISOString().split('T')[0];
+      document.querySelectorAll("input[type='date']").forEach(i => i.value = hoy);
+      generarCamposEtarios1();
+      calcularOcupacionMeses();
+    });
 
-    const tx = db.transaction("potreros", "readonly");
-    tx.objectStore("potreros").getAll().onsuccess = (e) => {
-      const list = (e.target.result || []).filter(r => r.potreroNombre === potreroSel);
-
-      let sumCargaInv = 0, countInv = 0;
-      let sumCargaVer = 0, countVer = 0;
-      let totalCab = 0;
-      let totalDiasUso = 0;
-      let ultimaFechaSalida = null;
-
-      list.sort((a, b) => new Date(a.fIng) - new Date(b.fIng));
-
-      list.forEach(r => {
-        const cargaVal = parseFloat(r.ugmHa) || 0;
-        if (r.epoca === "Invierno") { sumCargaInv += cargaVal; countInv++; }
-        else { sumCargaVer += cargaVal; countVer++; }
-
-        totalCab += parseInt(r.cabezas) || 0;
-
-        const dIng = new Date(r.fIng);
-        const dSal = new Date(r.fSal);
-        if (!isNaN(dIng) && !isNaN(dSal) && dSal >= dIng) {
-          const duracionDias = Math.max(1, Math.round((dSal - dIng) / (1000 * 60 * 60 * 24)));
-          totalDiasUso += duracionDias;
-        }
-
-        if (r.fSal) {
-          const fSalDate = new Date(r.fSal);
-          if (!ultimaFechaSalida || fSalDate > ultimaFechaSalida) {
-            ultimaFechaSalida = fSalDate;
-          }
-        }
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${r.fIng || '-'}</td>
-          <td>${r.fSal || '-'}</td>
-          <td>${r.epoca}</td>
-          <td>${r.mov}</td>
-          <td>${r.cabezas}</td>
-          <td>${r.ugmHa}</td>
-          <td>${r.detalle || '-'}</td>
-          <td>${r.resp || '-'}</td>
-          <td>${r.obs || '-'}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      const promInv = countInv > 0 ? (sumCargaInv / countInv).toFixed(2) : "0.00";
-      const promVer = countVer > 0 ? (sumCargaVer / countVer).toFixed(2) : "0.00";
-      const promDiasUso = list.length > 0 ? (totalDiasUso / list.length).toFixed(1) : "0.0";
-
-      document.getElementById("m3-carga-inv").innerText = `${promInv} UGM/ha`;
-      document.getElementById("m3-carga-ver").innerText = `${promVer} UGM/ha`;
-      document.getElementById("m3-total-cabezas").innerText = `${totalCab} Cab.`;
-      document.getElementById("m3-dias-uso-prom").innerText = `${promDiasUso} Días`;
-
-      const semaforoEl = document.getElementById("m3-semaforo-status");
-      if (ultimaFechaSalida) {
-        const hoy = new Date();
-        const diasDescanso = Math.max(0, Math.floor((hoy - ultimaFechaSalida) / (1000 * 60 * 60 * 24)));
-        document.getElementById("m3-dias-descanso").innerText = `${diasDescanso} Días`;
-
-        if (diasDescanso < 21) {
-          semaforoEl.className = "status-badge badge-rojo";
-          semaforoEl.innerText = "No Disponible (<21d)";
-        } else if (diasDescanso <= 35) {
-          semaforoEl.className = "status-badge badge-amarillo";
-          semaforoEl.innerText = "En Recuperación (21-35d)";
-        } else {
-          semaforoEl.className = "status-badge badge-verde";
-          semaforoEl.innerText = "Óptimo / Listo (>35d)";
-        }
-      } else {
-        document.getElementById("m3-dias-descanso").innerText = "0 Días";
-        semaforoEl.className = "status-badge badge-amarillo";
-        semaforoEl.innerText = "Sin Datos";
+    function navegarA(id, el) {
+      document.querySelectorAll('.module-view').forEach(m => m.classList.remove('active'));
+      document.querySelectorAll('.sidebar-menu li').forEach(l => l.classList.remove('active'));
+      
+      const target = document.getElementById(id);
+      if (target) target.classList.add('active');
+      if (el) el.classList.add('active');
+      
+      if (id === 'mod-historial') {
+        analizarPotreroHistorial();
       }
-    };
-  }
-
-  // --- LÓGICA DE TAREAS Y BITÁCORA ---
-
-  function guardarTarea(event) {
-    event.preventDefault();
-    if (!db) return;
-
-    const descripcion = document.getElementById("tarea-descripcion").value.trim();
-    const responsable = document.getElementById("tarea-responsable").value.trim();
-    const fecha = document.getElementById("tarea-fecha").value;
-    const observacion = document.getElementById("tarea-observacion").value.trim();
-
-    if (!descripcion || !responsable || !fecha) {
-      alert("Por favor rellene los campos obligatorios.");
-      return;
     }
 
-    const nuevaTarea = {
-      descripcion,
-      responsable,
-      fecha,
-      observacion: observacion || "-",
-      fRegistro: new Date().toISOString()
-    };
+    function generarCamposEtarios1() {
+      const container = document.getElementById("m1-etarios-container");
+      if (!container) return;
+      container.innerHTML = "";
 
-    const tx = db.transaction(["tareas"], "readwrite");
-    tx.objectStore("tareas").add(nuevaTarea).onsuccess = () => {
-      rehacerFormularioTarea();
-      cargarTablaTareas();
-    };
-  }
+      GRUPOS_DESPLEGABLES.forEach((opciones) => {
+        const div = document.createElement("div");
+        div.className = "cat-box";
+        div.innerHTML = `
+          <select class="form-control select-cat" onchange="calcularUGM1()">
+            <option value="${opciones[0]}">${opciones[0]}</option>
+            <option value="${opciones[1]}">${opciones[1]}</option>
+          </select>
+          <input type="number" class="form-control input-cant" value="0" min="0" placeholder="Cant." oninput="calcularUGM1()">
+        `;
+        container.appendChild(div);
+      });
+      calcularUGM1();
+    }
 
-  function rehacerFormularioTarea() {
-    document.getElementById("form-planificacion-tareas").reset();
-    document.getElementById("tarea-fecha").value = new Date().toISOString().split("T")[0];
-  }
-
-  function sincronizarTareas() {
-    cargarTablaTareas();
-  }
-
-  function cargarTablaTareas() {
-    if (!db) return;
-
-    const tbody = document.getElementById("tabla-tareas-body");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-
-    const tx = db.transaction(["tareas"], "readonly");
-    tx.objectStore("tareas").getAll().onsuccess = (e) => {
-      const list = e.target.result || [];
-      document.getElementById("stat-total-tareas").innerText = list.length;
-
-      if (list.length > 0) {
-        list.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-        document.getElementById("stat-ultima-fecha-tarea").innerText = list[0].fecha;
+    function calcularOcupacionMeses() {
+      const fIng = new Date(document.getElementById("m1-f-ingreso").value);
+      const fSal = new Date(document.getElementById("m1-f-salida").value);
+      
+      if (!isNaN(fIng) && !isNaN(fSal) && fSal >= fIng) {
+        const diffDias = Math.max(0, Math.round((fSal - fIng) / (1000 * 60 * 60 * 24)));
+        const meses = (diffDias / 30.42).toFixed(2);
+        document.getElementById("m1-ocupacion-meses").value = `${meses} M`;
       } else {
-        document.getElementById("stat-ultima-fecha-tarea").innerText = "-";
+        document.getElementById("m1-ocupacion-meses").value = "0.00 M";
+      }
+    }
+
+    function calcularUGM1() {
+      const ha = parseFloat(document.getElementById("m1-potrero").value) || 1;
+      let totalCabezas = 0;
+      let totalUGM = 0;
+
+      const boxes = document.querySelectorAll(".cat-box");
+      boxes.forEach(box => {
+        const catSelected = box.querySelector(".select-cat").value;
+        const cant = parseInt(box.querySelector(".input-cant").value) || 0;
+        const factor = FACTORES_UGM[catSelected] || 1.0;
+
+        totalCabezas += cant;
+        totalUGM += (cant * factor);
+      });
+
+      const cargaHa = (totalUGM / ha).toFixed(2);
+      document.getElementById("m1-total-cabezas").value = totalCabezas;
+      document.getElementById("m1-total-ugm").value = `${totalUGM.toFixed(1)} UGM`;
+      document.getElementById("m1-carga-ha").value = `${cargaHa} UGM/ha`;
+    }
+
+    function guardarRegistroMod1() {
+      const selPotrero = document.getElementById("m1-potrero");
+      const potreroNombre = selPotrero.options[selPotrero.selectedIndex].text;
+      const ha = selPotrero.value;
+      const epoca = document.getElementById("m1-epoca").value;
+      const mov = document.getElementById("m1-movimiento").value;
+      const fIng = document.getElementById("m1-f-ingreso").value;
+      const fSal = document.getElementById("m1-f-salida").value;
+      const ocupacionMesesVal = parseFloat(document.getElementById("m1-ocupacion-meses").value) || 0;
+      const resp = document.getElementById("m1-responsable").value;
+      const cabezas = parseInt(document.getElementById("m1-total-cabezas").value) || 0;
+      const ugmHa = document.getElementById("m1-carga-ha").value;
+      const ugmTotal = parseFloat(document.getElementById("m1-total-ugm").value) || 0;
+      const obs = document.getElementById("m1-obs").value;
+
+      if (cabezas <= 0) return alert("⚠️ Ingrese al menos un animal.");
+
+      actualizarSemaforo("amarillo", "En cola...");
+
+      let desgloseText = [];
+      document.querySelectorAll(".cat-box").forEach(box => {
+        const cat = box.querySelector(".select-cat").value;
+        const cant = parseInt(box.querySelector(".input-cant").value) || 0;
+        if (cant > 0) desgloseText.push(`${cat}: ${cant}`);
+      });
+
+      const reg = { potreroNombre, ha, epoca, mov, fIng, fSal, ocupacionMeses: ocupacionMesesVal, resp, detalle: desgloseText.join(", "), cabezas, ugmHa, ugmTotal, obs };
+
+      const tx = db.transaction("potreros", "readwrite");
+      tx.objectStore("potreros").add(reg);
+      
+      tx.oncomplete = () => {
+        cargarTablas();
+        limpiarFormMod1();
+        actualizarSemaforo("verde", "Sincronizado");
+        alert("✅ Registro guardado y sincronizado.");
+      };
+
+      tx.onerror = () => {
+        actualizarSemaforo("rojo", "Error guardando");
+      };
+    }
+
+    function limpiarFormMod1() {
+      document.getElementById("form-mod1").reset();
+      const hoy = new Date().toISOString().split('T')[0];
+      document.getElementById("m1-f-ingreso").value = hoy;
+      document.getElementById("m1-f-salida").value = hoy;
+      generarCamposEtarios1();
+      calcularOcupacionMeses();
+    }
+
+    function calcularMetricasLevante() {
+      const fAnt = new Date(document.getElementById("lev-f-ant").value);
+      const fAct = new Date(document.getElementById("lev-f-act").value);
+      const pesoAnt = parseFloat(document.getElementById("lev-peso-ant").value) || 0;
+      const pesoAct = parseFloat(document.getElementById("lev-peso-act").value) || 0;
+      const pesoMeta = parseFloat(document.getElementById("lev-peso-meta").value) || 0;
+      const cant = parseInt(document.getElementById("lev-cant").value) || 1;
+
+      if (fAct <= fAnt || pesoAnt <= 0 || pesoAct <= 0) return;
+
+      const diffDias = Math.max(1, Math.round((fAct - fAnt) / (1000 * 60 * 60 * 24)));
+      const gananciaInd = pesoAct - pesoAnt;
+      const gmd = gananciaInd / diffDias;
+      const gananciaLote = gananciaInd * cant;
+
+      let mesesMeta = "0.0";
+      if (gmd > 0 && pesoMeta > pesoAct) {
+        mesesMeta = ((pesoMeta - pesoAct) / (gmd * 30.44)).toFixed(1);
       }
 
-      list.forEach(t => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>#${t.id}</td>
-          <td><strong>${t.descripcion}</strong></td>
-          <td>${t.responsable}</td>
-          <td>${t.fecha}</td>
-          <td>${t.observacion}</td>
-          <td>
-            <button class="btn btn-sm btn-danger" onclick="borrarFila('tareas', ${t.id})">
-              <i class="fas fa-trash"></i> Borrar
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    };
-  }
+      document.getElementById("kpi-gmd").innerText = gmd.toFixed(3);
+      document.getElementById("kpi-ganancia-total").innerText = `${gananciaLote.toFixed(1)} kg`;
+      document.getElementById("kpi-meses-meta").innerText = `${mesesMeta} M`;
+    }
 
-  function borrarFila(storeName, id) {
-    if (!confirm(`¿Confirma eliminar este registro?`)) return;
-    const tx = db.transaction([storeName], "readwrite");
-    tx.objectStore(storeName).delete(id).onsuccess = () => {
-      if (storeName === "tareas") cargarTablaTareas();
-      else cargarDatosTablas();
-    };
-  }
+    function guardarRegistroLevante() {
+      const lote = document.getElementById("lev-lote").value;
+      const epoca = document.getElementById("lev-epoca").value;
+      const sexo = document.getElementById("lev-sexo").value;
+      const especie = document.getElementById("lev-especie").value;
+      const grupo = document.getElementById("lev-grupo").value;
+      const cant = document.getElementById("lev-cant").value;
+      const gmd = document.getElementById("kpi-gmd").innerText;
+      const ganLote = document.getElementById("kpi-ganancia-total").innerText;
+      const mesesMeta = document.getElementById("kpi-meses-meta").innerText;
+      const proxPesaje = document.getElementById("lev-f-prox").value;
+      const obs = document.getElementById("lev-obs").value;
 
-  function borrarTodasLasTareas() {
-    if (!confirm("⚠️ ¿Confirma que desea borrar TODAS las tareas de la bitácora?")) return;
-    const tx = db.transaction(["tareas"], "readwrite");
-    tx.objectStore("tareas").clear().onsuccess = () => {
-      cargarTablaTareas();
-    };
-  }
-</script>
+      if (!lote || !cant) return alert("⚠️ Ingrese el lote y la cantidad de animales.");
+
+      actualizarSemaforo("amarillo", "En cola...");
+
+      const reg = { lote, epoca, sexo, especie, grupo, cant, gmd, ganLote, mesesMeta, proxPesaje, obs };
+
+      const tx = db.transaction("levante", "readwrite");
+      tx.objectStore("levante").add(reg);
+      
+      tx.oncomplete = () => {
+        cargarTablas();
+        limpiarFormLevante();
+        actualizarSemaforo("verde", "Sincronizado");
+        alert("✅ Pesaje registrado y sincronizado.");
+      };
+
+      tx.onerror = () => {
+        actualizarSemaforo("rojo", "Error guardando");
+      };
+    }
+
+    function limpiarFormLevante() {
+      document.getElementById("form-levante").reset();
+      document.getElementById("kpi-gmd").innerText = "0.000";
+      document.getElementById("kpi-ganancia-total").innerText = "0 kg";
+      document.getElementById("kpi-meses-meta").innerText = "0.0 M";
+    }
+
+    function borrarFila(store, id) {
+      if (confirm("¿Desea borrar este registro?")) {
+        actualizarSemaforo("amarillo", "En cola...");
+        const tx = db.transaction(store, "readwrite");
+        tx.objectStore(store).delete(id);
+        tx.oncomplete = () => {
+          cargarTablas();
+          actualizarSemaforo("verde", "Sincronizado");
+        };
+      }
+    }
+
+    function cargarTablas() {
+      if (!db) return;
+
+      const tx1 = db.transaction("potreros", "readonly");
+      tx1.objectStore("potreros").getAll().onsuccess = (e) => {
+        const list = e.target.result;
+        const tbody = document.getElementById("tabla-mod1-body");
+        tbody.innerHTML = "";
+        let totCab = 0; let totUgm = 0; let totOcupacion = 0;
+
+        list.forEach(r => {
+          totCab += r.cabezas;
+          totUgm += r.ugmTotal;
+          totOcupacion += (r.ocupacionMeses || 0);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.potreroNombre}</td>
+            <td>${r.ha}</td>
+            <td>${r.epoca}</td>
+            <td>${r.mov}</td>
+            <td>${r.detalle || '-'}</td>
+            <td>${r.cabezas}</td>
+            <td>${r.ugmHa}</td>
+            <td>${(r.ocupacionMeses || 0).toFixed(2)} M</td>
+            <td>${r.resp || '-'}</td>
+            <td>${r.obs || '-'}</td>
+            <td><button class="btn-danger" onclick="borrarFila('potreros', ${r.id})">Borrar</button></td>
+          `;
+          tbody.prepend(tr);
+        });
+
+        document.getElementById("stat-cabezas").innerText = totCab;
+        document.getElementById("stat-ugm").innerText = totUgm.toFixed(1);
+        document.getElementById("stat-ocupacion-meses").innerText = `${totOcupacion.toFixed(2)} M`;
+        
+        analizarPotreroHistorial();
+      };
+
+      const tx2 = db.transaction("levante", "readonly");
+      tx2.objectStore("levante").getAll().onsuccess = (e) => {
+        const list = e.target.result;
+        const tbody = document.getElementById("tabla-levante-body");
+        tbody.innerHTML = "";
+
+        list.forEach(r => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.lote}</td>
+            <td>${r.sexo}/${r.especie}</td>
+            <td>${r.cant}</td>
+            <td>${r.gmd}</td>
+            <td>${r.ganLote}</td>
+            <td>${r.mesesMeta}</td>
+            <td>${r.proxPesaje}</td>
+            <td>${r.obs || '-'}</td>
+            <td><button class="btn-danger" onclick="borrarFila('levante', ${r.id})">Borrar</button></td>
+          `;
+          tbody.prepend(tr);
+        });
+      };
+    }
+
+    /* LÓGICA DEL MÓDULO 3: HISTORIAL Y ROTACIÓN DE POTREROS */
+    function analizarPotreroHistorial() {
+      const tbody3 = document.getElementById("tabla-mod3-body");
+      if (!tbody3) return;
+      tbody3.innerHTML = "";
+
+      const potreroSel = document.getElementById("m3-potrero-select").value;
+
+      if (!db) {
+        resetearKpisM3();
+        return;
+      }
+
+      const tx = db.transaction("potreros", "readonly");
+      tx.objectStore("potreros").getAll().onsuccess = (e) => {
+        const list = e.target.result.filter(r => r.potreroNombre === potreroSel);
+
+        if (list.length === 0) {
+          resetearKpisM3();
+          return;
+        }
+
+        // Ordenar por fecha de salida descendente
+        list.sort((a, b) => new Date(b.fSal) - new Date(a.fSal));
+
+        let totCab = 0;
+        let sumDiasUso = 0;
+        let cInv = [], cVer = [];
+        const hoy = new Date();
+
+        list.forEach(r => {
+          totCab += r.cabezas;
+          
+          const dIng = new Date(r.fIng);
+          const dSal = new Date(r.fSal);
+          const diffUso = Math.max(1, Math.round((dSal - dIng) / (1000 * 60 * 60 * 24)));
+          sumDiasUso += diffUso;
+
+          const numCarga = parseFloat(r.ugmHa) || 0;
+          if (r.epoca === "Invierno") cInv.push(numCarga);
+          else cVer.push(numCarga);
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.fIng}</td>
+            <td>${r.fSal}</td>
+            <td>${r.epoca}</td>
+            <td>${r.mov}</td>
+            <td>${r.cabezas}</td>
+            <td>${r.ugmHa}</td>
+            <td>${r.detalle || '-'}</td>
+            <td>${r.resp || '-'}</td>
+            <td>${r.obs || '-'}</td>
+          `;
+          tbody3.appendChild(tr);
+        });
+
+        // 1. Días de Descanso y Semáforo
+        const ultimaSalida = new Date(list[0].fSal);
+        const diasDescanso = Math.max(0, Math.floor((hoy - ultimaSalida) / (1000 * 60 * 60 * 24)));
+        document.getElementById("m3-dias-descanso").innerText = `${diasDescanso} Días`;
+
+        const badge = document.getElementById("m3-semaforo-status");
+        if (diasDescanso >= 42) {
+          badge.className = "status-badge badge-verde";
+          badge.innerText = "🟢 Listo para Pastorear";
+        } else if (diasDescanso >= 21) {
+          badge.className = "status-badge badge-amarillo";
+          badge.innerText = "🟡 En Recuperación";
+        } else {
+          badge.className = "status-badge badge-rojo";
+          badge.innerText = "🔴 Descanso Insuficiente";
+        }
+
+        // 2. Días de Uso Promedio
+        const promUso = (sumDiasUso / list.length).toFixed(1);
+        document.getElementById("m3-dias-uso-prom").innerText = `${promUso} Días`;
+
+        // 3. Cargas Promedio e Histórico Cabezas
+        const avgInv = cInv.length ? (cInv.reduce((a, b) => a + b, 0) / cInv.length).toFixed(2) : "0.00";
+        const avgVer = cVer.length ? (cVer.reduce((a, b) => a + b, 0) / cVer.length).toFixed(2) : "0.00";
+
+        document.getElementById("m3-carga-inv").innerText = `${avgInv} UGM/ha`;
+        document.getElementById("m3-carga-ver").innerText = `${avgVer} UGM/ha`;
+        document.getElementById("m3-total-cabezas").innerText = `${totCab} Cab.`;
+      };
+    }
+
+    function resetearKpisM3() {
+      document.getElementById("m3-dias-descanso").innerText = "Sin registros";
+      const badge = document.getElementById("m3-semaforo-status");
+      badge.className = "status-badge badge-amarillo";
+      badge.innerText = "Sin Datos";
+      document.getElementById("m3-dias-uso-prom").innerText = "0.0 Días";
+      document.getElementById("m3-carga-inv").innerText = "0.00 UGM/ha";
+      document.getElementById("m3-carga-ver").innerText = "0.00 UGM/ha";
+      document.getElementById("m3-total-cabezas").innerText = "0 Cab.";
+    }
+  </script>
 </body>
 </html>
