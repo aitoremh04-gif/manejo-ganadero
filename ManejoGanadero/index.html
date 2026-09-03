@@ -315,9 +315,10 @@
       cargarTablas();
     };
 
-    // FACTORES UGM AJUSTADOS A CONDICIONES TROPICALES
+    // FACTORES UGM ESPECÍFICOS POR SUBCATEGORÍA
     const FACTORES_UGM = {
-      "Mautas": 0.5, "Mautes": 0.5,
+      "Mautas": 0.5, "Bautas": 0.6,
+      "Mautes": 0.5, "Bautes": 0.6,
       "Becerros": 0.25, "Bucerros": 0.3,
       "Vacas Vacías": 1.0, "Búfalas Vacías": 1.2,
       "Toros": 1.5, "Butoros": 1.5,
@@ -325,12 +326,14 @@
       "Vacas Paridas": 1.0, "Búfala Parida": 1.2,
       "Vacas Monta": 1.0, "Búfala Monta": 1.2,
       "Novillas Pñ": 0.7, "Buvilla Pñ": 0.8,
-      "Novillas Monta": 0.7, "Buvilla Monta": 0.8
+      "Novillas Monta": 0.7, "Buvilla Monta": 0.8,
+      "Novillas Vacías": 0.7, "Buvillas Vacías": 0.8
     };
 
-    // PARES DE DESPLEGABLES EXCLUYENDO CATEGORÍAS INDICADAS
+    // PARES DE DESPLEGABLES INCLUYENDO MAUTES/BAUTES Y NOVILLAS VACÍAS/BUVILLAS VACÍAS
     const GRUPOS_DESPLEGABLES = [
-      ["Mautas", "Mautes"],
+      ["Mautas", "Bautas"],
+      ["Mautes", "Bautes"],
       ["Becerros", "Bucerros"],
       ["Vacas Vacías", "Búfalas Vacías"],
       ["Toros", "Butoros"],
@@ -338,7 +341,8 @@
       ["Vacas Paridas", "Búfala Parida"],
       ["Vacas Monta", "Búfala Monta"],
       ["Novillas Pñ", "Buvilla Pñ"],
-      ["Novillas Monta", "Buvilla Monta"]
+      ["Novillas Monta", "Buvilla Monta"],
+      ["Novillas Vacías", "Buvillas Vacías"]
     ];
 
     document.addEventListener("DOMContentLoaded", () => {
