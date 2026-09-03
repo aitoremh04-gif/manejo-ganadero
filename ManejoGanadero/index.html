@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Sistema Hato Laguna Brava</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
   <style>
     :root {
@@ -36,7 +33,6 @@
     .sidebar {
       width: 260px; background: #0d47a1; color: #ffffff;
       display: flex; flex-direction: column; z-index: 100;
-      flex-shrink: 0;
     }
 
     .sidebar-header {
@@ -44,16 +40,13 @@
       display: flex; align-items: center; justify-content: space-between;
     }
 
-    /* ESTILOS DEL SEMÁFORO */
     .sync-semaforo {
       display: flex; align-items: center; gap: 6px;
-      background: rgba(0, 0, 0, 0.2); padding: 3px 8px;
-      border-radius: 12px; font-size: 10px;
+      background: rgba(0, 0, 0, 0.2); padding: 3px 8px; border-radius: 12px; font-size: 10px;
     }
     .semaforo-luz {
-      width: 10px; height: 10px; border-radius: 50%;
-      background-color: #757575; box-shadow: 0 0 4px rgba(0,0,0,0.3);
-      transition: background-color 0.3s ease;
+      width: 10px; height: 10px; border-radius: 50%; background-color: #757575;
+      box-shadow: 0 0 4px rgba(0,0,0,0.3); transition: background-color 0.3s ease;
     }
     .semaforo-luz.rojo { background-color: var(--alert-color); box-shadow: 0 0 6px var(--alert-color); }
     .semaforo-luz.amarillo { background-color: var(--warning-color); box-shadow: 0 0 6px var(--warning-color); }
@@ -82,9 +75,10 @@
     .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; }
     .form-group label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 2px; }
     
-    .form-control-custom {
-      width: 100%; padding: 5px 6px; border: 1px solid #cfd8dc;
-      border-radius: 4px; font-size: 11px; background: #fafafa; height: 28px;
+    .form-control {
+      width: 100%; padding: 5px 6px;
+      border: 1px solid #cfd8dc; border-radius: 4px;
+      font-size: 11px; background: #fafafa; height: 28px;
     }
 
     .category-grid {
@@ -96,23 +90,35 @@
     .cat-box select { font-size: 10px; padding: 2px 4px; height: 24px; font-weight: bold; margin-bottom: 3px; }
     .cat-box input { font-size: 11px; padding: 2px 4px; height: 24px; text-align: center; }
 
-    .btn-group-custom { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .btn-group { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
     .btn-action { background-color: var(--blue-primary); color: #ffffff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; flex: 1; }
     .btn-reset { background-color: var(--warning-color); }
-    .btn-danger-custom { background-color: var(--alert-color); color: #fff; border: none; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+    .btn-danger { background-color: var(--alert-color); color: #fff; border: none; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
 
     .table-container { width: 100%; overflow-x: auto; margin-top: 10px; border: 1px solid #eef0f2; border-radius: 6px; }
     .data-table { width: 100%; border-collapse: collapse; font-size: 10px; text-align: left; }
     .data-table th { background-color: #f0f4f8; padding: 6px 4px; border-bottom: 1px solid #cfd8dc; }
     .data-table td { padding: 6px 4px; border-bottom: 1px solid #eef0f2; }
 
-    .kpi-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 8px 0; }
+    .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 4px; margin: 8px 0; }
     .kpi-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 4px; text-align: center; }
     .kpi-title { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
     .kpi-value { font-size: 12px; font-weight: bold; color: var(--blue-primary); margin-top: 1px; }
 
-    @media (min-width: 600px) { .category-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (min-width: 900px) { .category-grid { grid-template-columns: repeat(4, 1fr); } }
+    /* ESTILOS DEL MÓDULO 3 */
+    .status-badge {
+      display: inline-block; padding: 4px 8px; border-radius: 12px; font-weight: bold; font-size: 10px; text-align: center; color: #fff;
+    }
+    .badge-verde { background-color: var(--success-color); }
+    .badge-amarillo { background-color: var(--warning-color); }
+    .badge-rojo { background-color: var(--alert-color); }
+
+    @media (min-width: 600px) {
+      .category-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (min-width: 900px) {
+      .category-grid { grid-template-columns: repeat(4, 1fr); }
+    }
 
     @media (max-width: 768px) {
       body { flex-direction: column; }
@@ -135,7 +141,7 @@
     <ul class="sidebar-menu">
       <li class="active" onclick="navegarA('mod-1', this)">🌾 Potreros y UGM</li>
       <li onclick="navegarA('mod-levante', this)">⚖️ Módulo Levante</li>
-      <li onclick="navegarA('mod-3', this)">🔄 Rotación y Carga</li>
+      <li onclick="navegarA('mod-historial', this)">📊 Historial y Rotación</li>
     </ul>
   </aside>
 
@@ -154,7 +160,7 @@
         <div class="form-row">
           <div class="form-group" style="grid-column: span 2;">
             <label>Potrero / Hectáreas:</label>
-            <select class="form-control-custom" id="m1-potrero" onchange="calcularUGM1()">
+            <select class="form-control" id="m1-potrero" onchange="calcularUGM1()">
               <option value="432">Macanillal (432 ha)</option>
               <option value="569">El Galpón (569 ha)</option>
               <option value="80">Mata del Muerto (80 ha)</option>
@@ -179,19 +185,19 @@
           </div>
           <div class="form-group">
             <label>Época:</label>
-            <select class="form-control-custom" id="m1-epoca"><option>Invierno</option><option>Verano</option></select>
+            <select class="form-control" id="m1-epoca"><option>Invierno</option><option>Verano</option></select>
           </div>
           <div class="form-group">
             <label>Movimiento:</label>
-            <select class="form-control-custom" id="m1-movimiento"><option>Ingreso</option><option>Egreso</option></select>
+            <select class="form-control" id="m1-movimiento"><option>Ingreso</option><option>Egreso</option></select>
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="m1-f-ingreso" class="form-control-custom" onchange="calcularOcupacionMeses()"></div>
-          <div class="form-group"><label>Salida Est.:</label><input type="date" id="m1-f-salida" class="form-control-custom" onchange="calcularOcupacionMeses()"></div>
-          <div class="form-group"><label>Ocupación:</label><input type="text" id="m1-ocupacion-meses" class="form-control-custom" readonly value="0.00 Meses"></div>
-          <div class="form-group"><label>Responsable:</label><input type="text" id="m1-responsable" class="form-control-custom" placeholder="Caporal"></div>
+          <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="m1-f-ingreso" class="form-control" onchange="calcularOcupacionMeses()"></div>
+          <div class="form-group"><label>Salida Est.:</label><input type="date" id="m1-f-salida" class="form-control" onchange="calcularOcupacionMeses()"></div>
+          <div class="form-group"><label>Ocupación:</label><input type="text" id="m1-ocupacion-meses" class="form-control" readonly value="0.00 Meses"></div>
+          <div class="form-group"><label>Responsable:</label><input type="text" id="m1-responsable" class="form-control" placeholder="Caporal"></div>
         </div>
 
         <label style="font-size:10px; font-weight:bold; margin: 4px 0 2px 0; display:block;">Categorías (Cantidad):</label>
@@ -200,24 +206,24 @@
         <div class="form-row">
           <div class="form-group">
             <label>Total Cabezas:</label>
-            <input type="number" id="m1-total-cabezas" class="form-control-custom" readonly value="0" style="font-weight:bold;">
+            <input type="number" id="m1-total-cabezas" class="form-control" readonly value="0" style="font-weight:bold;">
           </div>
           <div class="form-group">
             <label>Total UGM:</label>
-            <input type="text" id="m1-total-ugm" class="form-control-custom" readonly value="0.0 UGM" style="font-weight:bold; color:var(--blue-primary);">
+            <input type="text" id="m1-total-ugm" class="form-control" readonly value="0.0 UGM" style="font-weight:bold; color:var(--blue-primary);">
           </div>
           <div class="form-group">
             <label>Carga (UGM/Ha):</label>
-            <input type="text" id="m1-carga-ha" class="form-control-custom" readonly value="0.00 UGM/ha" style="font-weight:bold;">
+            <input type="text" id="m1-carga-ha" class="form-control" readonly value="0.00 UGM/ha" style="font-weight:bold;">
           </div>
         </div>
 
         <div class="form-group">
           <label>Observaciones:</label>
-          <input type="text" id="m1-obs" class="form-control-custom" placeholder="Estado del pasto, agua, etc.">
+          <input type="text" id="m1-obs" class="form-control" placeholder="Estado del pasto, agua, etc.">
         </div>
 
-        <div class="btn-group-custom">
+        <div class="btn-group">
           <button type="button" class="btn-action" onclick="guardarRegistroMod1()">Guardar</button>
           <button type="button" class="btn-action btn-reset" onclick="limpiarFormMod1()">Limpiar</button>
         </div>
@@ -261,39 +267,39 @@
 
       <form id="form-levante">
         <div class="form-row">
-          <div class="form-group"><label>Lote:</label><input type="text" id="lev-lote" class="form-control-custom" placeholder="Lote Mautes 2026"></div>
+          <div class="form-group"><label>Lote:</label><input type="text" id="lev-lote" class="form-control" placeholder="Lote Mautes 2026"></div>
           <div class="form-group">
             <label>Época:</label>
-            <select class="form-control-custom" id="lev-epoca"><option>Invierno</option><option>Verano</option></select>
+            <select class="form-control" id="lev-epoca"><option>Invierno</option><option>Verano</option></select>
           </div>
           <div class="form-group">
             <label>Sexo:</label>
-            <select class="form-control-custom" id="lev-sexo"><option>Macho</option><option>Hembra</option></select>
+            <select class="form-control" id="lev-sexo"><option>Macho</option><option>Hembra</option></select>
           </div>
           <div class="form-group">
             <label>Especie:</label>
-            <select class="form-control-custom" id="lev-especie"><option>Bovino</option><option>Bufalino</option></select>
+            <select class="form-control" id="lev-especie"><option>Bovino</option><option>Bufalino</option></select>
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-group"><label>Grupo Etario:</label><input type="text" id="lev-grupo" class="form-control-custom" placeholder="Mautes / Bautes"></div>
-          <div class="form-group"><label>N° Animales:</label><input type="number" id="lev-cant" class="form-control-custom" placeholder="50" oninput="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Grupo Etario:</label><input type="text" id="lev-grupo" class="form-control" placeholder="Mautes / Bautes"></div>
+          <div class="form-group"><label>N° Animales:</label><input type="number" id="lev-cant" class="form-control" placeholder="50" oninput="calcularMetricasLevante()"></div>
         </div>
 
         <div class="form-row">
-          <div class="form-group"><label>Fecha Pesaje Ant.:</label><input type="date" id="lev-f-ant" class="form-control-custom" onchange="calcularMetricasLevante()"></div>
-          <div class="form-group"><label>Peso Ant. (kg):</label><input type="number" id="lev-peso-ant" class="form-control-custom" placeholder="180" oninput="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Fecha Pesaje Ant.:</label><input type="date" id="lev-f-ant" class="form-control" onchange="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Ant. (kg):</label><input type="number" id="lev-peso-ant" class="form-control" placeholder="180" oninput="calcularMetricasLevante()"></div>
         </div>
 
         <div class="form-row">
-          <div class="form-group"><label>Fecha Pesaje Act.:</label><input type="date" id="lev-f-act" class="form-control-custom" onchange="calcularMetricasLevante()"></div>
-          <div class="form-group"><label>Peso Act. (kg):</label><input type="number" id="lev-peso-act" class="form-control-custom" placeholder="205" oninput="calcularMetricasLevante()"></div>
-          <div class="form-group"><label>Peso Meta (kg):</label><input type="number" id="lev-peso-meta" class="form-control-custom" value="320" oninput="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Fecha Pesaje Act.:</label><input type="date" id="lev-f-act" class="form-control" onchange="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Act. (kg):</label><input type="number" id="lev-peso-act" class="form-control" placeholder="205" oninput="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Meta (kg):</label><input type="number" id="lev-peso-meta" class="form-control" value="320" oninput="calcularMetricasLevante()"></div>
         </div>
 
         <div class="form-row">
-          <div class="form-group"><label>Próximo Pesaje:</label><input type="date" id="lev-f-prox" class="form-control-custom"></div>
+          <div class="form-group"><label>Próximo Pesaje:</label><input type="date" id="lev-f-prox" class="form-control"></div>
         </div>
 
         <div class="kpi-container">
@@ -302,9 +308,9 @@
           <div class="kpi-card"><div class="kpi-title">Meses a Meta</div><div class="kpi-value" id="kpi-meses-meta">0.0 M</div></div>
         </div>
 
-        <div class="form-group"><label>Observaciones:</label><input type="text" id="lev-obs" class="form-control-custom" placeholder="Suplementación, condición corporal, etc."></div>
+        <div class="form-group"><label>Observaciones:</label><input type="text" id="lev-obs" class="form-control" placeholder="Suplementación, condición corporal, etc."></div>
 
-        <div class="btn-group-custom">
+        <div class="btn-group">
           <button type="button" class="btn-action" onclick="guardarRegistroLevante()">Guardar</button>
           <button type="button" class="btn-action btn-reset" onclick="limpiarFormLevante()">Limpiar</button>
         </div>
@@ -330,99 +336,94 @@
       </div>
     </section>
 
-    <section id="mod-3" class="module-view">
-      <div class="row mb-3 align-items-center">
-        <div class="col-md-7">
-          <h3 class="fw-bold text-success"><i class="bi bi-diagram-3-fill me-2"></i>Historial, Rotación y Capacidad de Carga</h3>
-          <p class="text-muted small mb-0">Monitoreo de tiempo de descanso, balance de ocupación y capacidad sugerida por hectárea.</p>
-        </div>
-        
-        <div class="col-md-5 mt-3 mt-md-0">
-          <div class="p-2 bg-light rounded border border-success d-flex align-items-center justify-content-between">
-            <label for="selectEpocaAno" class="form-label fw-bold mb-0 me-2 small text-dark"><i class="bi bi-calendar3 me-1"></i>Época del Año:</label>
-            <select id="selectEpocaAno" class="form-select form-select-sm border-success fw-bold w-auto" onchange="actualizarEpocaYCargas()">
-              <option value="INVIERNO" selected>🌧️ Invierno (1.8 Cab/ha)</option>
-              <option value="VERANO">☀️ Verano (2.8 Cab/ha)</option>
-            </select>
-          </div>
+    <section id="mod-historial" class="module-view">
+      <div class="module-header">
+        <h3>📊 Historial, Rotación y Estadística de Potreros</h3>
+      </div>
+
+      <div class="form-row" style="margin-bottom: 12px;">
+        <div class="form-group" style="grid-column: span 2;">
+          <label>Seleccionar Potrero para Análisis:</label>
+          <select class="form-control" id="m3-potrero-select" onchange="analizarPotreroHistorial()">
+            <option value="Macanillal (432 ha)">Macanillal (432 ha)</option>
+            <option value="El Galpón (569 ha)">El Galpón (569 ha)</option>
+            <option value="Mata del Muerto (80 ha)">Mata del Muerto (80 ha)</option>
+            <option value="Manguito (234 ha)">Manguito (234 ha)</option>
+            <option value="Mata de Piña (205 ha)">Mata de Piña (205 ha)</option>
+            <option value="Las Rallas (102 ha)">Las Rallas (102 ha)</option>
+            <option value="Potrero del Medio (703 ha)">Potrero del Medio (703 ha)</option>
+            <option value="Cuatro Esquinas (77 ha)">Cuatro Esquinas (77 ha)</option>
+            <option value="Paulero (418 ha)">Paulero (418 ha)</option>
+            <option value="Jobo Gacho (422 ha)">Jobo Gacho (422 ha)</option>
+            <option value="Curva del Peligro (40 ha)">Curva del Peligro (40 ha)</option>
+            <option value="Módulo A (36 ha)">Módulo A (36 ha)</option>
+            <option value="Módulo B (36 ha)">Módulo B (36 ha)</option>
+            <option value="Módulo C (36 ha)">Módulo C (36 ha)</option>
+            <option value="Módulo D (36 ha)">Módulo D (36 ha)</option>
+            <option value="Módulo F (143 ha)">Módulo F (143 ha)</option>
+            <option value="Saladillal (125 ha)">Saladillal (125 ha)</option>
+            <option value="Carretera (142 ha)">Carretera (142 ha)</option>
+            <option value="María del Carmen (32 ha)">María del Carmen (32 ha)</option>
+            <option value="Casa (26 ha)">Casa (26 ha)</option>
+          </select>
         </div>
       </div>
 
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
-          <span><i class="bi bi-stars text-warning me-2"></i>Sugerencias Inteligentes de Rotación</span>
-          <span class="badge bg-success" id="badgeFactorCarga">Factor Activo: 1.8 UGM/ha</span>
+      <h4 style="margin: 4px 0; font-size: 11px; color: var(--blue-primary);">Estado Actual y Disponibilidad</h4>
+      <div class="kpi-container">
+        <div class="kpi-card">
+          <div class="kpi-title">Días Descanso</div>
+          <div class="kpi-value" id="m3-dias-descanso">0 Días</div>
         </div>
-        <div class="card-body bg-light">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <div class="p-3 bg-white rounded border border-success border-2 h-100">
-                <h6 class="fw-bold text-success"><i class="bi bi-box-arrow-in-right me-1"></i> Potreros con Mayor Descanso (Listos)</h6>
-                <hr class="my-2">
-                <ul class="list-group list-group-flush small" id="listaPotrerosMayorDescanso">
-                  <li class="list-group-item text-muted">Cargando datos de reposo...</li>
-                </ul>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="p-3 bg-white rounded border border-danger border-2 h-100">
-                <h6 class="fw-bold text-danger"><i class="bi bi-box-arrow-left me-1"></i> Potreros Ocupados (Evaluación de Carga)</h6>
-                <hr class="my-2">
-                <ul class="list-group list-group-flush small" id="listaPotrerosMayorUso">
-                  <li class="list-group-item text-muted">Cargando datos de ocupación...</li>
-                </ul>
-              </div>
-            </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Disponibilidad</div>
+          <div style="margin-top:2px;" id="m3-container-semaforo">
+            <span class="status-badge badge-amarillo" id="m3-semaforo-status">Sin datos</span>
           </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Uso Promedio</div>
+          <div class="kpi-value" id="m3-dias-uso-prom">0.0 Días</div>
         </div>
       </div>
 
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-          <div class="row align-items-center g-3">
-            <div class="col-md-6">
-              <label for="selectPotreroHistorial" class="form-label fw-bold">Seleccionar Potrero para Ficha Técnica:</label>
-              <select id="selectPotreroHistorial" class="form-select border-success" onchange="analizarPotreroSeleccionado()">
-                <option value="">-- Selecciona un potrero --</option>
-              </select>
-            </div>
-            <div class="col-md-6 text-md-end">
-              <span id="semaforoPotrero" class="badge p-2 fs-6 bg-secondary">Estado: Sin Selección</span>
-            </div>
-          </div>
-
-          <div id="fichaTecnicaPotrero" class="mt-4" style="display:none;">
-            <div class="row g-3">
-              <div class="col-md-3">
-                <div class="p-3 bg-light rounded text-center border">
-                  <span class="text-muted small d-block">Superficie</span>
-                  <strong class="fs-5 text-dark" id="fichaHa">0 ha</strong>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="p-3 bg-light rounded text-center border">
-                  <span class="text-muted small d-block">Carga Actual</span>
-                  <strong class="fs-5 text-primary" id="fichaCargaAct">0.00 UGM/ha</strong>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="p-3 bg-light rounded text-center border">
-                  <span class="text-muted small d-block">Capacidad Óptima</span>
-                  <strong class="fs-5 text-success" id="fichaCapMax">0 Cabezas</strong>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="p-3 bg-light rounded text-center border">
-                  <span class="text-muted small d-block">Último Movimiento</span>
-                  <strong class="fs-6 text-dark" id="fichaUltimoMov">-</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-
+      <h4 style="margin: 10px 0 4px 0; font-size: 11px; color: var(--blue-primary);">Análisis Estacional (Invierno vs Verano)</h4>
+      <div class="kpi-container">
+        <div class="kpi-card">
+          <div class="kpi-title">Carga Invierno</div>
+          <div class="kpi-value" id="m3-carga-inv">0.00 UGM/ha</div>
         </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Carga Verano</div>
+          <div class="kpi-value" id="m3-carga-ver">0.00 UGM/ha</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Transeúntes Totales</div>
+          <div class="kpi-value" id="m3-total-cabezas">0 Cab.</div>
+        </div>
+      </div>
+
+      <h4 style="margin: 10px 0 4px 0; font-size: 11px; color: var(--blue-primary);">Bitácora Cronológica del Potrero</h4>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ingreso</th>
+              <th>Salida</th>
+              <th>Época</th>
+              <th>Mov.</th>
+              <th>Cabezas</th>
+              <th>UGM/Ha</th>
+              <th>Detalle Categorías</th>
+              <th>Resp.</th>
+              <th>Observaciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-mod3-body"></tbody>
+        </table>
       </div>
     </section>
+
   </main>
 
   <script>
@@ -448,11 +449,9 @@
       db = e.target.result;
       actualizarSemaforo("verde", "Sincronizado");
       cargarTablas();
-      poblarSelectPotrerosHistorial();
-      actualizarEpocaYCargas();
     };
 
-    request.onerror = () => {
+    request.onerror = (e) => {
       actualizarSemaforo("rojo", "Error DB");
     };
 
@@ -496,7 +495,10 @@
       document.querySelectorAll('.sidebar-menu li').forEach(l => l.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       if (el) el.classList.add('active');
-      if (id === 'mod-3') actualizarEpocaYCargas();
+      
+      if (id === 'mod-historial') {
+        analizarPotreroHistorial();
+      }
     }
 
     function generarCamposEtarios1() {
@@ -507,11 +509,11 @@
         const div = document.createElement("div");
         div.className = "cat-box";
         div.innerHTML = `
-          <select class="form-control-custom select-cat" onchange="calcularUGM1()">
+          <select class="form-control select-cat" onchange="calcularUGM1()">
             <option value="${opciones[0]}">${opciones[0]}</option>
             <option value="${opciones[1]}">${opciones[1]}</option>
           </select>
-          <input type="number" class="form-control-custom input-cant" value="0" min="0" placeholder="Cant." oninput="calcularUGM1()">
+          <input type="number" class="form-control input-cant" value="0" min="0" placeholder="Cant." oninput="calcularUGM1()">
         `;
         container.appendChild(div);
       });
@@ -524,3 +526,212 @@
       
       if (!isNaN(fIng) && !isNaN(fSal) && fSal >= fIng) {
         const diffDias = Math.max(0, Math.round((fSal - fIng) / (1000 * 60 * 60 * 24)));
+        const meses = (diffDias / 30.42).toFixed(2);
+        document.getElementById("m1-ocupacion-meses").value = `${meses} M`;
+      } else {
+        document.getElementById("m1-ocupacion-meses").value = "0.00 M";
+      }
+    }
+
+    function calcularUGM1() {
+      const ha = parseFloat(document.getElementById("m1-potrero").value) || 1;
+      let totalCabezas = 0;
+      let totalUGM = 0;
+
+      const boxes = document.querySelectorAll(".cat-box");
+      boxes.forEach(box => {
+        const catSelected = box.querySelector(".select-cat").value;
+        const cant = parseInt(box.querySelector(".input-cant").value) || 0;
+        const factor = FACTORES_UGM[catSelected] || 1.0;
+
+        totalCabezas += cant;
+        totalUGM += (cant * factor);
+      });
+
+      const cargaHa = (totalUGM / ha).toFixed(2);
+      document.getElementById("m1-total-cabezas").value = totalCabezas;
+      document.getElementById("m1-total-ugm").value = `${totalUGM.toFixed(1)} UGM`;
+      document.getElementById("m1-carga-ha").value = `${cargaHa} UGM/ha`;
+    }
+
+    function guardarRegistroMod1() {
+      const selPotrero = document.getElementById("m1-potrero");
+      const potreroNombre = selPotrero.options[selPotrero.selectedIndex].text;
+      const ha = selPotrero.value;
+      const epoca = document.getElementById("m1-epoca").value;
+      const mov = document.getElementById("m1-movimiento").value;
+      const fIng = document.getElementById("m1-f-ingreso").value;
+      const fSal = document.getElementById("m1-f-salida").value;
+      const ocupacionMesesVal = parseFloat(document.getElementById("m1-ocupacion-meses").value) || 0;
+      const resp = document.getElementById("m1-responsable").value;
+      const cabezas = parseInt(document.getElementById("m1-total-cabezas").value) || 0;
+      const ugmHa = document.getElementById("m1-carga-ha").value;
+      const ugmTotal = parseFloat(document.getElementById("m1-total-ugm").value) || 0;
+      const obs = document.getElementById("m1-obs").value;
+
+      if (cabezas <= 0) return alert("⚠️ Ingrese al menos un animal.");
+
+      actualizarSemaforo("amarillo", "En cola...");
+
+      let desgloseText = [];
+      document.querySelectorAll(".cat-box").forEach(box => {
+        const cat = box.querySelector(".select-cat").value;
+        const cant = parseInt(box.querySelector(".input-cant").value) || 0;
+        if (cant > 0) desgloseText.push(`${cat}: ${cant}`);
+      });
+
+      const reg = { potreroNombre, ha, epoca, mov, fIng, fSal, ocupacionMeses: ocupacionMesesVal, resp, detalle: desgloseText.join(", "), cabezas, ugmHa, ugmTotal, obs };
+
+      const tx = db.transaction("potreros", "readwrite");
+      tx.objectStore("potreros").add(reg);
+      
+      tx.oncomplete = () => {
+        cargarTablas();
+        limpiarFormMod1();
+        actualizarSemaforo("verde", "Sincronizado");
+        alert("✅ Registro guardado y sincronizado.");
+      };
+
+      tx.onerror = () => {
+        actualizarSemaforo("rojo", "Error guardando");
+      };
+    }
+
+    function limpiarFormMod1() {
+      document.getElementById("form-mod1").reset();
+      const hoy = new Date().toISOString().split('T')[0];
+      document.getElementById("m1-f-ingreso").value = hoy;
+      document.getElementById("m1-f-salida").value = hoy;
+      generarCamposEtarios1();
+      calcularOcupacionMeses();
+    }
+
+    function calcularMetricasLevante() {
+      const fAnt = new Date(document.getElementById("lev-f-ant").value);
+      const fAct = new Date(document.getElementById("lev-f-act").value);
+      const pesoAnt = parseFloat(document.getElementById("lev-peso-ant").value) || 0;
+      const pesoAct = parseFloat(document.getElementById("lev-peso-act").value) || 0;
+      const pesoMeta = parseFloat(document.getElementById("lev-peso-meta").value) || 0;
+      const cant = parseInt(document.getElementById("lev-cant").value) || 1;
+
+      if (fAct <= fAnt || pesoAnt <= 0 || pesoAct <= 0) return;
+
+      const diffDias = Math.max(1, Math.round((fAct - fAnt) / (1000 * 60 * 60 * 24)));
+      const gananciaInd = pesoAct - pesoAnt;
+      const gmd = gananciaInd / diffDias;
+      const gananciaLote = gananciaInd * cant;
+
+      let mesesMeta = "0.0";
+      if (gmd > 0 && pesoMeta > pesoAct) {
+        mesesMeta = ((pesoMeta - pesoAct) / (gmd * 30.44)).toFixed(1);
+      }
+
+      document.getElementById("kpi-gmd").innerText = gmd.toFixed(3);
+      document.getElementById("kpi-ganancia-total").innerText = `${gananciaLote.toFixed(1)} kg`;
+      document.getElementById("kpi-meses-meta").innerText = `${mesesMeta} M`;
+    }
+
+    function guardarRegistroLevante() {
+      const lote = document.getElementById("lev-lote").value;
+      const epoca = document.getElementById("lev-epoca").value;
+      const sexo = document.getElementById("lev-sexo").value;
+      const especie = document.getElementById("lev-especie").value;
+      const grupo = document.getElementById("lev-grupo").value;
+      const cant = document.getElementById("lev-cant").value;
+      const gmd = document.getElementById("kpi-gmd").innerText;
+      const ganLote = document.getElementById("kpi-ganancia-total").innerText;
+      const mesesMeta = document.getElementById("kpi-meses-meta").innerText;
+      const proxPesaje = document.getElementById("lev-f-prox").value;
+      const obs = document.getElementById("lev-obs").value;
+
+      if (!lote || !cant) return alert("⚠️ Ingrese el lote y la cantidad de animales.");
+
+      actualizarSemaforo("amarillo", "En cola...");
+
+      const reg = { lote, epoca, sexo, especie, grupo, cant, gmd, ganLote, mesesMeta, proxPesaje, obs };
+
+      const tx = db.transaction("levante", "readwrite");
+      tx.objectStore("levante").add(reg);
+      
+      tx.oncomplete = () => {
+        cargarTablas();
+        limpiarFormLevante();
+        actualizarSemaforo("verde", "Sincronizado");
+        alert("✅ Pesaje registrado y sincronizado.");
+      };
+
+      tx.onerror = () => {
+        actualizarSemaforo("rojo", "Error guardando");
+      };
+    }
+
+    function limpiarFormLevante() {
+      document.getElementById("form-levante").reset();
+      document.getElementById("kpi-gmd").innerText = "0.000";
+      document.getElementById("kpi-ganancia-total").innerText = "0 kg";
+      document.getElementById("kpi-meses-meta").innerText = "0.0 M";
+    }
+
+    function borrarFila(store, id) {
+      if (confirm("¿Desea borrar este registro?")) {
+        actualizarSemaforo("amarillo", "En cola...");
+        const tx = db.transaction(store, "readwrite");
+        tx.objectStore(store).delete(id);
+        tx.oncomplete = () => {
+          cargarTablas();
+          actualizarSemaforo("verde", "Sincronizado");
+        };
+      }
+    }
+
+    function cargarTablas() {
+      if (!db) return;
+
+      const tx1 = db.transaction("potreros", "readonly");
+      tx1.objectStore("potreros").getAll().onsuccess = (e) => {
+        const list = e.target.result;
+        const tbody = document.getElementById("tabla-mod1-body");
+        tbody.innerHTML = "";
+        let totCab = 0; let totUgm = 0; let totOcupacion = 0;
+
+        list.forEach(r => {
+          totCab += r.cabezas;
+          totUgm += r.ugmTotal;
+          totOcupacion += (r.ocupacionMeses || 0);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.potreroNombre}</td>
+            <td>${r.ha}</td>
+            <td>${r.epoca}</td>
+            <td>${r.mov}</td>
+            <td>${r.detalle || '-'}</td>
+            <td>${r.cabezas}</td>
+            <td>${r.ugmHa}</td>
+            <td>${(r.ocupacionMeses || 0).toFixed(2)} M</td>
+            <td>${r.resp || '-'}</td>
+            <td>${r.obs || '-'}</td>
+            <td><button class="btn-danger" onclick="borrarFila('potreros', ${r.id})">Borrar</button></td>
+          `;
+          tbody.prepend(tr);
+        });
+
+        document.getElementById("stat-cabezas").innerText = totCab;
+        document.getElementById("stat-ugm").innerText = totUgm.toFixed(1);
+        document.getElementById("stat-ocupacion-meses").innerText = `${totOcupacion.toFixed(2)} M`;
+        
+        analizarPotreroHistorial();
+      };
+
+      const tx2 = db.transaction("levante", "readonly");
+      tx2.objectStore("levante").getAll().onsuccess = (e) => {
+        const list = e.target.result;
+        const tbody = document.getElementById("tabla-levante-body");
+        tbody.innerHTML = "";
+
+        list.forEach(r => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.lote}</td>
+            <td>${r.sexo}/${r.especie}</td>
+            <td>${r.cant}</td>
+            <td>${r.gmd}</td>
