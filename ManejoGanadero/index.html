@@ -2,502 +2,855 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sistema Hato Laguna Brava - Gestión Ganadera</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Sistema Hato Laguna Brava</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     :root {
-      --primary-color: #1b5e20;
-      --primary-dark: #003300;
-      --accent-color: #f57f17;
-      --bg-light: #f4f6f8;
-      --card-bg: #ffffff;
-      --text-main: #333333;
-      --border-color: #e0e0e0;
+      --blue-primary: #1d72b8;
+      --blue-hover: #155a92;
+      --bg-card: #ffffff;
+      --text-main: #1c252e;
+      --text-muted: #637381;
+      --bg-body: #f4f6f8;
+      --alert-color: #d32f2f;
+      --alert-bg: #fde8e8;
+      --warning-color: #ed6c02;
+      --success-color: #2e7d32;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: var(--bg-light); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
+    * { box-sizing: border-box; }
 
-    /* HEADER & SIDEBAR */
-    header { background-color: var(--primary-color); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .header-title { font-size: 16px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
-    .status-badge { font-size: 12px; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 12px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0; padding: 0;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      display: flex; min-height: 100vh;
+    }
 
-    .app-container { display: flex; flex: 1; overflow: hidden; }
-    .sidebar { width: 250px; background: #2e7d32; color: white; display: flex; flex-direction: column; shrink: 0; }
-    .sidebar-menu { list-style: none; padding: 10px 0; }
-    .sidebar-menu li { padding: 12px 20px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px; transition: background 0.2s; }
-    .sidebar-menu li:hover, .sidebar-menu li.active { background-color: var(--primary-dark); font-weight: bold; border-left: 4px solid var(--accent-color); }
+    .sidebar {
+      width: 260px; background: #0d47a1; color: #ffffff;
+      display: flex; flex-direction: column; z-index: 100;
+    }
 
-    /* LAYOUT Y CONTENIDO */
-    main { flex: 1; padding: 16px; overflow-y: auto; }
-    .module-view { display: none; background: var(--card-bg); padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    .module-view.active { display: block; }
-    .module-header { border-bottom: 2px solid var(--primary-color); padding-bottom: 8px; margin-bottom: 16px; color: var(--primary-dark); }
+    .sidebar-header {
+      padding: 12px 16px; background: #0a3880; font-weight: bold; font-size: 14px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
 
-    /* FORMULARIOS Y CONTROLES */
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #555; }
-    .form-control { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; background: #fff; }
-    .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .form-row .form-group { flex: 1; min-width: 140px; }
+    .sync-semaforo {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(0, 0, 0, 0.2); padding: 3px 8px; border-radius: 12px; font-size: 10px;
+    }
+    .semaforo-luz {
+      width: 10px; height: 10px; border-radius: 50%; background-color: #757575;
+      box-shadow: 0 0 4px rgba(0,0,0,0.3); transition: background-color 0.3s ease;
+    }
+    .semaforo-luz.rojo { background-color: var(--alert-color); box-shadow: 0 0 6px var(--alert-color); }
+    .semaforo-luz.amarillo { background-color: var(--warning-color); box-shadow: 0 0 6px var(--warning-color); }
+    .semaforo-luz.verde { background-color: var(--success-color); box-shadow: 0 0 6px var(--success-color); }
 
-    /* BOTONES */
-    .btn-action { width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
-    .btn-action:active { background: var(--primary-dark); }
-    .btn-export { background: #0288d1; margin-top: 5px; }
+    .sidebar-menu { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
+    .sidebar-menu li { padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); cursor: pointer; font-size: 12px; }
+    .sidebar-menu li:hover, .sidebar-menu li.active { background: var(--blue-primary); }
 
-    /* TARJETAS DE KPIS Y TABLAS */
-    .kpi-grid { display: flex; gap: 10px; margin: 12px 0; }
-    .kpi-card { flex: 1; background: #e8f5e9; padding: 10px; border-radius: 6px; text-align: center; border: 1px solid #c8e6c9; }
-    .kpi-value { font-size: 18px; font-weight: bold; color: var(--primary-dark); margin-top: 4px; }
-    .kpi-label { font-size: 11px; color: #555; text-transform: uppercase; }
+    .main-wrapper { flex: 1; padding: 8px; overflow-y: auto; max-width: 1200px; margin: 0 auto; width: 100%; }
 
-    .table-responsive { width: 100%; overflow-x: auto; margin-top: 12px; border: 1px solid var(--border-color); border-radius: 6px; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
-    th { background: #f0f4f1; padding: 8px; border-bottom: 2px solid var(--border-color); color: #333; }
-    td { padding: 8px; border-bottom: 1px solid var(--border-color); }
-    tr:nth-child(even) { background: #fafafa; }
+    .header-card {
+      background: linear-gradient(135deg, #1d72b8, #0d47a1); color: #ffffff;
+      border-radius: 8px; padding: 10px 12px; margin-bottom: 8px;
+    }
+    .header-card h2 { margin: 0 0 2px 0; font-size: 15px; }
+    .header-card p { margin: 0; opacity: 0.9; font-size: 11px; }
+
+    .module-view { display: none; background: var(--bg-card); border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); }
+    .module-view.active { display: block !important; }
+
+    .module-header { border-bottom: 1px solid #eef0f2; padding-bottom: 6px; margin-bottom: 8px; }
+    .module-header h3 { margin: 0; color: var(--blue-primary); font-size: 14px; }
+
+    .form-group { margin-bottom: 6px; }
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; }
+    .form-group label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 2px; }
+    
+    .form-control {
+      width: 100%; padding: 5px 6px;
+      border: 1px solid #cfd8dc; border-radius: 4px;
+      font-size: 11px; background: #fafafa; height: 28px;
+    }
+
+    .category-grid {
+      background: #f4f6f8; padding: 6px; border-radius: 6px; margin-bottom: 8px;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
+    }
+
+    .cat-box { background: #ffffff; padding: 4px; border: 1px solid #cfd8dc; border-radius: 4px; }
+    .cat-box select { font-size: 10px; padding: 2px 4px; height: 24px; font-weight: bold; margin-bottom: 3px; }
+    .cat-box input { font-size: 11px; padding: 2px 4px; height: 24px; text-align: center; }
+
+    .btn-group { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .btn-action { background-color: var(--blue-primary); color: #ffffff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; flex: 1; }
+    .btn-reset { background-color: var(--warning-color); }
+    .btn-danger { background-color: var(--alert-color); color: #fff; border: none; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+
+    .table-container { width: 100%; overflow-x: auto; margin-top: 10px; border: 1px solid #eef0f2; border-radius: 6px; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 10px; text-align: left; }
+    .data-table th { background-color: #f0f4f8; padding: 6px 4px; border-bottom: 1px solid #cfd8dc; }
+    .data-table td { padding: 6px 4px; border-bottom: 1px solid #eef0f2; }
+
+    .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 4px; margin: 8px 0; }
+    .kpi-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 4px; text-align: center; }
+    .kpi-title { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
+    .kpi-value { font-size: 12px; font-weight: bold; color: var(--blue-primary); margin-top: 1px; }
+
+    .status-badge {
+      display: inline-block; padding: 4px 8px; border-radius: 12px; font-weight: bold; font-size: 10px; text-align: center; color: #fff;
+    }
+    .badge-verde { background-color: var(--success-color); }
+    .badge-amarillo { background-color: var(--warning-color); }
+    .badge-rojo { background-color: var(--alert-color); }
+
+    @media (min-width: 600px) {
+      .category-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (min-width: 900px) {
+      .category-grid { grid-template-columns: repeat(4, 1fr); }
+    }
 
     @media (max-width: 768px) {
-      .app-container { flex-direction: column; }
+      body { flex-direction: column; }
       .sidebar { width: 100%; }
-      .sidebar-menu { display: flex; overflow-x: auto; white-space: nowrap; }
-      .sidebar-menu li { flex: 0 0 auto; border-bottom: none; border-right: 1px solid rgba(255,255,255,0.1); padding: 10px 14px; }
+      .sidebar-menu { display: flex; overflow-x: auto; }
+      .sidebar-menu li { white-space: nowrap; flex: 1; text-align: center; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-title">
-      <span>🐂 Hato Laguna Brava</span>
-      <span class="status-badge" id="sync-icon">🟢</span>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span>Hato Laguna Brava</span>
+      <div class="sync-semaforo" title="Estado de sincronización">
+        <div id="luz-semaforo" class="semaforo-luz verde"></div>
+        <span id="texto-semaforo">Sincronizado</span>
+      </div>
     </div>
-    <div id="offline-tag" style="display:none; font-size: 11px; background: #d32f2f; color: white; padding: 2px 6px; border-radius: 4px;">OFFLINE</div>
-  </header>
+    <ul class="sidebar-menu">
+      <li class="active" onclick="navegarA('mod-1', this)">🌾 Potreros y UGM</li>
+      <li onclick="navegarA('mod-levante', this)">⚖️ Módulo Levante</li>
+      <li onclick="navegarA('mod-historial', this)">📊 Historial y Rotación</li>
+    </ul>
+  </aside>
 
-  <div class="app-container">
-    <nav class="sidebar">
-      <ul class="sidebar-menu">
-        <li class="active" onclick="navegarA('mod-rotacion', this)">1. Rotación y UGM</li>
-        <li onclick="navegarA('mod-levante', this)">📈 Levante y Pesajes</li>
-        <li onclick="navegarA('mod-2', this)">2. Planificación/Tareas</li>
-        <li onclick="navegarA('mod-3', this)">3. Manejo Sanitario</li>
-        <li onclick="navegarA('mod-4', this)">4. Eventos/GPS</li>
-        <li onclick="navegarA('mod-logistica', this)">📦 Logística e Insumos</li>
-        <li onclick="navegarA('mod-6', this)">🌤️ Meteorología GPS</li>
-        <li onclick="navegarA('mod-10', this)">🍽️ Comida/Cuadrillas</li>
-      </ul>
-    </nav>
+  <main class="main-wrapper">
+    <div class="header-card">
+      <h2>¡Hola, Juan José! 🤠</h2>
+      <p>Sistema Integrado de Control Ganadero - Hato Laguna Brava</p>
+    </div>
 
-    <main>
-      <!-- MÓDULO 1: ROTACIÓN Y CÁLCULO UGM -->
-      <section id="mod-rotacion" class="module-view active">
-        <div class="module-header"><h3>1. Control de Rotación de Potreros y UGM</h3></div>
+    <!-- MÓDULO 1: POTREROS Y UGM -->
+    <section id="mod-1" class="module-view active">
+      <div class="module-header">
+        <h3>1. Control de Pastoreo, Potreros y UGM</h3>
+      </div>
+      
+      <form id="form-mod1">
         <div class="form-row">
-          <div class="form-group"><label>Potrero / Módulo:</label><input type="text" id="mod1-potrero" class="form-control" placeholder="Ej: Potrero 04"></div>
-          <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="mod1-f-ingreso" class="form-control"></div>
-          <div class="form-group"><label>Fecha Salida Est.:</label><input type="date" id="mod1-f-salida" class="form-control" onchange="validarFechasRotacion()"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Especie:</label>
-            <select class="form-control" id="mod1-categoria" onchange="actualizarGruposEtarios()">
-              <option value="Bovinos">Bovinos</option>
-              <option value="Bufalinos">Bufalinos</option>
+          <div class="form-group" style="grid-column: span 2;">
+            <label>Potrero / Hectáreas:</label>
+            <select class="form-control" id="m1-potrero" onchange="calcularUGM1()">
+              <option value="432">Macanillal (432 ha)</option>
+              <option value="569">El Galpón (569 ha)</option>
+              <option value="80">Mata del Muerto (80 ha)</option>
+              <option value="234">Manguito (234 ha)</option>
+              <option value="205">Mata de Piña (205 ha)</option>
+              <option value="102">Las Rallas (102 ha)</option>
+              <option value="703">Potrero del Medio (703 ha)</option>
+              <option value="77">Cuatro Esquinas (77 ha)</option>
+              <option value="418">Paulero (418 ha)</option>
+              <option value="422">Jobo Gacho (422 ha)</option>
+              <option value="40">Curva del Peligro (40 ha)</option>
+              <option value="36">Módulo A (36 ha)</option>
+              <option value="36">Módulo B (36 ha)</option>
+              <option value="36">Módulo C (36 ha)</option>
+              <option value="36">Módulo D (36 ha)</option>
+              <option value="143">Módulo F (143 ha)</option>
+              <option value="125">Saladillal (125 ha)</option>
+              <option value="142">Carretera (142 ha)</option>
+              <option value="32">María del Carmen (32 ha)</option>
+              <option value="26">Casa (26 ha)</option>
             </select>
           </div>
           <div class="form-group">
-            <label>Categoría / Grupo:</label>
-            <select class="form-control" id="mod1-grupo-etario" onchange="calcularUGM()"></select>
+            <label>Época:</label>
+            <select class="form-control" id="m1-epoca"><option>Invierno</option><option>Verano</option></select>
           </div>
-          <div class="form-group"><label>Cantidad Cabezas:</label><input type="number" id="mod1-cantidad" class="form-control" value="0" oninput="calcularUGM()"></div>
-          <div class="form-group"><label>Carga Equiv. (UGM):</label><input type="text" id="mod1-ugm" class="form-control" readonly style="background:#e8f5e9; font-weight:bold;"></div>
+          <div class="form-group">
+            <label>Movimiento:</label>
+            <select class="form-control" id="m1-movimiento"><option>Ingreso</option><option>Egreso</option></select>
+          </div>
         </div>
-        <button class="btn-action" onclick="registrarMovimientoRotacion()">Registrar Movimiento</button>
-        <button class="btn-action btn-export" onclick="exportarCSV('rotacion')">📥 Exportar Rotación a CSV</button>
 
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr><th>Potrero</th><th>Ingreso</th><th>Salida</th><th>Especie</th><th>Grupo</th><th>Cab.</th><th>UGM</th></tr>
-            </thead>
-            <tbody id="tabla-rotacion-body"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- MÓDULO LEVANTE: PESAJES Y MONITOREO DE GMD -->
-      <section id="mod-levante" class="module-view">
-        <div class="module-header"><h3>📈 Levantamiento y Monitoreo de Pesajes</h3></div>
         <div class="form-row">
-          <div class="form-group"><label>Nombre del Lote:</label><input type="text" id="lev-lote" class="form-control" placeholder="Ej: Lote Mautas 2026"></div>
+          <div class="form-group"><label>Fecha Ingreso:</label><input type="date" id="m1-f-ingreso" class="form-control" onchange="calcularOcupacionMeses()"></div>
+          <div class="form-group"><label>Salida Est.:</label><input type="date" id="m1-f-salida" class="form-control" onchange="calcularOcupacionMeses()"></div>
+          <div class="form-group"><label>Ocupación:</label><input type="text" id="m1-ocupacion-meses" class="form-control" readonly value="0.00 Meses"></div>
+          <div class="form-group"><label>Responsable:</label><input type="text" id="m1-responsable" class="form-control" placeholder="Caporal"></div>
+        </div>
+
+        <label style="font-size:10px; font-weight:bold; margin: 4px 0 2px 0; display:block;">Categorías (Cantidad):</label>
+        <div class="category-grid" id="m1-etarios-container"></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Total Cabezas:</label>
+            <input type="number" id="m1-total-cabezas" class="form-control" readonly value="0" style="font-weight:bold;">
+          </div>
+          <div class="form-group">
+            <label>Total UGM:</label>
+            <input type="text" id="m1-total-ugm" class="form-control" readonly value="0.0 UGM" style="font-weight:bold; color:var(--blue-primary);">
+          </div>
+          <div class="form-group">
+            <label>Carga (UGM/Ha):</label>
+            <input type="text" id="m1-carga-ha" class="form-control" readonly value="0.00 UGM/ha" style="font-weight:bold;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Observaciones:</label>
+          <input type="text" id="m1-obs" class="form-control" placeholder="Estado del pasto, agua, etc.">
+        </div>
+
+        <div class="btn-group">
+          <button type="button" class="btn-action" onclick="guardarRegistroMod1()">Guardar</button>
+          <button type="button" class="btn-action btn-reset" onclick="limpiarFormMod1()">Limpiar</button>
+        </div>
+      </form>
+
+      <div style="margin-top:12px;">
+        <h4 style="margin:0 0 4px 0; font-size:11px; color:var(--blue-primary);">Resumen de Pastoreo</h4>
+        <div class="kpi-container">
+          <div class="kpi-card"><div class="kpi-title">Cabezas</div><div class="kpi-value" id="stat-cabezas">0</div></div>
+          <div class="kpi-card"><div class="kpi-title">UGM Hato</div><div class="kpi-value" id="stat-ugm">0.0</div></div>
+          <div class="kpi-card"><div class="kpi-title">Ocupación</div><div class="kpi-value" id="stat-ocupacion-meses">0.00 M</div></div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Potrero</th>
+              <th>Ha</th>
+              <th>Época</th>
+              <th>Mov.</th>
+              <th>Detalle Categorías</th>
+              <th>Cab.</th>
+              <th>UGM/Ha</th>
+              <th>Ocup.</th>
+              <th>Resp.</th>
+              <th>Obs.</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-mod1-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MÓDULO LEVANTE -->
+    <section id="mod-levante" class="module-view">
+      <div class="module-header">
+        <h3>⚖️ Módulo de Levante y Eficiencia Ponderal</h3>
+      </div>
+
+      <form id="form-levante">
+        <div class="form-row">
+          <div class="form-group"><label>Lote:</label><input type="text" id="lev-lote" class="form-control" placeholder="Lote Mautes 2026"></div>
+          <div class="form-group">
+            <label>Época:</label>
+            <select class="form-control" id="lev-epoca"><option>Invierno</option><option>Verano</option></select>
+          </div>
           <div class="form-group">
             <label>Sexo:</label>
-            <select class="form-control" id="lev-sexo">
-              <option value="Hembras">Hembras</option>
-              <option value="Machos">Machos</option>
-            </select>
+            <select class="form-control" id="lev-sexo"><option>Macho</option><option>Hembra</option></select>
           </div>
-          <div class="form-group"><label>Nº Animales (Lote):</label><input type="number" id="lev-cant" class="form-control" value="1" oninput="calcularMetricasLevante()"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Fecha Pesaje Anterior:</label><input type="date" id="lev-f-anterior" class="form-control" onchange="calcularMetricasLevante()"></div>
-          <div class="form-group"><label>Peso Prom. Anterior (kg):</label><input type="number" id="lev-peso-anterior" class="form-control" placeholder="Ej: 180" oninput="calcularMetricasLevante()"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Fecha Pesaje Actual:</label><input type="date" id="lev-f-actual" class="form-control" onchange="calcularMetricasLevante()"></div>
-          <div class="form-group"><label>Peso Prom. Actual (kg):</label><input type="number" id="lev-peso-actual" class="form-control" placeholder="Ej: 198" oninput="calcularMetricasLevante()"></div>
-          <div class="form-group"><label>Peso Meta / Objetivo (kg):</label><input type="number" id="lev-peso-meta" class="form-control" value="280" oninput="calcularMetricasLevante()"></div>
-        </div>
-
-        <div class="kpi-grid">
-          <div class="kpi-card"><div class="kpi-label">GMD Promedio</div><div class="kpi-value" id="kpi-gmd">0.000</div></div>
-          <div class="kpi-card"><div class="kpi-label">Ganancia Lote / Mes</div><div class="kpi-value" id="kpi-ganancia-mes">0 kg</div></div>
-          <div class="kpi-card"><div class="kpi-label">Est. Fecha Meta</div><div class="kpi-value" id="kpi-fecha-meta">N/A</div></div>
-        </div>
-
-        <button class="btn-action" onclick="guardarRegistroLevante()">Guardar Pesaje de Levante</button>
-        <button class="btn-action btn-export" onclick="exportarCSV('levante')">📥 Exportar Pesajes a CSV</button>
-
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr><th>Lote</th><th>Sexo</th><th>Cab.</th><th>Días</th><th>GMD (kg)</th><th>Ganancia Total</th><th>F. Meta</th></tr>
-            </thead>
-            <tbody id="tabla-levante-body"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- MÓDULO 2: PLANIFICACIÓN Y TAREAS -->
-      <section id="mod-2" class="module-view">
-        <div class="module-header"><h3>2. Planificación y Tareas</h3></div>
-        <div class="form-group"><label>Descripción Tarea:</label><input type="text" id="mod2-tarea" class="form-control"></div>
-        <div class="form-row">
-          <div class="form-group"><label>Fecha Asignación:</label><input type="date" id="mod2-f-asignacion" class="form-control"></div>
-          <div class="form-group"><label>Fecha Culminación:</label><input type="date" id="mod2-f-culminacion" class="form-control"></div>
-        </div>
-        <button class="btn-action" onclick="guardarTarea()">Guardar Tarea</button>
-      </section>
-
-      <!-- MÓDULO 3: MANEJO SANITARIO -->
-      <section id="mod-3" class="module-view">
-        <div class="module-header"><h3>3. Manejo Sanitario Productivo</h3></div>
-        <div class="form-group"><label>Lote Trabajado:</label><input type="text" id="mod3-lote" class="form-control" placeholder="Ej: Mautas de Levante"></div>
-        <div class="form-row">
-          <div class="form-group"><label>Tratamiento:</label><select class="form-control" id="mod3-tipo"><option>Vacunas</option><option>Desparasitación</option><option>Minerales</option><option>Antibióticos</option></select></div>
-          <div class="form-group"><label>Fecha Aplicación:</label><input type="date" id="mod3-f-aplicacion" class="form-control"></div>
-        </div>
-        <button class="btn-action" onclick="guardarSanidad()">Guardar Registro Sanitario</button>
-      </section>
-
-      <!-- MÓDULO 4: EVENTOS Y GEOLOCALIZACIÓN -->
-      <section id="mod-4" class="module-view">
-        <div class="module-header"><h3>4. Eventos por Categoría y Coordenadas GPS</h3></div>
-        <div class="form-row">
-          <div class="form-group"><label>Evento:</label><select class="form-control" id="mod4-evento"><option>Nacimientos</option><option>Mortalidad</option><option>Traslado</option></select></div>
-          <div class="form-group"><label>Cantidad:</label><input type="number" id="mod4-cant" class="form-control"></div>
-        </div>
-        <div class="form-group">
-          <button class="btn-action" style="background:#2e7d32;" onclick="capturarGPS('mod4-geo')">📍 Capturar Geolocalización GPS</button>
-          <input type="text" id="mod4-geo" class="form-control" readonly style="margin-top:4px;" placeholder="Coordenadas GPS">
-        </div>
-        <button class="btn-action" onclick="guardarEvento()">Registrar Evento</button>
-      </section>
-
-      <!-- MÓDULO CONSOLIDADO: LOGÍSTICA E INSUMOS (DEPOSITO, REPARACIÓN, COMBUSTIBLE) -->
-      <section id="mod-logistica" class="module-view">
-        <div class="module-header"><h3>📦 Logística, Insumos, Mantenimiento y Combustibles</h3></div>
-        <div class="form-row">
-          <div class="form-group"><label>Tipo Registro:</label>
-            <select class="form-control" id="log-tipo">
-              <option value="Insumo">Entrada/Salida Depósito</option>
-              <option value="Combustible">Combustible (Gasoil/Gasolina)</option>
-              <option value="Maquinaria">Mantenimiento Maquinaria (250h)</option>
-            </select>
+          <div class="form-group">
+            <label>Especie:</label>
+            <select class="form-control" id="lev-especie"><option>Bovino</option><option>Bufalino</option></select>
           </div>
-          <div class="form-group"><label>Detalle / Insumo / Equipo:</label><input type="text" id="log-detalle" class="form-control" placeholder="Ej: Gasoil / Tractor / Alambre"></div>
-          <div class="form-group"><label>Cantidad / Litros / Horas:</label><input type="number" id="log-cant" class="form-control"></div>
         </div>
-        <button class="btn-action" onclick="guardarLogistica()">Guardar Registro Logístico</button>
-      </section>
 
-      <!-- MÓDULO 6: METEOROLOGÍA GPS -->
-      <section id="mod-6" class="module-view">
-        <div class="module-header"><h3>🌤️ Control Meteorológico</h3></div>
-        <div style="text-align:center; padding:12px; background:#e3f2fd; border-radius:8px;">
-          <div id="clima-ubicacion" style="font-weight:bold; font-size:13px;">📍 Mantecal, Apure</div>
-          <div id="clima-temp" style="font-size:32px; font-weight:bold; color:#0d47a1;">23°C</div>
-          <div id="clima-condicion" style="font-size:12px;">Prácticamente Despejado</div>
-        </div>
-      </section>
-
-      <!-- MÓDULO 10: LOGÍSTICA DE COMIDA -->
-      <section id="mod-10" class="module-view">
-        <div class="module-header"><h3>🍽️ Logística de Comida y Cuadrillas</h3></div>
         <div class="form-row">
-          <div class="form-group"><label>Fecha:</label><input type="date" id="mod10-fecha" class="form-control"></div>
-          <div class="form-group"><label>Raciones Servidas:</label><input type="number" id="mod10-cant" class="form-control"></div>
+          <div class="form-group"><label>Grupo Etario:</label><input type="text" id="lev-grupo" class="form-control" placeholder="Mautes / Bautes"></div>
+          <div class="form-group"><label>N° Animales:</label><input type="number" id="lev-cant" class="form-control" placeholder="50" oninput="calcularMetricasLevante()"></div>
         </div>
-        <button class="btn-action" onclick="guardarComida()">Registrar Raciones</button>
-      </section>
-    </main>
-  </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Fecha Pesaje Ant.:</label><input type="date" id="lev-f-ant" class="form-control" onchange="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Ant. (kg):</label><input type="number" id="lev-peso-ant" class="form-control" placeholder="180" oninput="calcularMetricasLevante()"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Fecha Pesaje Act.:</label><input type="date" id="lev-f-act" class="form-control" onchange="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Act. (kg):</label><input type="number" id="lev-peso-act" class="form-control" placeholder="205" oninput="calcularMetricasLevante()"></div>
+          <div class="form-group"><label>Peso Meta (kg):</label><input type="number" id="lev-peso-meta" class="form-control" value="320" oninput="calcularMetricasLevante()"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Próximo Pesaje:</label><input type="date" id="lev-f-prox" class="form-control"></div>
+        </div>
+
+        <div class="kpi-container">
+          <div class="kpi-card"><div class="kpi-title">GMD (kg/día)</div><div class="kpi-value" id="kpi-gmd">0.000</div></div>
+          <div class="kpi-card"><div class="kpi-title">Ganancia Lote</div><div class="kpi-value" id="kpi-ganancia-total">0 kg</div></div>
+          <div class="kpi-card"><div class="kpi-title">Meses a Meta</div><div class="kpi-value" id="kpi-meses-meta">0.0 M</div></div>
+        </div>
+
+        <div class="form-group"><label>Observaciones:</label><input type="text" id="lev-obs" class="form-control" placeholder="Suplementación, condición corporal, etc."></div>
+
+        <div class="btn-group">
+          <button type="button" class="btn-action" onclick="guardarRegistroLevante()">Guardar</button>
+          <button type="button" class="btn-action btn-reset" onclick="limpiarFormLevante()">Limpiar</button>
+        </div>
+      </form>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Lote</th>
+              <th>Sexo/Esp</th>
+              <th>Cant</th>
+              <th>GMD (kg/d)</th>
+              <th>Ganancia Lote</th>
+              <th>Meta (Meses)</th>
+              <th>Próx Pesaje</th>
+              <th>Obs.</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-levante-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MÓDULO 3: HISTORIAL, ROTACIÓN Y ESTADÍSTICA -->
+    <section id="mod-historial" class="module-view">
+      <div class="module-header">
+        <h3>📊 Historial, Rotación y Estadística de Potreros</h3>
+      </div>
+
+      <div class="form-row" style="margin-bottom: 12px;">
+        <div class="form-group" style="grid-column: span 2;">
+          <label>Seleccionar Potrero para Análisis:</label>
+          <select class="form-control" id="m3-potrero-select" onchange="analizarPotreroHistorial()">
+            <option value="Macanillal (432 ha)">Macanillal (432 ha)</option>
+            <option value="El Galpón (569 ha)">El Galpón (569 ha)</option>
+            <option value="Mata del Muerto (80 ha)">Mata del Muerto (80 ha)</option>
+            <option value="Manguito (234 ha)">Manguito (234 ha)</option>
+            <option value="Mata de Piña (205 ha)">Mata de Piña (205 ha)</option>
+            <option value="Las Rallas (102 ha)">Las Rallas (102 ha)</option>
+            <option value="Potrero del Medio (703 ha)">Potrero del Medio (703 ha)</option>
+            <option value="Cuatro Esquinas (77 ha)">Cuatro Esquinas (77 ha)</option>
+            <option value="Paulero (418 ha)">Paulero (418 ha)</option>
+            <option value="Jobo Gacho (422 ha)">Jobo Gacho (422 ha)</option>
+            <option value="Curva del Peligro (40 ha)">Curva del Peligro (40 ha)</option>
+            <option value="Módulo A (36 ha)">Módulo A (36 ha)</option>
+            <option value="Módulo B (36 ha)">Módulo B (36 ha)</option>
+            <option value="Módulo C (36 ha)">Módulo C (36 ha)</option>
+            <option value="Módulo D (36 ha)">Módulo D (36 ha)</option>
+            <option value="Módulo F (143 ha)">Módulo F (143 ha)</option>
+            <option value="Saladillal (125 ha)">Saladillal (125 ha)</option>
+            <option value="Carretera (142 ha)">Carretera (142 ha)</option>
+            <option value="María del Carmen (32 ha)">María del Carmen (32 ha)</option>
+            <option value="Casa (26 ha)">Casa (26 ha)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- KPI ESTADO ACTUAL -->
+      <h4 style="margin: 4px 0; font-size: 11px; color: var(--blue-primary);">Estado Actual y Disponibilidad</h4>
+      <div class="kpi-container">
+        <div class="kpi-card">
+          <div class="kpi-title">Días Descanso</div>
+          <div class="kpi-value" id="m3-dias-descanso">0 Días</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Disponibilidad</div>
+          <div style="margin-top:2px;" id="m3-container-semaforo">
+            <span class="status-badge badge-amarillo" id="m3-semaforo-status">Sin datos</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Uso Promedio</div>
+          <div class="kpi-value" id="m3-dias-uso-prom">0.0 Días</div>
+        </div>
+      </div>
+
+      <!-- ESTADÍSTICA ESTACIONAL -->
+      <h4 style="margin: 10px 0 4px 0; font-size: 11px; color: var(--blue-primary);">Análisis Estacional (Invierno vs Verano)</h4>
+      <div class="kpi-container">
+        <div class="kpi-card">
+          <div class="kpi-title">Carga Invierno</div>
+          <div class="kpi-value" id="m3-carga-inv">0.00 UGM/ha</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Carga Verano</div>
+          <div class="kpi-value" id="m3-carga-ver">0.00 UGM/ha</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Transeúntes Totales</div>
+          <div class="kpi-value" id="m3-total-cabezas">0 Cab.</div>
+        </div>
+      </div>
+
+      <!-- BITÁCORA DEL POTRERO -->
+      <h4 style="margin: 10px 0 4px 0; font-size: 11px; color: var(--blue-primary);">Bitácora Cronológica del Potrero</h4>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ingreso</th>
+              <th>Salida</th>
+              <th>Época</th>
+              <th>Mov.</th>
+              <th>Cabezas</th>
+              <th>UGM/Ha</th>
+              <th>Detalle Categorías</th>
+              <th>Resp.</th>
+              <th>Observaciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-mod3-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
 
   <script>
-    // INIT TELEGRAM WEBAPP
-    const tg = window.Telegram?.WebApp;
-    if (tg) { tg.ready(); tg.expand(); }
-
-    // DICCIONARIO DE FACTORES UGM (Segun Categoria/Especie en Trópico)
-    const FACTORES_UGM = {
-      "Vaca": 1.0, "Toro": 1.2, "Novilla": 0.7, "Mautas": 0.5, "Mautes": 0.5, "Becerro": 0.25,
-      "Búfalas": 1.2, "Butoro": 1.4, "Buvillas": 0.8, "Bautas": 0.6, "Bautes": 0.6, "Bucerros": 0.3
-    };
-
-    const gruposBovinos = ["Vaca", "Novilla", "Mautas", "Mautes", "Toro", "Becerro"];
-    const gruposBufalinos = ["Búfalas", "Buvillas", "Bautas", "Bautes", "Butoro", "Bucerros"];
-
-    // CONFIGURACIÓN INDEXEDDB (OFFLINE STORAGE)
     let db;
-    const dbRequest = indexedDB.open("HatoLagunaBravaDB", 1);
-    dbRequest.onupgradeneeded = (e) => {
-      db = e.target.result;
-      if (!db.objectStoreNames.contains("registros")) {
-        db.createObjectStore("registros", { keyPath: "id", autoIncrement: true });
-      }
-    };
-    dbRequest.onsuccess = (e) => { db = e.target.result; cargarRegistrosLocales(); };
-
-    // SINK AND ONLINE STATUS
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-
-    function updateOnlineStatus() {
-      const isOnline = navigator.onLine;
-      document.getElementById('sync-icon').innerText = isOnline ? "🟢" : "🟠";
-      document.getElementById('offline-tag').style.display = isOnline ? "none" : "block";
+    
+    function actualizarSemaforo(estado, texto) {
+      const luz = document.getElementById("luz-semaforo");
+      const txt = document.getElementById("texto-semaforo");
+      if (luz) luz.className = "semaforo-luz " + estado;
+      if (txt) txt.innerText = texto;
     }
+
+    actualizarSemaforo("amarillo", "Cargando...");
+
+    const request = indexedDB.open("HatoLagunaBrava_v5", 1);
+    request.onupgradeneeded = (e) => {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains("potreros")) db.createObjectStore("potreros", { keyPath: "id", autoIncrement: true });
+      if (!db.objectStoreNames.contains("levante")) db.createObjectStore("levante", { keyPath: "id", autoIncrement: true });
+    };
+    
+    request.onsuccess = (e) => {
+      db = e.target.result;
+      actualizarSemaforo("verde", "Sincronizado");
+      cargarTablas();
+    };
+
+    request.onerror = (e) => {
+      actualizarSemaforo("rojo", "Error DB");
+    };
+
+    const FACTORES_UGM = {
+      "Mautas": 0.5, "Bautas": 0.6,
+      "Mautes": 0.5, "Bautes": 0.6,
+      "Becerros": 0.25, "Bucerros": 0.3,
+      "Vacas Vacías": 1.0, "Búfalas Vacías": 1.2,
+      "Toros": 1.5, "Butoros": 1.5,
+      "Vacas Pñ": 1.0, "Búfala Pñ": 1.2,
+      "Vacas Paridas": 1.0, "Búfala Parida": 1.2,
+      "Vacas Monta": 1.0, "Búfala Monta": 1.2,
+      "Novillas Pñ": 0.7, "Buvilla Pñ": 0.8,
+      "Novillas Monta": 0.7, "Buvilla Monta": 0.8,
+      "Novillas Vacías": 0.7, "Buvillas Vacías": 0.8
+    };
+
+    const GRUPOS_DESPLEGABLES = [
+      ["Mautas", "Bautas"],
+      ["Mautes", "Bautes"],
+      ["Becerros", "Bucerros"],
+      ["Vacas Vacías", "Búfalas Vacías"],
+      ["Toros", "Butoros"],
+      ["Vacas Pñ", "Búfala Pñ"],
+      ["Vacas Paridas", "Búfala Parida"],
+      ["Vacas Monta", "Búfala Monta"],
+      ["Novillas Pñ", "Buvilla Pñ"],
+      ["Novillas Monta", "Buvilla Monta"],
+      ["Novillas Vacías", "Buvillas Vacías"]
+    ];
 
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date().toISOString().split('T')[0];
       document.querySelectorAll("input[type='date']").forEach(i => i.value = hoy);
-      actualizarGruposEtarios();
-      updateOnlineStatus();
+      generarCamposEtarios1();
+      calcularOcupacionMeses();
     });
 
-    // NAVEGACIÓN ENTRE MÓDULOS
-    function navegarA(idModulo, elemento) {
+    function navegarA(id, el) {
       document.querySelectorAll('.module-view').forEach(m => m.classList.remove('active'));
       document.querySelectorAll('.sidebar-menu li').forEach(l => l.classList.remove('active'));
-      document.getElementById(idModulo).classList.add('active');
-      if (elemento) elemento.classList.add('active');
-    }
-
-    // LÓGICA MÓDULO 1: ROTACIÓN Y UGM
-    function actualizarGruposEtarios() {
-      const cat = document.getElementById("mod1-categoria").value;
-      const selectGrupo = document.getElementById("mod1-grupo-etario");
-      selectGrupo.innerHTML = "";
-      const lista = (cat === "Bovinos") ? gruposBovinos : gruposBufalinos;
-      lista.forEach(g => {
-        const opt = document.createElement("option"); opt.value = g; opt.innerText = g;
-        selectGrupo.appendChild(opt);
-      });
-      calcularUGM();
-    }
-
-    function calcularUGM() {
-      const grupo = document.getElementById("mod1-grupo-etario").value;
-      const cantidad = parseFloat(document.getElementById("mod1-cantidad").value) || 0;
-      const factor = FACTORES_UGM[grupo] || 1.0;
-      const totalUGM = (cantidad * factor).toFixed(2);
-      document.getElementById("mod1-ugm").value = `${totalUGM} UGM`;
-      return totalUGM;
-    }
-
-    function validarFechasRotacion() {
-      const fIngreso = document.getElementById("mod1-f-ingreso").value;
-      const fSalida = document.getElementById("mod1-f-salida").value;
-      if (fIngreso && fSalida && fSalida < fIngreso) {
-        alert("⚠️ La fecha de salida no puede ser anterior a la fecha de ingreso.");
-        document.getElementById("mod1-f-salida").value = fIngreso;
+      
+      const target = document.getElementById(id);
+      if (target) target.classList.add('active');
+      if (el) el.classList.add('active');
+      
+      if (id === 'mod-historial') {
+        analizarPotreroHistorial();
       }
     }
 
-    function registrarMovimientoRotacion() {
-      const potrero = document.getElementById("mod1-potrero").value;
-      const fIngreso = document.getElementById("mod1-f-ingreso").value;
-      const fSalida = document.getElementById("mod1-f-salida").value;
-      const cat = document.getElementById("mod1-categoria").value;
-      const grupo = document.getElementById("mod1-grupo-etario").value;
-      const cant = document.getElementById("mod1-cantidad").value;
-      const ugm = calcularUGM();
+    function generarCamposEtarios1() {
+      const container = document.getElementById("m1-etarios-container");
+      if (!container) return;
+      container.innerHTML = "";
 
-      if (!cant || cant <= 0) return alert("⚠️ Ingrese una cantidad válida.");
-
-      const registro = { modulo: "rotacion", potrero, fIngreso, fSalida, cat, grupo, cant, ugm, fecha: new Date() };
-      guardarEnDB(registro, () => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${potrero}</td><td>${fIngreso}</td><td>${fSalida}</td><td>${cat}</td><td>${grupo}</td><td>${cant}</td><td>${ugm}</td>`;
-        document.getElementById("tabla-rotacion-body").prepend(tr);
-        alert("✅ Movimiento de potrero registrado.");
+      GRUPOS_DESPLEGABLES.forEach((opciones) => {
+        const div = document.createElement("div");
+        div.className = "cat-box";
+        div.innerHTML = `
+          <select class="form-control select-cat" onchange="calcularUGM1()">
+            <option value="${opciones[0]}">${opciones[0]}</option>
+            <option value="${opciones[1]}">${opciones[1]}</option>
+          </select>
+          <input type="number" class="form-control input-cant" value="0" min="0" placeholder="Cant." oninput="calcularUGM1()">
+        `;
+        container.appendChild(div);
       });
+      calcularUGM1();
     }
 
-    // LÓGICA MÓDULO DE LEVANTE (PESAJES Y KPIs)
+    function calcularOcupacionMeses() {
+      const fIng = new Date(document.getElementById("m1-f-ingreso").value);
+      const fSal = new Date(document.getElementById("m1-f-salida").value);
+      
+      if (!isNaN(fIng) && !isNaN(fSal) && fSal >= fIng) {
+        const diffDias = Math.max(0, Math.round((fSal - fIng) / (1000 * 60 * 60 * 24)));
+        const meses = (diffDias / 30.42).toFixed(2);
+        document.getElementById("m1-ocupacion-meses").value = `${meses} M`;
+      } else {
+        document.getElementById("m1-ocupacion-meses").value = "0.00 M";
+      }
+    }
+
+    function calcularUGM1() {
+      const ha = parseFloat(document.getElementById("m1-potrero").value) || 1;
+      let totalCabezas = 0;
+      let totalUGM = 0;
+
+      const boxes = document.querySelectorAll(".cat-box");
+      boxes.forEach(box => {
+        const catSelected = box.querySelector(".select-cat").value;
+        const cant = parseInt(box.querySelector(".input-cant").value) || 0;
+        const factor = FACTORES_UGM[catSelected] || 1.0;
+
+        totalCabezas += cant;
+        totalUGM += (cant * factor);
+      });
+
+      const cargaHa = (totalUGM / ha).toFixed(2);
+      document.getElementById("m1-total-cabezas").value = totalCabezas;
+      document.getElementById("m1-total-ugm").value = `${totalUGM.toFixed(1)} UGM`;
+      document.getElementById("m1-carga-ha").value = `${cargaHa} UGM/ha`;
+    }
+
+    function guardarRegistroMod1() {
+      const selPotrero = document.getElementById("m1-potrero");
+      const potreroNombre = selPotrero.options[selPotrero.selectedIndex].text;
+      const ha = selPotrero.value;
+      const epoca = document.getElementById("m1-epoca").value;
+      const mov = document.getElementById("m1-movimiento").value;
+      const fIng = document.getElementById("m1-f-ingreso").value;
+      const fSal = document.getElementById("m1-f-salida").value;
+      const ocupacionMesesVal = parseFloat(document.getElementById("m1-ocupacion-meses").value) || 0;
+      const resp = document.getElementById("m1-responsable").value;
+      const cabezas = parseInt(document.getElementById("m1-total-cabezas").value) || 0;
+      const ugmHa = document.getElementById("m1-carga-ha").value;
+      const ugmTotal = parseFloat(document.getElementById("m1-total-ugm").value) || 0;
+      const obs = document.getElementById("m1-obs").value;
+
+      if (cabezas <= 0) return alert("⚠️ Ingrese al menos un animal.");
+
+      actualizarSemaforo("amarillo", "En cola...");
+
+      let desgloseText = [];
+      document.querySelectorAll(".cat-box").forEach(box => {
+        const cat = box.querySelector(".select-cat").value;
+        const cant = parseInt(box.querySelector(".input-cant").value) || 0;
+        if (cant > 0) desgloseText.push(`${cat}: ${cant}`);
+      });
+
+      const reg = { potreroNombre, ha, epoca, mov, fIng, fSal, ocupacionMeses: ocupacionMesesVal, resp, detalle: desgloseText.join(", "), cabezas, ugmHa, ugmTotal, obs };
+
+      const tx = db.transaction("potreros", "readwrite");
+      tx.objectStore("potreros").add(reg);
+      
+      tx.oncomplete = () => {
+        cargarTablas();
+        limpiarFormMod1();
+        actualizarSemaforo("verde", "Sincronizado");
+        alert("✅ Registro guardado y sincronizado.");
+      };
+
+      tx.onerror = () => {
+        actualizarSemaforo("rojo", "Error guardando");
+      };
+    }
+
+    function limpiarFormMod1() {
+      document.getElementById("form-mod1").reset();
+      const hoy = new Date().toISOString().split('T')[0];
+      document.getElementById("m1-f-ingreso").value = hoy;
+      document.getElementById("m1-f-salida").value = hoy;
+      generarCamposEtarios1();
+      calcularOcupacionMeses();
+    }
+
     function calcularMetricasLevante() {
-      const fAnt = new Date(document.getElementById("lev-f-anterior").value);
-      const fAct = new Date(document.getElementById("lev-f-actual").value);
-      const pesoAnt = parseFloat(document.getElementById("lev-peso-anterior").value) || 0;
-      const pesoAct = parseFloat(document.getElementById("lev-peso-actual").value) || 0;
+      const fAnt = new Date(document.getElementById("lev-f-ant").value);
+      const fAct = new Date(document.getElementById("lev-f-act").value);
+      const pesoAnt = parseFloat(document.getElementById("lev-peso-ant").value) || 0;
+      const pesoAct = parseFloat(document.getElementById("lev-peso-act").value) || 0;
       const pesoMeta = parseFloat(document.getElementById("lev-peso-meta").value) || 0;
-      const cant = parseInt(document.getElementById("lev-cant").value) || 0;
+      const cant = parseInt(document.getElementById("lev-cant").value) || 1;
 
       if (fAct <= fAnt || pesoAnt <= 0 || pesoAct <= 0) return;
 
       const diffDias = Math.max(1, Math.round((fAct - fAnt) / (1000 * 60 * 60 * 24)));
-      const gmd = (pesoAct - pesoAnt) / diffDias;
-      const gananciaLoteMes = gmd * 30 * cant;
+      const gananciaInd = pesoAct - pesoAnt;
+      const gmd = gananciaInd / diffDias;
+      const gananciaLote = gananciaInd * cant;
+
+      let mesesMeta = "0.0";
+      if (gmd > 0 && pesoMeta > pesoAct) {
+        mesesMeta = ((pesoMeta - pesoAct) / (gmd * 30.44)).toFixed(1);
+      }
 
       document.getElementById("kpi-gmd").innerText = gmd.toFixed(3);
-      document.getElementById("kpi-ganancia-mes").innerText = `${Math.round(gananciaLoteMes)} kg`;
-
-      if (gmd > 0 && pesoMeta > pesoAct) {
-        const diasFaltantes = (pesoMeta - pesoAct) / gmd;
-        const fechaEstimadaMeta = new Date(fAct);
-        fechaEstimadaMeta.setDate(fechaEstimadaMeta.getDate() + diasFaltantes);
-        document.getElementById("kpi-fecha-meta").innerText = fechaEstimadaMeta.toISOString().split('T')[0];
-      } else {
-        document.getElementById("kpi-fecha-meta").innerText = "Meta alcanzada/N/A";
-      }
+      document.getElementById("kpi-ganancia-total").innerText = `${gananciaLote.toFixed(1)} kg`;
+      document.getElementById("kpi-meses-meta").innerText = `${mesesMeta} M`;
     }
 
     function guardarRegistroLevante() {
       const lote = document.getElementById("lev-lote").value;
+      const epoca = document.getElementById("lev-epoca").value;
       const sexo = document.getElementById("lev-sexo").value;
+      const especie = document.getElementById("lev-especie").value;
+      const grupo = document.getElementById("lev-grupo").value;
       const cant = document.getElementById("lev-cant").value;
       const gmd = document.getElementById("kpi-gmd").innerText;
-      const gananciaTotal = document.getElementById("kpi-ganancia-mes").innerText;
-      const estMeta = document.getElementById("kpi-fecha-meta").innerText;
+      const ganLote = document.getElementById("kpi-ganancia-total").innerText;
+      const mesesMeta = document.getElementById("kpi-meses-meta").innerText;
+      const proxPesaje = document.getElementById("lev-f-prox").value;
+      const obs = document.getElementById("lev-obs").value;
 
-      if (!lote || !cant) return alert("⚠️ Complete los datos del lote.");
+      if (!lote || !cant) return alert("⚠️ Ingrese el lote y la cantidad de animales.");
 
-      const registro = { modulo: "levante", lote, sexo, cant, gmd, gananciaTotal, estMeta, fecha: new Date() };
-      guardarEnDB(registro, () => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${lote}</td><td>${sexo}</td><td>${cant}</td><td>30</td><td>${gmd}</td><td>${gananciaTotal}</td><td>${estMeta}</td>`;
-        document.getElementById("tabla-levante-body").prepend(tr);
-        alert("✅ Pesaje de Levante registrado exitosamente.");
-      });
-    }
+      actualizarSemaforo("amarillo", "En cola...");
 
-    // GEOLOCALIZACIÓN GPS
-    function capturarGPS(inputId) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          document.getElementById(inputId).value = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
-        }, () => alert("⚠️ No se pudo acceder al GPS."));
-      } else { alert("⚠️ GPS no soportado."); }
-    }
+      const reg = { lote, epoca, sexo, especie, grupo, cant, gmd, ganLote, mesesMeta, proxPesaje, obs };
 
-    // INDEXEDDB PERSISTENCIA
-    function guardarEnDB(data, callback) {
-      if (!db) return;
-      const tx = db.transaction("registros", "readwrite");
-      const store = tx.objectStore("registros");
-      store.add(data);
-      tx.oncomplete = () => { if (callback) callback(); };
-    }
+      const tx = db.transaction("levante", "readwrite");
+      tx.objectStore("levante").add(reg);
+      
+      tx.oncomplete = () => {
+        cargarTablas();
+        limpiarFormLevante();
+        actualizarSemaforo("verde", "Sincronizado");
+        alert("✅ Pesaje registrado y sincronizado.");
+      };
 
-    function cargarRegistrosLocales() {
-      if (!db) return;
-      const tx = db.transaction("registros", "readonly");
-      const store = tx.objectStore("registros");
-      const request = store.getAll();
-      request.onsuccess = () => {
-        const datos = request.result;
-        datos.forEach(d => {
-          if (d.modulo === "rotacion") {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${d.potrero}</td><td>${d.fIngreso}</td><td>${d.fSalida}</td><td>${d.cat}</td><td>${d.grupo}</td><td>${d.cant}</td><td>${d.ugm}</td>`;
-            document.getElementById("tabla-rotacion-body").prepend(tr);
-          } else if (d.modulo === "levante") {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${d.lote}</td><td>${d.sexo}</td><td>${d.cant}</td><td>30</td><td>${d.gmd}</td><td>${d.gananciaTotal}</td><td>${d.estMeta}</td>`;
-            document.getElementById("tabla-levante-body").prepend(tr);
-          }
-        });
+      tx.onerror = () => {
+        actualizarSemaforo("rojo", "Error guardando");
       };
     }
 
-    // EXPORTACIÓN A CSV
-    function exportarCSV(modulo) {
+    function limpiarFormLevante() {
+      document.getElementById("form-levante").reset();
+      document.getElementById("kpi-gmd").innerText = "0.000";
+      document.getElementById("kpi-ganancia-total").innerText = "0 kg";
+      document.getElementById("kpi-meses-meta").innerText = "0.0 M";
+    }
+
+    function borrarFila(store, id) {
+      if (confirm("¿Desea borrar este registro?")) {
+        actualizarSemaforo("amarillo", "En cola...");
+        const tx = db.transaction(store, "readwrite");
+        tx.objectStore(store).delete(id);
+        tx.oncomplete = () => {
+          cargarTablas();
+          actualizarSemaforo("verde", "Sincronizado");
+        };
+      }
+    }
+
+    function cargarTablas() {
       if (!db) return;
-      const tx = db.transaction("registros", "readonly");
-      const store = tx.objectStore("registros");
-      store.getAll().onsuccess = (e) => {
-        const items = e.target.result.filter(i => i.modulo === modulo);
-        if (items.length === 0) return alert("⚠️ No hay datos para exportar en este módulo.");
+
+      const tx1 = db.transaction("potreros", "readonly");
+      tx1.objectStore("potreros").getAll().onsuccess = (e) => {
+        const list = e.target.result;
+        const tbody = document.getElementById("tabla-mod1-body");
+        tbody.innerHTML = "";
+        let totCab = 0; let totUgm = 0; let totOcupacion = 0;
+
+        list.forEach(r => {
+          totCab += r.cabezas;
+          totUgm += r.ugmTotal;
+          totOcupacion += (r.ocupacionMeses || 0);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.potreroNombre}</td>
+            <td>${r.ha}</td>
+            <td>${r.epoca}</td>
+            <td>${r.mov}</td>
+            <td>${r.detalle || '-'}</td>
+            <td>${r.cabezas}</td>
+            <td>${r.ugmHa}</td>
+            <td>${(r.ocupacionMeses || 0).toFixed(2)} M</td>
+            <td>${r.resp || '-'}</td>
+            <td>${r.obs || '-'}</td>
+            <td><button class="btn-danger" onclick="borrarFila('potreros', ${r.id})">Borrar</button></td>
+          `;
+          tbody.prepend(tr);
+        });
+
+        document.getElementById("stat-cabezas").innerText = totCab;
+        document.getElementById("stat-ugm").innerText = totUgm.toFixed(1);
+        document.getElementById("stat-ocupacion-meses").innerText = `${totOcupacion.toFixed(2)} M`;
         
-        let csvContent = "data:text/csv;charset=utf-8,";
-        const headers = Object.keys(items[0]).join(",");
-        csvContent += headers + "\r\n";
+        analizarPotreroHistorial();
+      };
 
-        items.forEach(row => {
-          csvContent += Object.values(row).join(",") + "\r\n";
+      const tx2 = db.transaction("levante", "readonly");
+      tx2.objectStore("levante").getAll().onsuccess = (e) => {
+        const list = e.target.result;
+        const tbody = document.getElementById("tabla-levante-body");
+        tbody.innerHTML = "";
+
+        list.forEach(r => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.lote}</td>
+            <td>${r.sexo}/${r.especie}</td>
+            <td>${r.cant}</td>
+            <td>${r.gmd}</td>
+            <td>${r.ganLote}</td>
+            <td>${r.mesesMeta}</td>
+            <td>${r.proxPesaje}</td>
+            <td>${r.obs || '-'}</td>
+            <td><button class="btn-danger" onclick="borrarFila('levante', ${r.id})">Borrar</button></td>
+          `;
+          tbody.prepend(tr);
         });
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `reporte_${modulo}_hato.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
       };
     }
 
-    // STUBS COMPLEMENTARIOS CON PERSISTENCIA INDEXEDDB
-    function guardarTarea() {
-      const tarea = document.getElementById("mod2-tarea").value;
-      const fAsig = document.getElementById("mod2-f-asignacion").value;
-      const fCulm = document.getElementById("mod2-f-culminacion").value;
-      if (!tarea) return alert("⚠️ Ingrese una descripción para la tarea.");
-      guardarEnDB({ modulo: "tarea", tarea, fAsig, fCulm, fecha: new Date() }, () => alert("✅ Tarea registrada exitosamente."));
+    /* LÓGICA DEL MÓDULO 3: HISTORIAL Y ROTACIÓN DE POTREROS */
+    function analizarPotreroHistorial() {
+      const tbody3 = document.getElementById("tabla-mod3-body");
+      if (!tbody3) return;
+      tbody3.innerHTML = "";
+
+      const potreroSel = document.getElementById("m3-potrero-select").value;
+
+      if (!db) {
+        resetearKpisM3();
+        return;
+      }
+
+      const tx = db.transaction("potreros", "readonly");
+      tx.objectStore("potreros").getAll().onsuccess = (e) => {
+        const list = e.target.result.filter(r => r.potreroNombre === potreroSel);
+
+        if (list.length === 0) {
+          resetearKpisM3();
+          return;
+        }
+
+        // Ordenar por fecha de salida descendente
+        list.sort((a, b) => new Date(b.fSal) - new Date(a.fSal));
+
+        let totCab = 0;
+        let sumDiasUso = 0;
+        let cInv = [], cVer = [];
+        const hoy = new Date();
+
+        list.forEach(r => {
+          totCab += r.cabezas;
+          
+          const dIng = new Date(r.fIng);
+          const dSal = new Date(r.fSal);
+          const diffUso = Math.max(1, Math.round((dSal - dIng) / (1000 * 60 * 60 * 24)));
+          sumDiasUso += diffUso;
+
+          const numCarga = parseFloat(r.ugmHa) || 0;
+          if (r.epoca === "Invierno") cInv.push(numCarga);
+          else cVer.push(numCarga);
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.fIng}</td>
+            <td>${r.fSal}</td>
+            <td>${r.epoca}</td>
+            <td>${r.mov}</td>
+            <td>${r.cabezas}</td>
+            <td>${r.ugmHa}</td>
+            <td>${r.detalle || '-'}</td>
+            <td>${r.resp || '-'}</td>
+            <td>${r.obs || '-'}</td>
+          `;
+          tbody3.appendChild(tr);
+        });
+
+        // 1. Días de Descanso y Semáforo
+        const ultimaSalida = new Date(list[0].fSal);
+        const diasDescanso = Math.max(0, Math.floor((hoy - ultimaSalida) / (1000 * 60 * 60 * 24)));
+        document.getElementById("m3-dias-descanso").innerText = `${diasDescanso} Días`;
+
+        const badge = document.getElementById("m3-semaforo-status");
+        if (diasDescanso >= 42) {
+          badge.className = "status-badge badge-verde";
+          badge.innerText = "🟢 Listo para Pastorear";
+        } else if (diasDescanso >= 21) {
+          badge.className = "status-badge badge-amarillo";
+          badge.innerText = "🟡 En Recuperación";
+        } else {
+          badge.className = "status-badge badge-rojo";
+          badge.innerText = "🔴 Descanso Insuficiente";
+        }
+
+        // 2. Días de Uso Promedio
+        const promUso = (sumDiasUso / list.length).toFixed(1);
+        document.getElementById("m3-dias-uso-prom").innerText = `${promUso} Días`;
+
+        // 3. Cargas Promedio e Histórico Cabezas
+        const avgInv = cInv.length ? (cInv.reduce((a, b) => a + b, 0) / cInv.length).toFixed(2) : "0.00";
+        const avgVer = cVer.length ? (cVer.reduce((a, b) => a + b, 0) / cVer.length).toFixed(2) : "0.00";
+
+        document.getElementById("m3-carga-inv").innerText = `${avgInv} UGM/ha`;
+        document.getElementById("m3-carga-ver").innerText = `${avgVer} UGM/ha`;
+        document.getElementById("m3-total-cabezas").innerText = `${totCab} Cab.`;
+      };
     }
 
-    function guardarSanidad() {
-      const lote = document.getElementById("mod3-lote").value;
-      const tipo = document.getElementById("mod3-tipo").value;
-      const fAplicacion = document.getElementById("mod3-f-aplicacion").value;
-      if (!lote) return alert("⚠️ Ingrese el lote trabajado.");
-      guardarEnDB({ modulo: "sanidad", lote, tipo, fAplicacion, fecha: new Date() }, () => alert("✅ Registro sanitario guardado exitosamente."));
-    }
-
-    function guardarEvento() {
-      const evento = document.getElementById("mod4-evento").value;
-      const cant = document.getElementById("mod4-cant").value;
-      const geo = document.getElementById("mod4-geo").value;
-      if (!cant) return alert("⚠️ Ingrese la cantidad.");
-      guardarEnDB({ modulo: "evento", evento, cant, geo, fecha: new Date() }, () => alert("✅ Evento registrado exitosamente."));
-    }
-
-    function guardarLogistica() {
-      const tipo = document.getElementById("log-tipo").value;
-      const detalle = document.getElementById("log-detalle").value;
-      const cant = document.getElementById("log-cant").value;
-      if (!detalle || !cant) return alert("⚠️ Complete los datos logísticos.");
-      guardarEnDB({ modulo: "logistica", tipo, detalle, cant, fecha: new Date() }, () => alert("✅ Registro logístico guardado exitosamente."));
-    }
-
-    function guardarComida() {
-      const fecha = document.getElementById("mod10-fecha").value;
-      const cant = document.getElementById("mod10-cant").value;
-      if (!cant) return alert("⚠️ Ingrese el número de raciones.");
-      guardarEnDB({ modulo: "comida", fecha, cant, fechaReg: new Date() }, () => alert("✅ Raciones guardadas exitosamente."));
+    function resetearKpisM3() {
+      document.getElementById("m3-dias-descanso").innerText = "Sin registros";
+      const badge = document.getElementById("m3-semaforo-status");
+      badge.className = "status-badge badge-amarillo";
+      badge.innerText = "Sin Datos";
+      document.getElementById("m3-dias-uso-prom").innerText = "0.0 Días";
+      document.getElementById("m3-carga-inv").innerText = "0.00 UGM/ha";
+      document.getElementById("m3-carga-ver").innerText = "0.00 UGM/ha";
+      document.getElementById("m3-total-cabezas").innerText = "0 Cab.";
     }
   </script>
 </body>
