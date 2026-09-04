@@ -14,16 +14,9 @@ const CATEGORIAS_BOVINAS = [
   { id: "becerros_as", nombre: "Becerros / Becerras", pesoPromedio: 110, factorUGM: 0.24 }
 ];
 
-// 2. Inicialización del Módulo
-export function inicializarModuloPotreros() {
-  renderizarFormularioCategorias();
-  establecerFechaPorDefecto();
-  renderizarTablaHistorial();
-  actualizarEstadisticasKPI();
-}
+// 2. Funciones Principales Asignadas a Window para Ejecución Global
 
-// Renderizar casillas de categorías dentro del div #m1-etarios-container
-function renderizarFormularioCategorias() {
+window.renderizarFormularioCategorias = function() {
   const contenedor = document.getElementById("m1-etarios-container");
   if (!contenedor) return;
 
@@ -44,21 +37,17 @@ function renderizarFormularioCategorias() {
       <span style="font-size:9px; color:#637381; display:block;">${cat.factorUGM} UGM</span>
     </div>
   `).join('');
-}
+};
 
-// Asignar fecha actual por defecto
-function establecerFechaPorDefecto() {
+window.establecerFechaPorDefecto = function() {
   const inputFechaIngreso = document.getElementById("m1-f-ingreso");
   if (inputFechaIngreso && !inputFechaIngreso.value) {
     inputFechaIngreso.value = new Date().toISOString().split("T")[0];
   }
-}
+};
 
-// 3. Cálculo dinámico de Cabezas Totales, Carga UGM y UGM/Ha
-export function calcularUGM1() {
+window.calcularUGM1 = function() {
   const selectPotrero = document.getElementById("m1-potrero");
-  
-  // Extraer hectáreas desde el 'value' del option y el nombre desde el texto
   const hectareas = parseFloat(selectPotrero?.value || 0);
 
   let totalCabezas = 0;
@@ -77,7 +66,6 @@ export function calcularUGM1() {
 
   const cargaPorHa = hectareas > 0 ? (totalUGM / hectareas) : 0;
 
-  // Actualizar campos readonly en el HTML
   const elCabezas = document.getElementById("m1-total-cabezas");
   const elUGM = document.getElementById("m1-total-ugm");
   const elCarga = document.getElementById("m1-carga-ha");
@@ -87,14 +75,12 @@ export function calcularUGM1() {
   if (elCarga) elCarga.value = `${cargaPorHa.toFixed(2)} UGM/ha`;
 
   return { totalCabezas, totalUGM, cargaPorHa, hectareas };
-}
+};
 
-// 4. Registrar Entrada/Salida en el Historial (LocalStorage)
-export function guardarRegistroMod1() {
+window.guardarRegistroMod1 = function() {
   const selectPotrero = document.getElementById("m1-potrero");
   const hectareas = parseFloat(selectPotrero?.value || 0);
   
-  // Extrae el texto visible del option (ej: "Macanillal (432 ha)")
   const potreroTexto = selectPotrero?.options[selectPotrero.selectedIndex]?.text || "N/A";
   const potreroNombre = potreroTexto.split("(")[0].trim();
 
@@ -105,14 +91,13 @@ export function guardarRegistroMod1() {
   const responsable = document.getElementById("m1-responsable")?.value.trim() || "N/A";
   const observaciones = document.getElementById("m1-obs")?.value.trim() || "";
 
-  const { totalCabezas, totalUGM, cargaPorHa } = calcularUGM1();
+  const { totalCabezas, totalUGM, cargaPorHa } = window.calcularUGM1();
 
   if (totalCabezas <= 0) {
     alert("⚠️ Ingresa al menos una categoría con cantidad mayor a cero.");
     return;
   }
 
-  // Resumen del desglose de categorías
   const desgloseArr = [];
   document.querySelectorAll(".input-categoria-bovina").forEach(input => {
     const cantidad = parseInt(input.value || 0, 10);
@@ -143,17 +128,16 @@ export function guardarRegistroMod1() {
   historial.push(registro);
   localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
 
-  renderizarTablaHistorial();
-  actualizarEstadisticasKPI();
-  limpiarFormMod1();
+  window.renderizarTablaHistorial();
+  window.actualizarEstadisticasKPI();
+  window.limpiarFormMod1();
 
   if (window.sincronizarDatosPendientes) {
     window.sincronizarDatosPendientes();
   }
-}
+};
 
-// 5. Renderizar Registros en #tabla-mod1-body
-export function renderizarTablaHistorial() {
+window.renderizarTablaHistorial = function() {
   const tbody = document.getElementById("tabla-mod1-body");
   if (!tbody) return;
 
@@ -178,15 +162,14 @@ export function renderizarTablaHistorial() {
       <td>${item.responsable}</td>
       <td>${item.observaciones}</td>
       <td>
-        <button type="button" onclick="window.eliminarRegistroMod1(${item.id})" style="color:red; border:none; background:none; cursor:pointer;">✕</button>
+        <button type="button" onclick="window.eliminarRegistroMod1(${item.id})" style="color:red; border:none; background:none; cursor:pointer; font-weight:bold;">✕</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
-}
+};
 
-// 6. Actualizar KPIs globales (#stat-cabezas y #stat-ugm)
-export function actualizarEstadisticasKPI() {
+window.actualizarEstadisticasKPI = function() {
   const historial = JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
   
   const sumCabezas = historial.reduce((acc, curr) => acc + (curr.totalCabezas || 0), 0);
@@ -197,33 +180,36 @@ export function actualizarEstadisticasKPI() {
 
   if (elStatCabezas) elStatCabezas.textContent = sumCabezas.toLocaleString();
   if (elStatUGM) elStatUGM.textContent = sumUGM.toFixed(1);
-}
+};
 
-// 7. Eliminar un registro específico
-export function eliminarRegistroMod1(id) {
+window.eliminarRegistroMod1 = function(id) {
   if (!confirm("¿Deseas eliminar este registro de pastoreo?")) return;
   
   let historial = JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
   historial = historial.filter(item => item.id !== id);
   localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
 
-  renderizarTablaHistorial();
-  actualizarEstadisticasKPI();
-}
+  window.renderizarTablaHistorial();
+  window.actualizarEstadisticasKPI();
+};
 
-// 8. Limpiar Formulario
-export function limpiarFormMod1() {
+window.limpiarFormMod1 = function() {
   document.getElementById("form-mod1")?.reset();
   document.querySelectorAll(".input-categoria-bovina").forEach(input => input.value = "");
-  establecerFechaPorDefecto();
-  calcularUGM1();
+  window.establecerFechaPorDefecto();
+  window.calcularUGM1();
+};
+
+window.inicializarModuloPotreros = function() {
+  window.renderizarFormularioCategorias();
+  window.establecerFechaPorDefecto();
+  window.renderizarTablaHistorial();
+  window.actualizarEstadisticasKPI();
+};
+
+// 3. Mecanismo de Inicialización Robusto
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", window.inicializarModuloPotreros);
+} else {
+  window.inicializarModuloPotreros();
 }
-
-// Exposición global para compatibilidad con eventos inline del HTML (onclick / onchange / oninput)
-window.calcularUGM1 = calcularUGM1;
-window.guardarRegistroMod1 = guardarRegistroMod1;
-window.limpiarFormMod1 = limpiarFormMod1;
-window.eliminarRegistroMod1 = eliminarRegistroMod1;
-
-// Cargar al inicializar el DOM
-document.addEventListener("DOMContentLoaded", inicializarModuloPotreros);
