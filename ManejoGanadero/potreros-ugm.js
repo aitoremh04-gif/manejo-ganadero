@@ -1,99 +1,20 @@
 /**
  * Módulo 1: Control de Pastoreo, Potreros y UGM
  * Hato Laguna Brava (Mantecal, Apure)
- * Conexión nativa IndexedDB + Fallback LocalStorage
+ * Versión Directa Síncrona
  */
 
-const DB_NAME = "HatoLagunaBrava_v5";
-const DB_VERSION = 1;
-const STORE_NAME = "potreros";
-
 const CATEGORIAS_BOVINAS = [
-  { id: "vacas_escoteras", nombre: "Vacas Escoteras", pesoPromedio: 420, factorUGM: 0.93 },
-  { id: "vacas_paridas", nombre: "Vacas Paridas", pesoPromedio: 450, factorUGM: 1.00 },
-  { id: "novillas_servidas", nombre: "Novillas Servidas", pesoPromedio: 330, factorUGM: 0.73 },
-  { id: "mautas_levante", nombre: "Mautas Levante", pesoPromedio: 220, factorUGM: 0.49 },
-  { id: "mautes_levante", nombre: "Mautes Levante", pesoPromedio: 240, factorUGM: 0.53 },
-  { id: "toros_reproductores", nombre: "Toros / Reprod.", pesoPromedio: 600, factorUGM: 1.33 },
-  { id: "becerros_as", nombre: "Becerros / Becerras", pesoPromedio: 110, factorUGM: 0.24 }
+  { id: "vacas_escoteras", nombre: "Vacas Escoteras", factorUGM: 0.93 },
+  { id: "vacas_paridas", nombre: "Vacas Paridas", factorUGM: 1.00 },
+  { id: "novillas_servidas", nombre: "Novillas Servidas", factorUGM: 0.73 },
+  { id: "mautas_levante", nombre: "Mautas Levante", factorUGM: 0.49 },
+  { id: "mautes_levante", nombre: "Mautes Levante", factorUGM: 0.53 },
+  { id: "toros_reproductores", nombre: "Toros / Reprod.", factorUGM: 1.33 },
+  { id: "becerros_as", nombre: "Becerros / Becerras", factorUGM: 0.24 }
 ];
 
-// 1. Manejo de IndexedDB
-function abrirDB() {
-  return new Promise((resolve, reject) => {
-    if (!window.indexedDB) {
-      reject("IndexedDB no soportado");
-      return;
-    }
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: "id" });
-      }
-    };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-async function obtenerRegistrosDB() {
-  try {
-    const db = await abrirDB();
-    return new Promise((resolve) => {
-      const tx = db.transaction(STORE_NAME, "readonly");
-      const store = tx.objectStore(STORE_NAME);
-      const req = store.getAll();
-      req.onsuccess = () => resolve(req.result || []);
-      req.onerror = () => resolve(obtenerFallbackLocal());
-    });
-  } catch (err) {
-    return obtenerFallbackLocal();
-  }
-}
-
-async function guardarRegistroDB(registro) {
-  try {
-    const db = await abrirDB();
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    const store = tx.objectStore(STORE_NAME);
-    store.put(registro);
-  } catch (err) {
-    guardarFallbackLocal(registro);
-  }
-}
-
-async function eliminarRegistroDB(id) {
-  try {
-    const db = await abrirDB();
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    const store = tx.objectStore(STORE_NAME);
-    store.delete(id);
-  } catch (err) {
-    eliminarFallbackLocal(id);
-  }
-}
-
-// Métodos de respaldo (LocalStorage)
-function obtenerFallbackLocal() {
-  return JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
-}
-
-function guardarFallbackLocal(registro) {
-  const historial = obtenerFallbackLocal();
-  historial.push(registro);
-  localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
-}
-
-function eliminarFallbackLocal(id) {
-  let historial = obtenerFallbackLocal();
-  historial = historial.filter(item => item.id !== id);
-  localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
-}
-
-// 2. Interfaz de Usuario y Cálculos
-
-window.renderizarFormularioCategorias = function() {
+function renderizarFormularioCategorias() {
   const contenedor = document.getElementById("m1-etarios-container");
   if (!contenedor) return;
 
@@ -108,22 +29,22 @@ window.renderizarFormularioCategorias = function() {
         data-nombre="${cat.nombre}"
         min="0" 
         placeholder="0"
-        oninput="window.calcularUGM1()"
+        oninput="calcularUGM1()"
         style="width:100%; text-align:center;"
       >
       <span style="font-size:9px; color:#637381; display:block;">${cat.factorUGM} UGM</span>
     </div>
   `).join('');
-};
+}
 
-window.establecerFechaPorDefecto = function() {
+function establecerFechaPorDefecto() {
   const inputFechaIngreso = document.getElementById("m1-f-ingreso");
   if (inputFechaIngreso && !inputFechaIngreso.value) {
     inputFechaIngreso.value = new Date().toISOString().split("T")[0];
   }
-};
+}
 
-window.calcularUGM1 = function() {
+function calcularUGM1() {
   const selectPotrero = document.getElementById("m1-potrero");
   const hectareas = parseFloat(selectPotrero?.value || 0);
 
@@ -152,23 +73,21 @@ window.calcularUGM1 = function() {
   if (elCarga) elCarga.value = `${cargaPorHa.toFixed(2)} UGM/ha`;
 
   return { totalCabezas, totalUGM, cargaPorHa, hectareas };
-};
+}
 
-window.guardarRegistroMod1 = async function() {
+function guardarRegistroMod1() {
   const selectPotrero = document.getElementById("m1-potrero");
   const hectareas = parseFloat(selectPotrero?.value || 0);
-  
   const potreroTexto = selectPotrero?.options[selectPotrero.selectedIndex]?.text || "N/A";
   const potreroNombre = potreroTexto.split("(")[0].trim();
 
   const epoca = document.getElementById("m1-epoca")?.value;
   const movimiento = document.getElementById("m1-movimiento")?.value;
   const fechaIngreso = document.getElementById("m1-f-ingreso")?.value;
-  const fechaSalida = document.getElementById("m1-f-salida")?.value;
   const responsable = document.getElementById("m1-responsable")?.value.trim() || "N/A";
   const observaciones = document.getElementById("m1-obs")?.value.trim() || "";
 
-  const { totalCabezas, totalUGM, cargaPorHa } = window.calcularUGM1();
+  const { totalCabezas, totalUGM, cargaPorHa } = calcularUGM1();
 
   if (totalCabezas <= 0) {
     alert("⚠️ Ingresa al menos una categoría con cantidad mayor a cero.");
@@ -190,36 +109,32 @@ window.guardarRegistroMod1 = async function() {
     epoca,
     movimiento,
     fechaIngreso,
-    fechaSalida,
     responsable,
     observaciones,
     detalleCategorias: desgloseArr.join(", "),
     totalCabezas,
     totalUGM: parseFloat(totalUGM.toFixed(1)),
-    cargaPorHa: parseFloat(cargaPorHa.toFixed(2)),
-    sincronizado: false
+    cargaPorHa: parseFloat(cargaPorHa.toFixed(2))
   };
 
-  await guardarRegistroDB(registro);
-  guardarFallbackLocal(registro); // Garantiza redundancia
+  const historial = JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
+  historial.push(registro);
+  localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
 
-  await window.renderizarTablaHistorial();
-  window.limpiarFormMod1();
-};
+  renderizarTablaHistorial();
+  limpiarFormMod1();
+}
 
-window.renderizarTablaHistorial = async function() {
+function renderizarTablaHistorial() {
   const tbody = document.getElementById("tabla-mod1-body");
   if (!tbody) return;
 
-  // Evitar estado de "Cargando" colgado
-  tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:#666;">Cargando registros...</td></tr>`;
-
-  const historial = await obtenerRegistrosDB();
+  const historial = JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
   tbody.innerHTML = "";
 
   if (historial.length === 0) {
     tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:#888;">No hay registros cargados</td></tr>`;
-    window.actualizarEstadisticasKPI([]);
+    actualizarEstadisticasKPI([]);
     return;
   }
 
@@ -236,16 +151,16 @@ window.renderizarTablaHistorial = async function() {
       <td>${item.responsable}</td>
       <td>${item.observaciones || ''}</td>
       <td>
-        <button type="button" onclick="window.eliminarRegistroMod1(${item.id})" style="color:red; border:none; background:none; cursor:pointer; font-weight:bold;">✕</button>
+        <button type="button" onclick="eliminarRegistroMod1(${item.id})" style="color:red; border:none; background:none; cursor:pointer; font-weight:bold;">✕</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
 
-  window.actualizarEstadisticasKPI(historial);
-};
+  actualizarEstadisticasKPI(historial);
+}
 
-window.actualizarEstadisticasKPI = function(historialData) {
+function actualizarEstadisticasKPI(historialData) {
   const historial = historialData || [];
   const sumCabezas = historial.reduce((acc, curr) => acc + (curr.totalCabezas || 0), 0);
   const sumUGM = historial.reduce((acc, curr) => acc + (curr.totalUGM || 0), 0);
@@ -255,31 +170,26 @@ window.actualizarEstadisticasKPI = function(historialData) {
 
   if (elStatCabezas) elStatCabezas.textContent = sumCabezas.toLocaleString();
   if (elStatUGM) elStatUGM.textContent = sumUGM.toFixed(1);
-};
+}
 
-window.eliminarRegistroMod1 = async function(id) {
+function eliminarRegistroMod1(id) {
   if (!confirm("¿Deseas eliminar este registro de pastoreo?")) return;
-  await eliminarRegistroDB(id);
-  eliminarFallbackLocal(id);
-  await window.renderizarTablaHistorial();
-};
+  let historial = JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
+  historial = historial.filter(item => item.id !== id);
+  localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
+  renderizarTablaHistorial();
+}
 
-window.limpiarFormMod1 = function() {
+function limpiarFormMod1() {
   document.getElementById("form-mod1")?.reset();
   document.querySelectorAll(".input-categoria-bovina").forEach(input => input.value = "");
-  window.establecerFechaPorDefecto();
-  window.calcularUGM1();
-};
-
-window.inicializarModuloPotreros = function() {
-  window.renderizarFormularioCategorias();
-  window.establecerFechaPorDefecto();
-  window.renderizarTablaHistorial();
-};
-
-// Inicialización segura
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", window.inicializarModuloPotreros);
-} else {
-  window.inicializarModuloPotreros();
+  establecerFechaPorDefecto();
+  calcularUGM1();
 }
+
+// Inicialización al cargar la ventana
+window.onload = function() {
+  renderizarFormularioCategorias();
+  establecerFechaPorDefecto();
+  renderizarTablaHistorial();
+};
