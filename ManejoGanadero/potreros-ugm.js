@@ -1,9 +1,10 @@
 /**
  * Módulo 1: Control de Pastoreo, Potreros y UGM
  * Hato Laguna Brava (Mantecal, Apure)
- * Versión Directa Síncrona
+ * Versión Directa Síncrona - Corregida y Blindada
  */
 
+// 1. Matriz de Categorías Bovinas y Factores UGM
 const CATEGORIAS_BOVINAS = [
   { id: "vacas_escoteras", nombre: "Vacas Escoteras", factorUGM: 0.93 },
   { id: "vacas_paridas", nombre: "Vacas Paridas", factorUGM: 1.00 },
@@ -14,7 +15,8 @@ const CATEGORIAS_BOVINAS = [
   { id: "becerros_as", nombre: "Becerros / Becerras", factorUGM: 0.24 }
 ];
 
-function renderizarFormularioCategorias() {
+// 2. Renderizado dinámico del formulario de categorías
+window.renderizarFormularioCategorias = function() {
   const contenedor = document.getElementById("m1-etarios-container");
   if (!contenedor) return;
 
@@ -35,16 +37,18 @@ function renderizarFormularioCategorias() {
       <span style="font-size:9px; color:#637381; display:block;">${cat.factorUGM} UGM</span>
     </div>
   `).join('');
-}
+};
 
-function establecerFechaPorDefecto() {
+// 3. Control de fechas por defecto
+window.establecerFechaPorDefecto = function() {
   const inputFechaIngreso = document.getElementById("m1-f-ingreso");
   if (inputFechaIngreso && !inputFechaIngreso.value) {
     inputFechaIngreso.value = new Date().toISOString().split("T")[0];
   }
-}
+};
 
-function calcularUGM1() {
+// 4. Cálculo en tiempo real de UGM y Carga por Ha
+window.calcularUGM1 = function() {
   const selectPotrero = document.getElementById("m1-potrero");
   const hectareas = parseFloat(selectPotrero?.value || 0);
 
@@ -73,21 +77,22 @@ function calcularUGM1() {
   if (elCarga) elCarga.value = `${cargaPorHa.toFixed(2)} UGM/ha`;
 
   return { totalCabezas, totalUGM, cargaPorHa, hectareas };
-}
+};
 
-function guardarRegistroMod1() {
+// 5. Guardar registro en LocalStorage
+window.guardarRegistroMod1 = function() {
   const selectPotrero = document.getElementById("m1-potrero");
   const hectareas = parseFloat(selectPotrero?.value || 0);
   const potreroTexto = selectPotrero?.options[selectPotrero.selectedIndex]?.text || "N/A";
   const potreroNombre = potreroTexto.split("(")[0].trim();
 
-  const epoca = document.getElementById("m1-epoca")?.value;
-  const movimiento = document.getElementById("m1-movimiento")?.value;
-  const fechaIngreso = document.getElementById("m1-f-ingreso")?.value;
+  const epoca = document.getElementById("m1-epoca")?.value || "N/A";
+  const movimiento = document.getElementById("m1-movimiento")?.value || "Ingreso";
+  const fechaIngreso = document.getElementById("m1-f-ingreso")?.value || "";
   const responsable = document.getElementById("m1-responsable")?.value.trim() || "N/A";
   const observaciones = document.getElementById("m1-obs")?.value.trim() || "";
 
-  const { totalCabezas, totalUGM, cargaPorHa } = calcularUGM1();
+  const { totalCabezas, totalUGM, cargaPorHa } = window.calcularUGM1();
 
   if (totalCabezas <= 0) {
     alert("⚠️ Ingresa al menos una categoría con cantidad mayor a cero.");
@@ -121,11 +126,12 @@ function guardarRegistroMod1() {
   historial.push(registro);
   localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
 
-  renderizarTablaHistorial();
-  limpiarFormMod1();
-}
+  window.renderizarTablaHistorial();
+  window.limpiarFormMod1();
+};
 
-function renderizarTablaHistorial() {
+// 6. Renderizado de la tabla de historial
+window.renderizarTablaHistorial = function() {
   const tbody = document.getElementById("tabla-mod1-body");
   if (!tbody) return;
 
@@ -133,8 +139,8 @@ function renderizarTablaHistorial() {
   tbody.innerHTML = "";
 
   if (historial.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:#888;">No hay registros cargados</td></tr>`;
-    actualizarEstadisticasKPI([]);
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:#888; padding: 12px;">No hay registros cargados</td></tr>`;
+    window.actualizarEstadisticasKPI([]);
     return;
   }
 
@@ -157,10 +163,11 @@ function renderizarTablaHistorial() {
     tbody.appendChild(tr);
   });
 
-  actualizarEstadisticasKPI(historial);
-}
+  window.actualizarEstadisticasKPI(historial);
+};
 
-function actualizarEstadisticasKPI(historialData) {
+// 7. Actualización de indicadores clave (KPI)
+window.actualizarEstadisticasKPI = function(historialData) {
   const historial = historialData || [];
   const sumCabezas = historial.reduce((acc, curr) => acc + (curr.totalCabezas || 0), 0);
   const sumUGM = historial.reduce((acc, curr) => acc + (curr.totalUGM || 0), 0);
@@ -170,26 +177,34 @@ function actualizarEstadisticasKPI(historialData) {
 
   if (elStatCabezas) elStatCabezas.textContent = sumCabezas.toLocaleString();
   if (elStatUGM) elStatUGM.textContent = sumUGM.toFixed(1);
-}
+};
 
-function eliminarRegistroMod1(id) {
+// 8. Eliminar registro del historial
+window.eliminarRegistroMod1 = function(id) {
   if (!confirm("¿Deseas eliminar este registro de pastoreo?")) return;
   let historial = JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
   historial = historial.filter(item => item.id !== id);
   localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
-  renderizarTablaHistorial();
-}
+  window.renderizarTablaHistorial();
+};
 
-function limpiarFormMod1() {
+// 9. Reset del formulario
+window.limpiarFormMod1 = function() {
   document.getElementById("form-mod1")?.reset();
   document.querySelectorAll(".input-categoria-bovina").forEach(input => input.value = "");
-  establecerFechaPorDefecto();
-  calcularUGM1();
-}
-
-// Inicialización al cargar la ventana
-window.onload = function() {
-  renderizarFormularioCategorias();
-  establecerFechaPorDefecto();
-  renderizarTablaHistorial();
+  window.establecerFechaPorDefecto();
+  window.calcularUGM1();
 };
+
+// 10. Inicialización inmediata y robusta
+window.inicializarModuloPotreros = function() {
+  window.renderizarFormularioCategorias();
+  window.establecerFechaPorDefecto();
+  window.renderizarTablaHistorial();
+};
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", window.inicializarModuloPotreros);
+} else {
+  window.inicializarModuloPotreros();
+}
