@@ -1,17 +1,27 @@
-// 1. Declaras y exportas la función normalmente
 export function guardarPesajeLevante() {
-    const idAnimal = document.getElementById('levante-id-animal').value;
-    const peso = document.getElementById('levante-peso-actual').value;
-    const fecha = document.getElementById('levante-fecha-pesaje').value;
+  const idAnimal = document.getElementById('levante-id-animal')?.value.trim();
+  const peso = parseFloat(document.getElementById('levante-peso-actual')?.value || '0');
+  const fecha = document.getElementById('levante-fecha-pesaje')?.value;
 
-    if (!idAnimal || !peso) {
-        alert('Por favor complete la identificación y el peso.');
-        return;
-    }
+  if (!idAnimal || !peso || !fecha) {
+    alert('⚠️ Por favor completa la identificación, el peso y la fecha.');
+    return;
+  }
 
-    console.log(`Pesaje registrado: Animal ${idAnimal}, Peso: ${peso} kg, Fecha: ${fecha}`);
-    // Lógica para guardar en base de datos o almacenamiento local...
+  const registroPesaje = {
+    id: Date.now(),
+    idAnimal,
+    peso,
+    fecha
+  };
+
+  const pesajes = JSON.parse(localStorage.getItem('hlb_pesajes_levante') || '[]');
+  pesajes.push(registroPesaje);
+  localStorage.setItem('hlb_pesajes_levante', JSON.stringify(pesajes));
+
+  alert(`✅ Pesaje guardado para el animal ${idAnimal}: ${peso} kg.`);
+  document.getElementById('levante-id-animal').value = '';
+  document.getElementById('levante-peso-actual').value = '';
 }
 
-// 2. La adjuntas al objeto global window para hacerla visible al onclick del HTML
 window.guardarPesajeLevante = guardarPesajeLevante;
