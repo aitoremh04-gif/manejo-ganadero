@@ -1,9 +1,13 @@
 /**
  * Módulo 1: Control de Pastoreo, Potreros y UGM
  * Hato Laguna Brava (Mantecal, Apure)
+ * Conexión nativa IndexedDB + Fallback LocalStorage
  */
 
-// 1. Factores de Equivalencia UGM (Base: 1 UGM = 450 kg PV)
+const DB_NAME = "HatoLagunaBrava_v5";
+const DB_VERSION = 1;
+const STORE_NAME = "potreros";
+
 const CATEGORIAS_BOVINAS = [
   { id: "vacas_escoteras", nombre: "Vacas Escoteras", pesoPromedio: 420, factorUGM: 0.93 },
   { id: "vacas_paridas", nombre: "Vacas Paridas", pesoPromedio: 450, factorUGM: 1.00 },
@@ -14,7 +18,80 @@ const CATEGORIAS_BOVINAS = [
   { id: "becerros_as", nombre: "Becerros / Becerras", pesoPromedio: 110, factorUGM: 0.24 }
 ];
 
-// 2. Funciones Principales Asignadas a Window para Ejecución Global
+// 1. Manejo de IndexedDB
+function abrirDB() {
+  return new Promise((resolve, reject) => {
+    if (!window.indexedDB) {
+      reject("IndexedDB no soportado");
+      return;
+    }
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: "id" });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function obtenerRegistrosDB() {
+  try {
+    const db = await abrirDB();
+    return new Promise((resolve) => {
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => resolve(obtenerFallbackLocal());
+    });
+  } catch (err) {
+    return obtenerFallbackLocal();
+  }
+}
+
+async function guardarRegistroDB(registro) {
+  try {
+    const db = await abrirDB();
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const store = tx.objectStore(STORE_NAME);
+    store.put(registro);
+  } catch (err) {
+    guardarFallbackLocal(registro);
+  }
+}
+
+async function eliminarRegistroDB(id) {
+  try {
+    const db = await abrirDB();
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const store = tx.objectStore(STORE_NAME);
+    store.delete(id);
+  } catch (err) {
+    eliminarFallbackLocal(id);
+  }
+}
+
+// Métodos de respaldo (LocalStorage)
+function obtenerFallbackLocal() {
+  return JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
+}
+
+function guardarFallbackLocal(registro) {
+  const historial = obtenerFallbackLocal();
+  historial.push(registro);
+  localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
+}
+
+function eliminarFallbackLocal(id) {
+  let historial = obtenerFallbackLocal();
+  historial = historial.filter(item => item.id !== id);
+  localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
+}
+
+// 2. Interfaz de Usuario y Cálculos
 
 window.renderizarFormularioCategorias = function() {
   const contenedor = document.getElementById("m1-etarios-container");
@@ -77,7 +154,7 @@ window.calcularUGM1 = function() {
   return { totalCabezas, totalUGM, cargaPorHa, hectareas };
 };
 
-window.guardarRegistroMod1 = function() {
+window.guardarRegistroMod1 = async function() {
   const selectPotrero = document.getElementById("m1-potrero");
   const hectareas = parseFloat(selectPotrero?.value || 0);
   
@@ -105,7 +182,6 @@ window.guardarRegistroMod1 = function() {
       desgloseArr.push(`${input.dataset.nombre}: ${cantidad}`);
     }
   });
-  const detalleCategorias = desgloseArr.join(", ");
 
   const registro = {
     id: Date.now(),
@@ -117,35 +193,33 @@ window.guardarRegistroMod1 = function() {
     fechaSalida,
     responsable,
     observaciones,
-    detalleCategorias,
+    detalleCategorias: desgloseArr.join(", "),
     totalCabezas,
     totalUGM: parseFloat(totalUGM.toFixed(1)),
     cargaPorHa: parseFloat(cargaPorHa.toFixed(2)),
     sincronizado: false
   };
 
-  const historial = JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
-  historial.push(registro);
-  localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
+  await guardarRegistroDB(registro);
+  guardarFallbackLocal(registro); // Garantiza redundancia
 
-  window.renderizarTablaHistorial();
-  window.actualizarEstadisticasKPI();
+  await window.renderizarTablaHistorial();
   window.limpiarFormMod1();
-
-  if (window.sincronizarDatosPendientes) {
-    window.sincronizarDatosPendientes();
-  }
 };
 
-window.renderizarTablaHistorial = function() {
+window.renderizarTablaHistorial = async function() {
   const tbody = document.getElementById("tabla-mod1-body");
   if (!tbody) return;
 
-  const historial = JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
+  // Evitar estado de "Cargando" colgado
+  tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:#666;">Cargando registros...</td></tr>`;
+
+  const historial = await obtenerRegistrosDB();
   tbody.innerHTML = "";
 
   if (historial.length === 0) {
     tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:#888;">No hay registros cargados</td></tr>`;
+    window.actualizarEstadisticasKPI([]);
     return;
   }
 
@@ -160,18 +234,19 @@ window.renderizarTablaHistorial = function() {
       <td><strong>${item.totalCabezas}</strong></td>
       <td>${item.cargaPorHa}</td>
       <td>${item.responsable}</td>
-      <td>${item.observaciones}</td>
+      <td>${item.observaciones || ''}</td>
       <td>
         <button type="button" onclick="window.eliminarRegistroMod1(${item.id})" style="color:red; border:none; background:none; cursor:pointer; font-weight:bold;">✕</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
+
+  window.actualizarEstadisticasKPI(historial);
 };
 
-window.actualizarEstadisticasKPI = function() {
-  const historial = JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
-  
+window.actualizarEstadisticasKPI = function(historialData) {
+  const historial = historialData || [];
   const sumCabezas = historial.reduce((acc, curr) => acc + (curr.totalCabezas || 0), 0);
   const sumUGM = historial.reduce((acc, curr) => acc + (curr.totalUGM || 0), 0);
 
@@ -182,15 +257,11 @@ window.actualizarEstadisticasKPI = function() {
   if (elStatUGM) elStatUGM.textContent = sumUGM.toFixed(1);
 };
 
-window.eliminarRegistroMod1 = function(id) {
+window.eliminarRegistroMod1 = async function(id) {
   if (!confirm("¿Deseas eliminar este registro de pastoreo?")) return;
-  
-  let historial = JSON.parse(localStorage.getItem("hlb_historial_potreros") || "[]");
-  historial = historial.filter(item => item.id !== id);
-  localStorage.setItem("hlb_historial_potreros", JSON.stringify(historial));
-
-  window.renderizarTablaHistorial();
-  window.actualizarEstadisticasKPI();
+  await eliminarRegistroDB(id);
+  eliminarFallbackLocal(id);
+  await window.renderizarTablaHistorial();
 };
 
 window.limpiarFormMod1 = function() {
@@ -204,10 +275,9 @@ window.inicializarModuloPotreros = function() {
   window.renderizarFormularioCategorias();
   window.establecerFechaPorDefecto();
   window.renderizarTablaHistorial();
-  window.actualizarEstadisticasKPI();
 };
 
-// 3. Mecanismo de Inicialización Robusto
+// Inicialización segura
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", window.inicializarModuloPotreros);
 } else {
